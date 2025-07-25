@@ -58,6 +58,13 @@ UnlockED is a comprehensive course discovery and review platform designed specif
 - **Lucide React**: Beautiful, customizable icons
 - **Radix UI**: Unstyled, accessible components (via shadcn/ui)
 
+### Deployment & Infrastructure
+- **Docker**: Containerized deployment with Alpine Linux base images
+- **Docker Compose**: Multi-service orchestration
+- **Nginx**: Production-ready web server with optimized configuration
+- **Health Checks**: Automated container health monitoring
+- **Production Build**: Optimized static assets with gzip compression
+
 ### State Management
 - **React Hooks**: useState, useEffect, useMemo for local state
 - **Local Storage**: Client-side persistence for user sessions
@@ -66,11 +73,50 @@ UnlockED is a comprehensive course discovery and review platform designed specif
 ## Getting Started
 
 ### Prerequisites
-- **Node.js** (v18 or higher) - [Install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-- **PostgreSQL** (v14 or higher) - [Download](https://www.postgresql.org/download/)
-- **npm** or **yarn** package manager
+- **Node.js** (v18 or higher) - [Install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating) OR
+- **Docker** and **Docker Compose** - [Install Docker](https://docs.docker.com/get-docker/)
+- **PostgreSQL** (v14 or higher) - [Download](https://www.postgresql.org/download/) (for non-Docker setup)
+- **npm** or **yarn** package manager (for non-Docker setup)
 
-### Quick Start
+### Quick Start (Docker - Recommended)
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/luci582/uni-unlockedlockedin.git
+   cd uni-unlockedlockedin
+   ```
+
+2. **Start with Docker Compose**
+   ```bash
+   # Build and start all services
+   docker compose up -d
+   
+   # Or use the deploy script
+   chmod +x deploy.sh
+   ./deploy.sh
+   ```
+
+3. **Access the application**
+   - **Frontend**: http://localhost (port 80)
+   - **Backend API**: http://localhost:3001
+   - **Admin Panel**: Login with admin key "teamlockedin124"
+
+4. **Useful Docker commands**
+   ```bash
+   # View logs
+   docker compose logs -f
+   
+   # Stop services
+   docker compose down
+   
+   # Rebuild and restart
+   docker compose down && docker compose build && docker compose up -d
+   
+   # Check service status
+   docker compose ps
+   ```
+
+### Development Setup (Manual)
 
 1. **Clone the repository**
    ```bash
@@ -206,6 +252,28 @@ The application comes with realistic sample data including:
 - **Admin**: `admin@unsw.edu.au` / `password`
 - **Teacher**: `teacher@unsw.edu.au` / `password`
 - **Student**: `student@unsw.edu.au` / `password`
+
+## Docker Architecture
+
+### Container Services
+- **Frontend Container**: Nginx + React production build
+  - Alpine Linux base image for minimal size
+  - Multi-stage build for optimized production assets
+  - Gzip compression and security headers
+  - Health checks with automatic restart
+  
+- **Backend Container**: Node.js Express API
+  - Alpine Linux base image with Node.js 18
+  - Non-root user for enhanced security
+  - In-memory data storage for simplicity
+  - Health checks and graceful shutdown
+
+### Production Features
+- **Load Balancer Ready**: Nginx reverse proxy configuration
+- **Security**: Non-root containers, security headers, restricted permissions
+- **Monitoring**: Health checks for all services with automatic recovery
+- **Scalability**: Stateless backend design for horizontal scaling
+- **Optimization**: Gzip compression, static asset caching, optimized builds
 
 ## Key Features Implementation
 
