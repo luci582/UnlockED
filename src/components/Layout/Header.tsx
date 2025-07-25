@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Search, User, GraduationCap, LogOut, Settings, Menu, X } from "lucide-react";
+import { Search, User, GraduationCap, LogOut, Settings, Menu, X, Shield, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -18,33 +18,20 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "./ThemeToggle";
-import { useState, useEffect } from "react";
-
-interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  studentId?: string;
-}
+import { useState } from "react";
+import { useAuth, usePermissions } from "@/hooks/use-auth";
 
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [user, setUser] = useState<User | null>(null);
+  const { user, logout } = useAuth();
+  const permissions = usePermissions();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
-  }, []);
-
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
+    logout();
     navigate("/");
   };
 
@@ -124,18 +111,36 @@ const Header = () => {
                     <p className="text-xs leading-none text-muted-foreground">
                       {user.email}
                     </p>
-                    {user.studentId && (
-                      <p className="text-xs leading-none text-muted-foreground">
-                        {user.studentId}
-                      </p>
-                    )}
+                    <div className="flex items-center space-x-2 mt-1">
+                      <Badge variant="outline" className="text-xs">
+                        {user.role}
+                      </Badge>
+                      <Badge variant="secondary" className="text-xs">
+                        {user.totalPoints} pts
+                      </Badge>
+                    </div>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/profile")}>
                   <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
+                  <span>Profile</span>
                 </DropdownMenuItem>
+                
+                {permissions.canManageCourses && (
+                  <DropdownMenuItem onClick={() => navigate("/instructor")}>
+                    <BookOpen className="mr-2 h-4 w-4" />
+                    <span>Instructor Dashboard</span>
+                  </DropdownMenuItem>
+                )}
+                
+                {permissions.isAdmin && (
+                  <DropdownMenuItem onClick={() => navigate("/admin")}>
+                    <Shield className="mr-2 h-4 w-4" />
+                    <span>Admin Panel</span>
+                  </DropdownMenuItem>
+                )}
+                
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
@@ -213,14 +218,69 @@ const Header = () => {
                         <p className="text-xs text-muted-foreground">
                           {user.email}
                         </p>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <Badge variant="outline" className="text-xs">
+                            {user.role}
+                          </Badge>
+                          <Badge variant="secondary" className="text-xs">
+                            {user.totalPoints} pts
+                          </Badge>
+                        </div>
                       </div>
                     </div>
                     <div className="flex flex-col space-y-1 mt-2">
-                      <Button variant="ghost" className="justify-start" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        className="justify-start" 
+                        size="sm"
+                        onClick={() => {
+                          navigate("/profile");
+                          setMobileMenuOpen(false);
+                        }}
+                      >
                         <Settings className="mr-2 h-4 w-4" />
-                        Settings
+                        Profile
                       </Button>
-                      <Button variant="ghost" className="justify-start" size="sm" onClick={handleLogout}>
+                      
+                      {permissions.canManageCourses && (
+                        <Button 
+                          variant="ghost" 
+                          className="justify-start" 
+                          size="sm"
+                          onClick={() => {
+                            navigate("/instructor");
+                            setMobileMenuOpen(false);
+                          }}
+                        >
+                          <BookOpen className="mr-2 h-4 w-4" />
+                          Instructor
+                        </Button>
+                      )}
+                      
+                      {permissions.isAdmin && (
+                        <Button 
+                          variant="ghost" 
+                          className="justify-start" 
+                          size="sm"
+                          onClick={() => {
+                            navigate("/admin");
+                            setMobileMenuOpen(false);
+                          }}
+                        >
+                          <Shield className="mr-2 h-4 w-4" />
+                          Admin
+                        </Button>
+                      )}
+                      
+                      <Button 
+                        variant="ghost" 
+                        className="justify-start" 
+                        size="sm" 
+                        onClick={() => {
+                          handleLogout();
+                          setMobileMenuOpen(false);
+                        }}
+                      >
                         <LogOut className="mr-2 h-4 w-4" />
                         Log out
                       </Button>

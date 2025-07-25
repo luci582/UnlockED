@@ -1,15 +1,19 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAuth } from "@/hooks/use-auth";
+import { authenticateUser, createUser, UserRole } from "@/lib/auth";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -25,10 +29,12 @@ const Login = () => {
   const [signupForm, setSignupForm] = useState({
     firstName: "",
     lastName: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
-    studentId: "",
+    role: "STUDENT" as UserRole,
+    adminKey: "",
   });
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -37,22 +43,14 @@ const Login = () => {
     setError("");
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const result = await authenticateUser(loginForm.email, loginForm.password);
       
-      // Mock authentication - in real app, this would be an API call
-      if (loginForm.email === "admin@unsw.edu.au" && loginForm.password === "password") {
-        localStorage.setItem("user", JSON.stringify({
-          id: "1",
-          email: loginForm.email,
-          firstName: "John",
-          lastName: "Doe",
-          studentId: "z5555555"
-        }));
+      if (result.success && result.user) {
+        login(result.user);
         setSuccess("Login successful! Redirecting...");
         setTimeout(() => navigate("/"), 1000);
       } else {
-        setError("Invalid email or password. Try admin@unsw.edu.au / password");
+        setError(result.error || "Login failed");
       }
     } catch (err) {
       setError("An error occurred. Please try again.");
@@ -79,27 +77,30 @@ const Login = () => {
       return;
     }
 
-    if (!signupForm.email.includes("@")) {
-      setError("Please enter a valid email address");
+    if (!signupForm.username.trim()) {
+      setError("Username is required");
       setIsLoading(false);
       return;
     }
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Mock signup success
-      localStorage.setItem("user", JSON.stringify({
-        id: Date.now().toString(),
+      const result = await createUser({
         email: signupForm.email,
+        username: signupForm.username,
         firstName: signupForm.firstName,
         lastName: signupForm.lastName,
-        studentId: signupForm.studentId
-      }));
+        password: signupForm.password,
+        role: signupForm.role,
+        adminKey: signupForm.adminKey
+      });
       
-      setSuccess("Account created successfully! Redirecting...");
-      setTimeout(() => navigate("/"), 1000);
+      if (result.success && result.user) {
+        login(result.user);
+        setSuccess("Account created successfully! Redirecting...");
+        setTimeout(() => navigate("/"), 1000);
+      } else {
+        setError(result.error || "Account creation failed");
+      }
     } catch (err) {
       setError("An error occurred. Please try again.");
     } finally {
@@ -240,14 +241,51 @@ const Login = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="studentId">Student ID (Optional)</Label>
-                    <Input
-                      id="studentId"
-                      placeholder="z5555555"
-                      value={signupForm.studentId}
-                      onChange={(e) => setSignupForm(prev => ({ ...prev, studentId: e.target.value }))}
-                    />
+                    <Label htmlFor="username">Username</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="username"
+                        placeholder="Choose a username"
+                        className="pl-9"
+                        value={signupForm.username}
+                        onChange={(e) => setSignupForm(prev => ({ ...prev, username: e.target.value }))}
+                        required
+                      />
+                    </div>
                   </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="role">Account Type</Label>
+                    <Select value={signupForm.role} onValueChange={(value: UserRole) => setSignupForm(prev => ({ ...prev, role: value }))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select account type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="STUDENT">Student</SelectItem>
+                        <SelectItem value="INSTRUCTOR">Instructor</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {signupForm.role === 'INSTRUCTOR' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="adminKey">Admin Key (Optional)</Label>
+                      <div className="relative">
+                        <Shield className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="adminKey"
+                          placeholder="Enter admin key for admin access"
+                          className="pl-9"
+                          value={signupForm.adminKey}
+                          onChange={(e) => setSignupForm(prev => ({ ...prev, adminKey: e.target.value }))}
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Leave empty for instructor access, or enter admin key for full admin privileges
+                      </p>
+                    </div>
+                  )}
 
                   <div className="space-y-2">
                     <Label htmlFor="signup-email">Email</Label>
