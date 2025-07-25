@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Search, User, GraduationCap, LogOut, Settings } from "lucide-react";
+import { Search, User, GraduationCap, LogOut, Settings, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -10,6 +10,13 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "./ThemeToggle";
 import { useState, useEffect } from "react";
@@ -26,6 +33,7 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -60,7 +68,8 @@ const Header = () => {
           </span>
         </Link>
         
-        <nav className="mx-6 flex items-center space-x-4 lg:space-x-6">
+        {/* Desktop Navigation */}
+        <nav className="mx-6 hidden md:flex items-center space-x-4 lg:space-x-6">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.href;
@@ -85,7 +94,7 @@ const Header = () => {
         </nav>
 
         <div className="ml-auto flex items-center space-x-3">
-          <div className="relative hidden md:block">
+          <div className="relative hidden lg:block">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search courses..."
@@ -97,7 +106,7 @@ const Header = () => {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full" data-testid="user-menu-trigger">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="" alt={user.firstName} />
                     <AvatarFallback className="bg-primary text-primary-foreground">
@@ -137,9 +146,103 @@ const Header = () => {
           ) : (
             <Button variant="outline" size="sm" onClick={() => navigate("/login")}>
               <User className="h-4 w-4 mr-2" />
-              Login
+              <span className="hidden sm:inline">Login</span>
             </Button>
           )}
+
+          {/* Mobile Menu */}
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild className="md:hidden">
+              <Button variant="ghost" size="icon" data-testid="mobile-menu-trigger">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-80">
+              <SheetHeader>
+                <SheetTitle>Navigation</SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col space-y-4 mt-6">
+                {/* Mobile Search */}
+                <div className="relative lg:hidden">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search courses..."
+                    className="pl-8"
+                  />
+                </div>
+                
+                {/* Mobile Navigation Links */}
+                <nav className="flex flex-col space-y-2">
+                  {navItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = location.pathname === item.href;
+                    
+                    return (
+                      <Link
+                        key={item.href}
+                        to={item.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                          isActive
+                            ? "text-primary bg-primary/10"
+                            : "text-muted-foreground hover:text-primary hover:bg-primary/5"
+                        }`}
+                      >
+                        {Icon && <Icon className="h-5 w-5" />}
+                        <span className="font-medium">{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </nav>
+                
+                {/* Mobile User Section */}
+                {user ? (
+                  <div className="border-t pt-4 mt-4">
+                    <div className="flex items-center space-x-3 px-3 py-2">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src="" alt={user.firstName} />
+                        <AvatarFallback className="bg-primary text-primary-foreground">
+                          {user.firstName[0]}{user.lastName[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">
+                          {user.firstName} {user.lastName}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {user.email}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col space-y-1 mt-2">
+                      <Button variant="ghost" className="justify-start" size="sm">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Settings
+                      </Button>
+                      <Button variant="ghost" className="justify-start" size="sm" onClick={handleLogout}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Log out
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="border-t pt-4 mt-4">
+                    <Button 
+                      className="w-full" 
+                      onClick={() => {
+                        navigate("/login");
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      <User className="h-4 w-4 mr-2" />
+                      Login
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>

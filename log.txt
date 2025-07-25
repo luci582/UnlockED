@@ -1,0 +1,221 @@
+🎬 Starting UnlockED screenshot capture...
+
+🗑️  Deleted existing screenshots directory
+📁 Created directory: ./screenshots
+📁 Created directory: screenshots/light
+📁 Created directory: screenshots/dark
+📁 Created directory: screenshots/mobile-light
+📁 Created directory: screenshots/mobile-dark
+🚀 Initializing Puppeteer...
+✅ Puppeteer initialized
+📸 Starting screenshot capture process...
+🎨 Setting theme to: light
+Current theme is: light, want: light
+✅ Final theme state: light
+
+🖥️  Capturing desktop screenshots in light mode...
+
+📸 Taking screenshot: homepage (light)
+✅ Screenshot saved: screenshots/light/homepage.png
+📸 Taking screenshot: courses-directory (light)
+✅ Screenshot saved: screenshots/light/courses-directory.png
+📸 Taking screenshot: courses-with-filters (light)
+✅ Screenshot saved: screenshots/light/courses-with-filters.png
+📸 Taking screenshot: courses-without-filters (light)
+   🖱️  Clicked: Hide desktop filter panel
+✅ Screenshot saved: screenshots/light/courses-without-filters.png
+📸 Taking screenshot: mobile-filters-open (light)
+   ⚠️  Click failed: Open mobile filter panel - Waiting for selector `[data-testid="mobile-filter-toggle"]` failed: Waiting failed: 5000ms exceeded
+✅ Screenshot saved: screenshots/light/mobile-filters-open.png
+📸 Taking screenshot: courses-filtered-by-skills (light)
+   🖱️  Clicked: Click Programming skill filter
+   ⏱️  Waited: 1000ms
+✅ Screenshot saved: screenshots/light/courses-filtered-by-skills.png
+📸 Taking screenshot: courses-search-active (light)
+   ⌨️  Typed: Search for programming courses
+   ⏱️  Waited: 1000ms
+✅ Screenshot saved: screenshots/light/courses-search-active.png
+📸 Taking screenshot: course-card-expanded-skills (light)
+   🖱️  Clicked: Click "show more" on first course card
+   ⏱️  Waited: 500ms
+✅ Screenshot saved: screenshots/light/course-card-expanded-skills.png
+📸 Taking screenshot: login-page (light)
+✅ Screenshot saved: screenshots/light/login-page.png
+📸 Taking screenshot: login-signup-tab (light)
+   🖱️  Clicked: Switch to signup tab
+✅ Screenshot saved: screenshots/light/login-signup-tab.png
+📸 Taking screenshot: login-with-demo-credentials (light)
+   ⌨️  Typed: Fill email field
+   ⌨️  Typed: Fill password field
+✅ Screenshot saved: screenshots/light/login-with-demo-credentials.png
+📸 Taking screenshot: authenticated-header (light)
+🔐 Authenticating user...
+✅ Authentication successful
+   🖱️  Clicked: Open user dropdown
+   ⏱️  Waited: 500ms
+✅ Screenshot saved: screenshots/light/authenticated-header.png
+📸 Taking screenshot: leaderboard (light)
+✅ Screenshot saved: screenshots/light/leaderboard.png
+📸 Taking screenshot: submit-review (light)
+✅ Screenshot saved: screenshots/light/submit-review.png
+📸 Taking screenshot: mobile-navigation (light)
+   ⚠️  Click failed: Open mobile navigation menu - Waiting for selector `[data-testid="mobile-menu-trigger"]` failed: Waiting failed: 5000ms exceeded
+   ⏱️  Waited: 500ms
+✅ Screenshot saved: screenshots/light/mobile-navigation.png
+
+🖥️  Capturing mobile screenshots in light mode...
+
+📸 Taking screenshot: homepage (light mobile)
+✅ Screenshot saved: screenshots/mobile-light/homepage.png
+📸 Taking screenshot: courses-directory (light mobile)
+✅ Screenshot saved: screenshots/mobile-light/courses-directory.png
+📸 Taking screenshot: courses-with-filters (light mobile)
+✅ Screenshot saved: screenshots/mobile-light/courses-with-filters.png
+📸 Taking screenshot: courses-without-filters (light mobile)
+   ⚠️  Click failed: Hide desktop filter panel - Waiting for selector `[data-testid="desktop-filter-toggle"]` failed: Waiting failed: 5000ms exceeded
+✅ Screenshot saved: screenshots/mobile-light/courses-without-filters.png
+📸 Taking screenshot: mobile-filters-open (light mobile)
+   🖱️  Clicked: Open mobile filter panel
+✅ Screenshot saved: screenshots/mobile-light/mobile-filters-open.png
+📸 Taking screenshot: courses-filtered-by-skills (light mobile)
+   ⚠️  Click failed: Click Programming skill filter - Waiting for selector `[data-testid="skill-filter-programming"]` failed: Waiting failed: 5000ms exceeded
+   ⏱️  Waited: 1000ms
+✅ Screenshot saved: screenshots/mobile-light/courses-filtered-by-skills.png
+📸 Taking screenshot: courses-search-active (light mobile)
+   ⌨️  Typed: Search for programming courses
+   ⏱️  Waited: 1000ms
+✅ Screenshot saved: screenshots/mobile-light/courses-search-active.png
+📸 Taking screenshot: course-card-expanded-skills (light mobile)
+   🖱️  Clicked: Click "show more" on first course card
+   ⏱️  Waited: 500ms
+✅ Screenshot saved: screenshots/mobile-light/course-card-expanded-skills.png
+📸 Taking screenshot: login-page (light mobile)
+✅ Screenshot saved: screenshots/mobile-light/login-page.png
+📸 Taking screenshot: login-signup-tab (light mobile)
+   🖱️  Clicked: Switch to signup tab
+✅ Screenshot saved: screenshots/mobile-light/login-signup-tab.png
+📸 Taking screenshot: login-with-demo-credentials (light mobile)
+   ⌨️  Typed: Fill email field
+   ⌨️  Typed: Fill password field
+✅ Screenshot saved: screenshots/mobile-light/login-with-demo-credentials.png
+📸 Taking screenshot: authenticated-header (light mobile)
+   🖱️  Clicked: Open user dropdown
+   ⏱️  Waited: 500ms
+✅ Screenshot saved: screenshots/mobile-light/authenticated-header.png
+📸 Taking screenshot: leaderboard (light mobile)
+✅ Screenshot saved: screenshots/mobile-light/leaderboard.png
+📸 Taking screenshot: submit-review (light mobile)
+✅ Screenshot saved: screenshots/mobile-light/submit-review.png
+📸 Taking screenshot: mobile-navigation (light mobile)
+   🖱️  Clicked: Open mobile navigation menu
+   ⏱️  Waited: 500ms
+✅ Screenshot saved: screenshots/mobile-light/mobile-navigation.png
+🎨 Setting theme to: dark
+Current theme is: light, want: dark
+Found theme button with selector: button:has(svg)
+✅ Final theme state: dark
+
+🖥️  Capturing desktop screenshots in dark mode...
+
+📸 Taking screenshot: homepage (dark)
+✅ Screenshot saved: screenshots/dark/homepage.png
+📸 Taking screenshot: courses-directory (dark)
+✅ Screenshot saved: screenshots/dark/courses-directory.png
+📸 Taking screenshot: courses-with-filters (dark)
+✅ Screenshot saved: screenshots/dark/courses-with-filters.png
+📸 Taking screenshot: courses-without-filters (dark)
+   🖱️  Clicked: Hide desktop filter panel
+✅ Screenshot saved: screenshots/dark/courses-without-filters.png
+📸 Taking screenshot: mobile-filters-open (dark)
+   ⚠️  Click failed: Open mobile filter panel - Waiting for selector `[data-testid="mobile-filter-toggle"]` failed: Waiting failed: 5000ms exceeded
+✅ Screenshot saved: screenshots/dark/mobile-filters-open.png
+📸 Taking screenshot: courses-filtered-by-skills (dark)
+   🖱️  Clicked: Click Programming skill filter
+   ⏱️  Waited: 1000ms
+✅ Screenshot saved: screenshots/dark/courses-filtered-by-skills.png
+📸 Taking screenshot: courses-search-active (dark)
+   ⌨️  Typed: Search for programming courses
+   ⏱️  Waited: 1000ms
+✅ Screenshot saved: screenshots/dark/courses-search-active.png
+📸 Taking screenshot: course-card-expanded-skills (dark)
+   🖱️  Clicked: Click "show more" on first course card
+   ⏱️  Waited: 500ms
+✅ Screenshot saved: screenshots/dark/course-card-expanded-skills.png
+📸 Taking screenshot: login-page (dark)
+✅ Screenshot saved: screenshots/dark/login-page.png
+📸 Taking screenshot: login-signup-tab (dark)
+   🖱️  Clicked: Switch to signup tab
+✅ Screenshot saved: screenshots/dark/login-signup-tab.png
+📸 Taking screenshot: login-with-demo-credentials (dark)
+   ⌨️  Typed: Fill email field
+   ⌨️  Typed: Fill password field
+✅ Screenshot saved: screenshots/dark/login-with-demo-credentials.png
+📸 Taking screenshot: authenticated-header (dark)
+   🖱️  Clicked: Open user dropdown
+   ⏱️  Waited: 500ms
+✅ Screenshot saved: screenshots/dark/authenticated-header.png
+📸 Taking screenshot: leaderboard (dark)
+✅ Screenshot saved: screenshots/dark/leaderboard.png
+📸 Taking screenshot: submit-review (dark)
+✅ Screenshot saved: screenshots/dark/submit-review.png
+📸 Taking screenshot: mobile-navigation (dark)
+   ⚠️  Click failed: Open mobile navigation menu - Waiting for selector `[data-testid="mobile-menu-trigger"]` failed: Waiting failed: 5000ms exceeded
+   ⏱️  Waited: 500ms
+✅ Screenshot saved: screenshots/dark/mobile-navigation.png
+
+🖥️  Capturing mobile screenshots in dark mode...
+
+📸 Taking screenshot: homepage (dark mobile)
+✅ Screenshot saved: screenshots/mobile-dark/homepage.png
+📸 Taking screenshot: courses-directory (dark mobile)
+✅ Screenshot saved: screenshots/mobile-dark/courses-directory.png
+📸 Taking screenshot: courses-with-filters (dark mobile)
+✅ Screenshot saved: screenshots/mobile-dark/courses-with-filters.png
+📸 Taking screenshot: courses-without-filters (dark mobile)
+   ⚠️  Click failed: Hide desktop filter panel - Waiting for selector `[data-testid="desktop-filter-toggle"]` failed: Waiting failed: 5000ms exceeded
+✅ Screenshot saved: screenshots/mobile-dark/courses-without-filters.png
+📸 Taking screenshot: mobile-filters-open (dark mobile)
+   🖱️  Clicked: Open mobile filter panel
+✅ Screenshot saved: screenshots/mobile-dark/mobile-filters-open.png
+📸 Taking screenshot: courses-filtered-by-skills (dark mobile)
+   ⚠️  Click failed: Click Programming skill filter - Waiting for selector `[data-testid="skill-filter-programming"]` failed: Waiting failed: 5000ms exceeded
+   ⏱️  Waited: 1000ms
+✅ Screenshot saved: screenshots/mobile-dark/courses-filtered-by-skills.png
+📸 Taking screenshot: courses-search-active (dark mobile)
+   ⌨️  Typed: Search for programming courses
+   ⏱️  Waited: 1000ms
+✅ Screenshot saved: screenshots/mobile-dark/courses-search-active.png
+📸 Taking screenshot: course-card-expanded-skills (dark mobile)
+   🖱️  Clicked: Click "show more" on first course card
+   ⏱️  Waited: 500ms
+✅ Screenshot saved: screenshots/mobile-dark/course-card-expanded-skills.png
+📸 Taking screenshot: login-page (dark mobile)
+✅ Screenshot saved: screenshots/mobile-dark/login-page.png
+📸 Taking screenshot: login-signup-tab (dark mobile)
+   🖱️  Clicked: Switch to signup tab
+✅ Screenshot saved: screenshots/mobile-dark/login-signup-tab.png
+📸 Taking screenshot: login-with-demo-credentials (dark mobile)
+   ⌨️  Typed: Fill email field
+   ⌨️  Typed: Fill password field
+✅ Screenshot saved: screenshots/mobile-dark/login-with-demo-credentials.png
+📸 Taking screenshot: authenticated-header (dark mobile)
+   🖱️  Clicked: Open user dropdown
+   ⏱️  Waited: 500ms
+✅ Screenshot saved: screenshots/mobile-dark/authenticated-header.png
+📸 Taking screenshot: leaderboard (dark mobile)
+✅ Screenshot saved: screenshots/mobile-dark/leaderboard.png
+📸 Taking screenshot: submit-review (dark mobile)
+✅ Screenshot saved: screenshots/mobile-dark/submit-review.png
+📸 Taking screenshot: mobile-navigation (dark mobile)
+   🖱️  Clicked: Open mobile navigation menu
+   ⏱️  Waited: 500ms
+✅ Screenshot saved: screenshots/mobile-dark/mobile-navigation.png
+
+🎉 Screenshot capture complete!
+📊 Total screenshots taken: 60/60
+📝 Generating screenshot index...
+✅ Screenshot index generated
+
+🎉 All done! Check the ./screenshots directory for your images.
+📋 View ./screenshots/README.md for an organized overview.
+

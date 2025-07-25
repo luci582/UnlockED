@@ -1,24 +1,12 @@
 import { useState, useMemo } from "react";
-import { Search, SlidersHorizontal, Grid, List } from "lucide-react";
+import { Search, SlidersHorizontal, Grid, List, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import CourseCard from "@/components/Course/CourseCard";
 import FilterPanel from "@/components/Filter/FilterPanel";
-
-interface Course {
-  id: string;
-  title: string;
-  code: string;
-  faculty: string;
-  rating: number;
-  reviewCount: number;
-  skills: string[];
-  mode: "online" | "in-person" | "hybrid";
-  effortLevel?: "light" | "moderate" | "heavy" | "very-heavy";
-  featured?: boolean;
-  isNew?: boolean;
-}
+import { Course, allCourses } from "@/data/courses";
 
 interface Filters {
   faculty: string[];
@@ -29,7 +17,8 @@ interface Filters {
 
 const CoursesDirectory = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [showFilters, setShowFilters] = useState(true);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [showDesktopFilters, setShowDesktopFilters] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("rating");
   const [filters, setFilters] = useState<Filters>({
@@ -38,101 +27,6 @@ const CoursesDirectory = () => {
     mode: [],
     skills: [],
   });
-
-  // Mock course data
-  const allCourses: Course[] = [
-    {
-      id: "comp1511",
-      title: "Programming Fundamentals",
-      code: "COMP1511",
-      faculty: "Engineering",
-      rating: 4.5,
-      reviewCount: 234,
-      skills: ["Programming", "Problem Solving", "Logic", "Algorithms"],
-      mode: "hybrid",
-      effortLevel: "moderate",
-      featured: true,
-    },
-    {
-      id: "mgmt1001", 
-      title: "Managing Organisations and People",
-      code: "MGMT1001",
-      faculty: "Business School",
-      rating: 4.2,
-      reviewCount: 189,
-      skills: ["Leadership", "Teamwork", "Communication", "Management"],
-      mode: "in-person",
-      effortLevel: "light",
-    },
-    {
-      id: "psyc1001",
-      title: "Psychology 1A",
-      code: "PSYC1001", 
-      faculty: "Science",
-      rating: 4.7,
-      reviewCount: 312,
-      skills: ["Research", "Critical Thinking", "Analysis", "Statistics"],
-      mode: "online",
-      effortLevel: "heavy",
-      featured: true,
-    },
-    {
-      id: "math1131",
-      title: "Mathematics 1A",
-      code: "MATH1131",
-      faculty: "Science", 
-      rating: 3.8,
-      reviewCount: 156,
-      skills: ["Calculus", "Problem Solving", "Logic", "Analysis"],
-      mode: "in-person",
-      effortLevel: "very-heavy",
-    },
-    {
-      id: "econ1101",
-      title: "Microeconomics 1",
-      code: "ECON1101",
-      faculty: "Business School",
-      rating: 4.1,
-      reviewCount: 203,
-      skills: ["Economics", "Critical Thinking", "Analysis", "Mathematics"],
-      mode: "hybrid",
-      effortLevel: "moderate",
-    },
-    {
-      id: "arts1000",
-      title: "Arts Foundation Course",
-      code: "ARTS1000",
-      faculty: "Arts & Social Sciences",
-      rating: 4.4,
-      reviewCount: 98,
-      skills: ["Writing", "Research", "Critical Thinking", "Communication"],
-      mode: "online",
-      effortLevel: "light",
-      isNew: true,
-    },
-    {
-      id: "comp1521",
-      title: "Computer Systems Fundamentals",
-      code: "COMP1521",
-      faculty: "Engineering",
-      rating: 4.3,
-      reviewCount: 178,
-      skills: ["Programming", "Systems", "Assembly", "Hardware"],
-      mode: "hybrid",
-      effortLevel: "heavy",
-    },
-    {
-      id: "fins1613",
-      title: "Business Finance",
-      code: "FINS1613",
-      faculty: "Business School",
-      rating: 3.9,
-      reviewCount: 145,
-      skills: ["Finance", "Excel", "Analysis", "Mathematics"],
-      mode: "in-person",
-      effortLevel: "moderate",
-    },
-  ];
 
   // Filter and sort courses
   const filteredCourses = useMemo(() => {
@@ -231,8 +125,20 @@ const CoursesDirectory = () => {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => setShowFilters(!showFilters)}
+              onClick={() => setShowMobileFilters(!showMobileFilters)}
               className="lg:hidden"
+              data-testid="mobile-filter-toggle"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+            </Button>
+
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setShowDesktopFilters(!showDesktopFilters)}
+              className="hidden lg:flex"
+              data-testid="desktop-filter-toggle"
+              title={showDesktopFilters ? "Hide Filters" : "Show Filters"}
             >
               <SlidersHorizontal className="h-4 w-4" />
             </Button>
@@ -260,8 +166,8 @@ const CoursesDirectory = () => {
 
         {/* Content */}
         <div className="flex gap-8">
-          {/* Filters Sidebar */}
-          {showFilters && (
+          {/* Desktop Filters Sidebar - Always visible on large screens */}
+          {showDesktopFilters && (
             <div className="w-80 shrink-0 hidden lg:block">
               <FilterPanel 
                 onFiltersChange={handleFiltersChange}
@@ -286,6 +192,7 @@ const CoursesDirectory = () => {
                     key={course.id} 
                     {...course} 
                     onSkillClick={handleSkillClick}
+                    selectedSkills={filters.skills}
                   />
                 ))}
               </div>
@@ -296,6 +203,7 @@ const CoursesDirectory = () => {
                     <CourseCard 
                       {...course} 
                       onSkillClick={handleSkillClick}
+                      selectedSkills={filters.skills}
                     />
                   </div>
                 ))}
@@ -317,27 +225,20 @@ const CoursesDirectory = () => {
         </div>
 
         {/* Mobile Filter Sheet */}
-        {showFilters && (
-          <div className="lg:hidden fixed inset-0 z-50 bg-background/80 backdrop-blur-sm">
-            <div className="fixed inset-y-0 right-0 w-80 bg-background border-l p-6 overflow-y-auto">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold">Filters</h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowFilters(false)}
-                >
-                  Close
-                </Button>
-              </div>
+        <Sheet open={showMobileFilters} onOpenChange={setShowMobileFilters}>
+          <SheetContent side="right" className="w-80 lg:hidden">
+            <SheetHeader>
+              <SheetTitle>Filters</SheetTitle>
+            </SheetHeader>
+            <div className="mt-6">
               <FilterPanel 
                 onFiltersChange={handleFiltersChange}
                 currentFilters={filters}
                 onSkillClick={handleSkillClick}
               />
             </div>
-          </div>
-        )}
+          </SheetContent>
+        </Sheet>
       </div>
     </div>
   );

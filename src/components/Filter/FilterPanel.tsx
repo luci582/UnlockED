@@ -103,14 +103,7 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick }: FilterPa
   };
 
   const handleSkillToggle = (skill: string) => {
-    const isSelected = filters.skills.includes(skill);
-    const newSkills = isSelected
-      ? filters.skills.filter(s => s !== skill)
-      : [...filters.skills, skill];
-    const newFilters = { ...filters, skills: newSkills };
-    updateFilters(newFilters);
-    
-    // Also notify parent about the skill click
+    // Just call the parent's skill click handler
     onSkillClick?.(skill);
   };
 
@@ -200,22 +193,30 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick }: FilterPa
 
         {/* Skills Filter */}
         <Collapsible open={openSections.skills} onOpenChange={() => toggleSection('skills')}>
-          <CollapsibleTrigger className="flex w-full items-center justify-between py-2">
+          <CollapsibleTrigger className="flex w-full items-center justify-between py-2" data-testid="skills-filter-trigger">
             <Label className="font-medium">Skills</Label>
             <ChevronDown className={`h-4 w-4 transition-transform ${openSections.skills ? 'rotate-180' : ''}`} />
           </CollapsibleTrigger>
           <CollapsibleContent className="pt-2 space-y-2">
             <div className="flex flex-wrap gap-2 items-start">
-              {skillTags.map((skill) => (
-                <Badge 
-                  key={skill}
-                  variant={filters.skills.includes(skill) ? "default" : "outline"}
-                  className="cursor-pointer hover:bg-primary/20 transition-colors text-xs shrink-0"
-                  onClick={() => handleSkillToggle(skill)}
-                >
-                  {skill}
-                </Badge>
-              ))}
+              {skillTags.map((skill) => {
+                const isSelected = filters.skills.includes(skill);
+                return (
+                  <Badge 
+                    key={skill}
+                    variant={isSelected ? "default" : "outline"}
+                    className={`cursor-pointer transition-all duration-200 text-xs shrink-0 hover:scale-105 active:scale-95 ${
+                      isSelected 
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md" 
+                        : "hover:bg-primary/10 hover:text-primary hover:border-primary/50 hover:shadow-sm"
+                    }`}
+                    onClick={() => handleSkillToggle(skill)}
+                    data-testid={`skill-filter-${skill.toLowerCase().replace(/\s+/g, '-')}`}
+                  >
+                    {skill}
+                  </Badge>
+                );
+              })}
             </div>
           </CollapsibleContent>
         </Collapsible>

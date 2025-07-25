@@ -18,6 +18,7 @@ interface CourseCardProps {
   isNew?: boolean;
   effortLevel?: "light" | "moderate" | "heavy" | "very-heavy";
   onSkillClick?: (skill: string) => void;
+  selectedSkills?: string[];
 }
 
 const CourseCard = ({
@@ -33,6 +34,7 @@ const CourseCard = ({
   isNew = false,
   effortLevel,
   onSkillClick,
+  selectedSkills = [],
 }: CourseCardProps) => {
   const [showAllSkills, setShowAllSkills] = useState(false);
 
@@ -105,23 +107,34 @@ const CourseCard = ({
           </div>
         </div>
         
-        <div className="flex flex-wrap gap-1">
-          {(showAllSkills ? skills : skills.slice(0, 3)).map((skill) => (
-            <Badge 
-              key={skill} 
-              variant="secondary" 
-              className={`text-xs bg-secondary/60 hover:bg-secondary/80 ${
-                onSkillClick ? 'cursor-pointer transition-colors hover:bg-primary/20' : ''
-              }`}
-              onClick={() => onSkillClick?.(skill)}
-            >
-              {skill}
-            </Badge>
-          ))}
+        <div className="flex flex-wrap gap-1.5">
+          {(showAllSkills ? skills : skills.slice(0, 3)).map((skill) => {
+            const isSelected = selectedSkills.includes(skill);
+            return (
+              <Badge 
+                key={skill} 
+                variant={isSelected ? "default" : "secondary"} 
+                className={`text-xs transition-all duration-200 ${
+                  onSkillClick 
+                    ? `cursor-pointer ${
+                        isSelected 
+                          ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm' 
+                          : 'bg-secondary/60 hover:bg-primary/20 hover:text-primary hover:shadow-sm'
+                      } hover:scale-105 active:scale-95` 
+                    : isSelected 
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'bg-secondary/60'
+                }`}
+                onClick={() => onSkillClick?.(skill)}
+              >
+                {skill}
+              </Badge>
+            );
+          })}
           {skills.length > 3 && !showAllSkills && (
             <Badge 
               variant="outline" 
-              className="text-xs cursor-pointer hover:bg-primary/10 transition-colors"
+              className="text-xs cursor-pointer hover:bg-primary/10 hover:text-primary hover:border-primary/50 transition-all duration-200 hover:scale-105 active:scale-95"
               onClick={() => setShowAllSkills(true)}
             >
               +{skills.length - 3} more
@@ -130,7 +143,7 @@ const CourseCard = ({
           {showAllSkills && skills.length > 3 && (
             <Badge 
               variant="outline" 
-              className="text-xs cursor-pointer hover:bg-primary/10 transition-colors"
+              className="text-xs cursor-pointer hover:bg-primary/10 hover:text-primary hover:border-primary/50 transition-all duration-200 hover:scale-105 active:scale-95"
               onClick={() => setShowAllSkills(false)}
             >
               Show less

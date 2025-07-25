@@ -127,6 +127,19 @@ For demonstration purposes, use these credentials:
 - **Email**: `admin@unsw.edu.au`
 - **Password**: `password`
 
+## Screenshots & Visual Documentation
+
+📸 **[View Complete Screenshot Gallery →](./screenshots/README.md)**
+
+Comprehensive visual documentation showcasing all application features across:
+- ✨ Light and dark themes
+- 📱 Desktop and mobile viewports  
+- 🎯 Interactive features and user flows
+- 🔍 Course filtering and search functionality
+- 📊 Course detail pages and navigation
+
+Perfect for understanding the user experience, design decisions, and feature implementations.
+
 ## Contributing
 
 1. **Fork the repository**

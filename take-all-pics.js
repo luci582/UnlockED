@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 
 // Configuration
 const CONFIG = {
-  baseUrl: 'http://localhost:8081',
+  baseUrl: 'http://localhost:8080',
   screenshotDir: './screenshots',
   viewport: {
     width: 1920,
@@ -21,155 +21,253 @@ const CONFIG = {
     height: 812
   },
   delay: 2000, // Wait time after navigation
-  quality: 90,
   demoCredentials: {
     email: 'admin@unsw.edu.au',
     password: 'password'
-  }
+  },
+  // Available course IDs for random selection
+  courseIds: ['comp1511', 'mgmt1001', 'psyc1001', 'math1131', 'econ1101', 'arts1000', 'comp1521', 'fins1613']
 };
 
+// Function to randomly select a course ID
+function getRandomCourseId() {
+  const randomIndex = Math.floor(Math.random() * CONFIG.courseIds.length);
+  const selectedCourse = CONFIG.courseIds[randomIndex];
+  console.log(`🎲 Randomly selected course: ${selectedCourse.toUpperCase()}`);
+  return selectedCourse;
+}
+
+// Function to generate dynamic course scenarios
+function generateCourseScenarios() {
+  const randomCourseId = getRandomCourseId();
+  
+  return [
+    {
+      name: 'course-detail-overview',
+      url: `/course/${randomCourseId}`,
+      description: `Course detail page overview tab for ${randomCourseId.toUpperCase()}`,
+      actions: [],
+      dynamicCourse: randomCourseId
+    },
+    {
+      name: 'course-detail-reviews',
+      url: `/course/${randomCourseId}`,
+      description: `Course detail page reviews tab for ${randomCourseId.toUpperCase()}`,
+      actions: [
+        {
+          type: 'click',
+          selector: 'text="Reviews"',
+          description: 'Switch to Reviews tab'
+        },
+        {
+          type: 'wait',
+          duration: 1000
+        }
+      ],
+      dynamicCourse: randomCourseId
+    },
+    {
+      name: 'course-detail-student-video',
+      url: `/course/${randomCourseId}`,
+      description: `Course detail page student video tab for ${randomCourseId.toUpperCase()}`,
+      actions: [
+        {
+          type: 'click',
+          selector: 'text="Student Video"',
+          description: 'Switch to Student Video tab'
+        },
+        {
+          type: 'wait',
+          duration: 1000
+        }
+      ],
+      dynamicCourse: randomCourseId
+    }
+  ];
+}
+
 // Screenshot scenarios to capture
-const SCENARIOS = [
-  {
-    name: 'homepage',
-    url: '/',
-    description: 'Homepage with hero section and features',
-    actions: []
-  },
-  {
-    name: 'courses-directory',
-    url: '/courses',
-    description: 'Course directory with all courses visible',
-    actions: []
-  },
-  {
-    name: 'courses-with-filters',
-    url: '/courses',
-    description: 'Course directory with filters panel open',
-    actions: [
-      {
-        type: 'click',
-        selector: '[data-component-name="CollapsibleTrigger"]',
-        description: 'Ensure filters are expanded'
-      }
-    ]
-  },
-  {
-    name: 'courses-filtered-by-skills',
-    url: '/courses',
-    description: 'Courses filtered by Programming skill',
-    actions: [
-      {
-        type: 'click',
-        selector: 'text="Programming"',
-        description: 'Click Programming skill filter'
-      },
-      {
-        type: 'wait',
-        duration: 1000
-      }
-    ]
-  },
-  {
-    name: 'courses-search-active',
-    url: '/courses',
-    description: 'Course search functionality',
-    actions: [
-      {
-        type: 'type',
-        selector: 'input[placeholder*="Search by course"]',
-        text: 'Programming',
-        description: 'Search for programming courses'
-      },
-      {
-        type: 'wait',
-        duration: 1000
-      }
-    ]
-  },
-  {
-    name: 'course-card-expanded-skills',
-    url: '/courses',
-    description: 'Course card with expanded skills',
-    actions: [
-      {
-        type: 'click',
-        selector: 'text="+1 more"',
-        description: 'Click "show more" on first course card'
-      },
-      {
-        type: 'wait',
-        duration: 500
-      }
-    ]
-  },
-  {
-    name: 'login-page',
-    url: '/login',
-    description: 'Login/signup page',
-    actions: []
-  },
-  {
-    name: 'login-signup-tab',
-    url: '/login',
-    description: 'Signup tab on login page',
-    actions: [
-      {
-        type: 'click',
-        selector: '[value="signup"]',
-        description: 'Switch to signup tab'
-      }
-    ]
-  },
-  {
-    name: 'login-with-demo-credentials',
-    url: '/login',
-    description: 'Login form filled with demo credentials',
-    actions: [
-      {
-        type: 'type',
-        selector: '#login-email',
-        text: CONFIG.demoCredentials.email,
-        description: 'Fill email field'
-      },
-      {
-        type: 'type',
-        selector: '#login-password',
-        text: CONFIG.demoCredentials.password,
-        description: 'Fill password field'
-      }
-    ]
-  },
-  {
-    name: 'authenticated-header',
-    url: '/',
-    description: 'Header with authenticated user dropdown',
-    requiresAuth: true,
-    actions: [
-      {
-        type: 'click',
-        selector: '[role="button"]',
-        description: 'Open user dropdown'
-      },
-      {
-        type: 'wait',
-        duration: 500
-      }
-    ]
-  },
-  {
-    name: 'leaderboard',
-    url: '/leaderboard',
-    description: 'Leaderboard page',
-    actions: []
-  },
-  {
-    name: 'submit-review',
-    url: '/submit-review',
-    description: 'Submit review page',
-    actions: []
-  }
-];
+function getScenarios() {
+  const courseScenarios = generateCourseScenarios();
+  
+  return [
+    {
+      name: 'homepage',
+      url: '/',
+      description: 'Homepage with hero section and features',
+      actions: []
+    },
+    {
+      name: 'courses-directory',
+      url: '/courses',
+      description: 'Course directory with all courses visible',
+      actions: []
+    },
+    {
+      name: 'courses-with-filters',
+      url: '/courses',
+      description: 'Course directory with filters panel visible',
+      actions: []
+    },
+    {
+      name: 'courses-without-filters',
+      url: '/courses',
+      description: 'Course directory with filters panel hidden',
+      actions: [
+        {
+          type: 'click',
+          selector: '[data-testid="desktop-filter-toggle"]',
+          description: 'Hide desktop filter panel'
+        }
+      ]
+    },
+    {
+      name: 'mobile-filters-open',
+      url: '/courses',
+      description: 'Mobile filter panel opened',
+      actions: [
+        {
+          type: 'click',
+          selector: '[data-testid="mobile-filter-toggle"]',
+          description: 'Open mobile filter panel'
+        }
+      ]
+    },
+    {
+      name: 'courses-filtered-by-skills',
+      url: '/courses',
+      description: 'Courses filtered by Programming skill',
+      actions: [
+        {
+          type: 'click',
+          selector: '[data-testid="skill-filter-programming"]',
+          description: 'Click Programming skill filter'
+        },
+        {
+          type: 'wait',
+          duration: 1000
+        }
+      ]
+    },
+    {
+      name: 'courses-search-active',
+      url: '/courses',
+      description: 'Course search functionality',
+      actions: [
+        {
+          type: 'type',
+          selector: 'input[placeholder*="Search by course code"]',
+          text: 'Programming',
+          description: 'Search for programming courses'
+        },
+        {
+          type: 'wait',
+          duration: 1000
+        }
+      ]
+    },
+    {
+      name: 'course-card-expanded-skills',
+      url: '/courses',
+      description: 'Course card with expanded skills',
+      actions: [
+        {
+          type: 'click',
+          selector: 'text="+1 more"',
+          description: 'Click "show more" on first course card'
+        },
+        {
+          type: 'wait',
+          duration: 500
+        }
+      ]
+    },
+    // Add the dynamic course scenarios here
+    ...courseScenarios,
+    {
+      name: 'login-page',
+      url: '/login',
+      description: 'Login/signup page',
+      actions: []
+    },
+    {
+      name: 'login-signup-tab',
+      url: '/login',
+      description: 'Signup tab on login page',
+      actions: [
+        {
+          type: 'click',
+          selector: '[data-state="inactive"]',
+          description: 'Switch to signup tab'
+        }
+      ]
+    },
+    {
+      name: 'login-with-demo-credentials',
+      url: '/login',
+      description: 'Login form filled with demo credentials',
+      actions: [
+        {
+          type: 'type',
+          selector: '#login-email',
+          text: CONFIG.demoCredentials.email,
+          description: 'Fill email field'
+        },
+        {
+          type: 'type',
+          selector: '#login-password',
+          text: CONFIG.demoCredentials.password,
+          description: 'Fill password field'
+        }
+      ]
+    },
+    {
+      name: 'authenticated-header',
+      url: '/',
+      description: 'Header with authenticated user dropdown',
+      requiresAuth: true,
+      actions: [
+        {
+          type: 'click',
+          selector: '[data-testid="user-menu-trigger"]',
+          description: 'Open user dropdown'
+        },
+        {
+          type: 'wait',
+          duration: 500
+        }
+      ]
+    },
+    {
+      name: 'leaderboard',
+      url: '/leaderboard',
+      description: 'Leaderboard page',
+      actions: []
+    },
+    {
+      name: 'submit-review',
+      url: '/submit-review',
+      description: 'Submit review page',
+      actions: []
+    },
+    {
+      name: 'mobile-navigation',
+      url: '/',
+      description: 'Mobile navigation menu open',
+      actions: [
+        {
+          type: 'click',
+          selector: '[data-testid="mobile-menu-trigger"]',
+          description: 'Open mobile navigation menu'
+        },
+        {
+          type: 'wait',
+          duration: 500
+        }
+      ]
+    }
+  ];
+}
 
 class ScreenshotTaker {
   constructor() {
@@ -213,6 +311,16 @@ class ScreenshotTaker {
   }
 
   async createDirectories() {
+    // First, delete the existing screenshots directory if it exists
+    try {
+      await fs.rm(CONFIG.screenshotDir, { recursive: true, force: true });
+      console.log(`🗑️  Deleted existing screenshots directory`);
+    } catch (error) {
+      if (error.code !== 'ENOENT') {
+        console.error(`❌ Error deleting screenshots directory:`, error.message);
+      }
+    }
+
     const dirs = [
       CONFIG.screenshotDir,
       path.join(CONFIG.screenshotDir, 'light'),
@@ -262,30 +370,163 @@ class ScreenshotTaker {
     await this.page.goto(CONFIG.baseUrl, { waitUntil: 'networkidle0' });
     
     try {
-      // Find and click theme toggle button
-      const themeButton = await this.page.$('button[class*="h-9 w-9"]');
-      if (themeButton) {
-        // Check current theme by looking at the html class
-        const currentTheme = await this.page.evaluate(() => {
-          return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-        });
+      // Check current theme by looking at the html class
+      const currentTheme = await this.page.evaluate(() => {
+        return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+      });
+      
+      console.log(`Current theme is: ${currentTheme}, want: ${theme}`);
+      
+      // Toggle if needed
+      if (currentTheme !== theme) {
+        // Try multiple possible selectors for the theme toggle button
+        const possibleSelectors = [
+          'button[class*="h-9 w-9"]',
+          '[data-theme-toggle]',
+          'button:has(svg)',
+          'button[role="button"]'
+        ];
         
-        // Toggle if needed
-        if (currentTheme !== theme) {
+        let themeButton = null;
+        for (const selector of possibleSelectors) {
+          try {
+            themeButton = await this.page.$(selector);
+            if (themeButton) {
+              console.log(`Found theme button with selector: ${selector}`);
+              break;
+            }
+          } catch (e) {
+            // Continue to next selector
+          }
+        }
+        
+        if (themeButton) {
           await themeButton.click();
-          await new Promise(resolve => setTimeout(resolve, 500)); // Wait for theme transition
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for theme transition
+          
+          // Verify the theme changed
+          const newTheme = await this.page.evaluate(() => {
+            return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+          });
+          
+          if (newTheme !== theme) {
+            console.warn(`⚠️  Theme toggle didn't work as expected. Got ${newTheme}, wanted ${theme}`);
+          }
+        } else {
+          console.warn(`⚠️  Could not find theme toggle button`);
         }
       }
     } catch (error) {
-      console.warn(`⚠️  Could not find theme toggle button: ${error.message}`);
+      console.warn(`⚠️  Error setting theme: ${error.message}`);
     }
     
-    // Verify theme was set
+    // Final theme verification
     const actualTheme = await this.page.evaluate(() => {
       return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
     });
     
-    console.log(`✅ Theme set to: ${actualTheme}`);
+    console.log(`✅ Final theme state: ${actualTheme}`);
+  }
+
+  async tryFallbackClick(action) {
+    const { selector, description } = action;
+    
+    // Fallback strategies based on selector type
+    if (selector.includes('mobile-filter-toggle')) {
+      // Try generic mobile filter button
+      const fallbacks = [
+        'button:has(.h-4.w-4)',
+        'button[aria-label*="filter"]',
+        'button[title*="filter"]',
+        '.lg\\:hidden button'
+      ];
+      
+      for (const fallback of fallbacks) {
+        try {
+          await this.page.waitForSelector(fallback, { timeout: 1000, visible: true });
+          await this.page.click(fallback);
+          console.log(`   🖱️  Fallback click successful with: ${fallback}`);
+          return;
+        } catch (e) {
+          continue;
+        }
+      }
+    }
+    
+    if (selector.includes('desktop-filter-toggle')) {
+      // Try generic desktop filter button
+      const fallbacks = [
+        '.hidden.lg\\:flex button',
+        'button[title*="filter"]',
+        'button:has(svg) + button:has(svg)'
+      ];
+      
+      for (const fallback of fallbacks) {
+        try {
+          await this.page.waitForSelector(fallback, { timeout: 1000, visible: true });
+          await this.page.click(fallback);
+          console.log(`   🖱️  Fallback click successful with: ${fallback}`);
+          return;
+        } catch (e) {
+          continue;
+        }
+      }
+    }
+    
+    if (selector.includes('mobile-menu-trigger')) {
+      // Try generic mobile menu button
+      const fallbacks = [
+        '.md\\:hidden button',
+        'button:has(.h-5.w-5)',
+        'button[aria-label*="menu"]'
+      ];
+      
+      for (const fallback of fallbacks) {
+        try {
+          await this.page.waitForSelector(fallback, { timeout: 1000, visible: true });
+          await this.page.click(fallback);
+          console.log(`   🖱️  Fallback click successful with: ${fallback}`);
+          return;
+        } catch (e) {
+          continue;
+        }
+      }
+    }
+    
+    if (selector.includes('skill-filter-programming')) {
+      // Try to find Programming skill badge
+      const fallbacks = [
+        'text="Programming"',
+        '[class*="badge"]:has-text("Programming")',
+        '.cursor-pointer:has-text("Programming")'
+      ];
+      
+      for (const fallback of fallbacks) {
+        try {
+          if (fallback.startsWith('text=')) {
+            const text = fallback.replace('text=', '').replace(/"/g, '');
+            const element = await this.page.evaluateHandle((text) => {
+              const elements = Array.from(document.querySelectorAll('*'));
+              return elements.find(el => el.textContent && el.textContent.trim() === text);
+            }, text);
+            if (element) {
+              await element.click();
+              console.log(`   🖱️  Fallback click successful with text: ${text}`);
+              return;
+            }
+          } else {
+            await this.page.waitForSelector(fallback, { timeout: 1000, visible: true });
+            await this.page.click(fallback);
+            console.log(`   🖱️  Fallback click successful with: ${fallback}`);
+            return;
+          }
+        } catch (e) {
+          continue;
+        }
+      }
+    }
+    
+    throw new Error(`All fallback strategies failed for: ${description}`);
   }
 
   async performActions(actions) {
@@ -308,8 +549,41 @@ class ScreenshotTaker {
                   throw new Error(`Element with text "${text}" not found`);
                 }
               } else {
-                await this.page.waitForSelector(action.selector, { timeout: 5000 });
-                await this.page.click(action.selector);
+                // Try to wait for selector with shorter timeout first
+                let elementFound = false;
+                try {
+                  await this.page.waitForSelector(action.selector, { timeout: 2000, visible: true });
+                  elementFound = true;
+                } catch (e) {
+                  // Element not found, try fallback strategies
+                  console.warn(`   ⚠️  Primary selector not found: ${action.selector}`);
+                }
+                
+                if (elementFound) {
+                  // Check if element is clickable
+                  const isClickable = await this.page.evaluate((selector) => {
+                    const element = document.querySelector(selector);
+                    if (!element) return false;
+                    
+                    const rect = element.getBoundingClientRect();
+                    const style = window.getComputedStyle(element);
+                    
+                    return rect.width > 0 && 
+                           rect.height > 0 && 
+                           style.visibility !== 'hidden' && 
+                           style.display !== 'none' &&
+                           !element.disabled;
+                  }, action.selector);
+                  
+                  if (isClickable) {
+                    await this.page.click(action.selector);
+                  } else {
+                    throw new Error(`Element not clickable: ${action.selector}`);
+                  }
+                } else {
+                  // Try fallback strategies based on action type
+                  await this.tryFallbackClick(action);
+                }
               }
               console.log(`   🖱️  Clicked: ${action.description}`);
             } catch (error) {
@@ -371,8 +645,7 @@ class ScreenshotTaker {
     
     await this.page.screenshot({
       path: filepath,
-      fullPage: true,
-      quality: CONFIG.quality
+      fullPage: true
     });
     
     console.log(`✅ Screenshot saved: ${filepath}`);
@@ -381,6 +654,9 @@ class ScreenshotTaker {
   async takeAllScreenshots() {
     console.log('📸 Starting screenshot capture process...');
     
+    // Generate scenarios with random course selection
+    const scenarios = getScenarios();
+    
     const themes = ['light', 'dark'];
     const viewports = [
       { name: 'desktop', isMobile: false },
@@ -388,7 +664,7 @@ class ScreenshotTaker {
     ];
     
     let totalScreenshots = 0;
-    const totalScenarios = SCENARIOS.length * themes.length * viewports.length;
+    const totalScenarios = scenarios.length * themes.length * viewports.length;
     
     for (const theme of themes) {
       await this.setTheme(theme);
@@ -396,7 +672,7 @@ class ScreenshotTaker {
       for (const viewport of viewports) {
         console.log(`\n🖥️  Capturing ${viewport.name} screenshots in ${theme} mode...\n`);
         
-        for (const scenario of SCENARIOS) {
+        for (const scenario of scenarios) {
           try {
             await this.takeScreenshot(scenario, theme, viewport.isMobile);
             totalScreenshots++;
@@ -414,6 +690,9 @@ class ScreenshotTaker {
   async generateIndex() {
     console.log('📝 Generating screenshot index...');
     
+    // Use the same scenarios that were used for screenshot generation
+    const scenarios = getScenarios();
+    
     const indexContent = `# UnlockED Screenshots
 
 This directory contains screenshots of all application features in both light and dark modes, across desktop and mobile viewports.
@@ -427,9 +706,10 @@ This directory contains screenshots of all application features in both light an
 
 ## Screenshots
 
-${SCENARIOS.map(scenario => `
+${scenarios.map(scenario => `
 ### ${scenario.name.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
 *${scenario.description}*
+${scenario.dynamicCourse ? `**Course: ${scenario.dynamicCourse.toUpperCase()}**` : ''}
 
 | Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
 |---------------|--------------|--------------|-------------|
@@ -488,4 +768,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch(console.error);
 }
 
-export { ScreenshotTaker, CONFIG, SCENARIOS };
+export { ScreenshotTaker, CONFIG, getScenarios };

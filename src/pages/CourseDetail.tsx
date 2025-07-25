@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, Navigate } from "react-router-dom";
 import { Star, ThumbsUp, Clock, Users, Monitor, ChevronLeft, Play, MessageSquare, ExternalLink, Filter, CheckCircle, BookOpen, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,57 +7,20 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { courseDetails } from "@/data/courses";
 
 const CourseDetail = () => {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("overview");
   const [reviewSort, setReviewSort] = useState("most-recent");
 
-  // Mock course data - in real app, fetch based on ID
-  const course = {
-    id: "comp1511",
-    title: "Programming Fundamentals", 
-    code: "COMP1511",
-    faculty: "Engineering",
-    rating: 4.5,
-    reviewCount: 234,
-    skills: ["C Programming Language", "Data Structures (Arrays, Linked Lists)", "Algorithm Design", "Problem Decomposition", "Debugging & Testing", "Code Documentation", "Teamwork & Collaboration", "Critical Thinking"],
-    mode: "hybrid",
-    description: "An introduction to programming and software development. Students learn fundamental programming concepts using the C programming language.",
-    checklist: [
-      "Learn C programming fundamentals",
-      "Understand data structures and algorithms",
-      "Practice problem-solving techniques", 
-      "Complete weekly programming exercises",
-      "Work on group projects",
-      "Develop debugging skills"
-    ],
-    assessments: [
-      {
-        name: "Weekly Programming Exercises (20%)",
-        description: "Practical coding challenges focusing on C programming fundamentals, data structures, and problem-solving techniques. Submit solutions online with automated testing."
-      },
-      {
-        name: "Midterm Exam (25%)",
-        description: "Written examination covering programming concepts, syntax, debugging, and algorithm analysis. Includes both theoretical questions and code reading/writing."
-      },
-      {
-        name: "Group Project (25%)",
-        description: "Collaborative software development project where teams build a complete C program. Emphasizes teamwork, code documentation, and project management."
-      },
-      {
-        name: "Final Exam (30%)",
-        description: "Comprehensive examination testing all course content including advanced programming concepts, data structures, and practical problem-solving skills."
-      }
-    ],
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    tips: [
-      "Start assignments early - they take longer than expected",
-      "Practice coding problems daily for better understanding",
-      "Don't hesitate to ask for help during lab sessions",
-      "Form study groups with classmates for problem-solving"
-    ]
-  };
+  // Get course data from shared data source
+  const course = id ? courseDetails[id] : null;
+
+  // If course not found, redirect to 404 or courses page
+  if (!course) {
+    return <Navigate to="/courses" replace />;
+  }
 
   const allReviews = [
     {
@@ -166,7 +129,7 @@ const CourseDetail = () => {
           <div className="mt-6">
             <h3 className="text-sm font-medium text-muted-foreground mb-3">Skills You'll Develop</h3>
             <div className="flex flex-wrap gap-2">
-              {course.skills.map((skill) => (
+              {(course.detailedSkills || course.skills).map((skill) => (
                 <Badge key={skill} className="bg-course-skill-tag hover:bg-course-skill-tag/80">
                   {skill}
                 </Badge>
@@ -257,7 +220,7 @@ const CourseDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-4">
-                    {course.tips.map((tip, index) => (
+                    {(course.tips || []).map((tip, index) => (
                       <li key={index} className="flex items-start space-x-3">
                         <MessageSquare className="h-4 w-4 text-accent mt-1 flex-shrink-0" />
                         <span className="text-sm">{tip}</span>
