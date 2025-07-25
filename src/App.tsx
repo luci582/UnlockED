@@ -41,8 +41,16 @@ const App = () => {
               <Header />
               <Routes>
                 <Route path="/" element={<HomepageSimple />} />
-                <Route path="/courses" element={<CoursesDirectory />} />
-                <Route path="/course/:id" element={<CourseDetail />} />
+                <Route path="/courses" element={
+                  <ProtectedRoute>
+                    <CoursesDirectory />
+                  </ProtectedRoute>
+                } />
+                <Route path="/course/:id" element={
+                  <ProtectedRoute>
+                    <CourseDetail />
+                  </ProtectedRoute>
+                } />
                 <Route path="/login" element={<Login />} />
                 
                 {/* Protected routes - require authentication */}

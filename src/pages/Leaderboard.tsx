@@ -41,9 +41,9 @@ const Leaderboard = () => {
     email: user?.email || "",
     reviewCount: user?.reviewCount || 0,
     points: user?.points || 0,
-    rank: leaderboardData.length + 1,
-    badge: "New Reviewer",
-    recentActivity: "No reviews yet",
+    rank: 999, // Will be calculated properly below
+    badge: "🆕 New Reviewer",
+    recentActivity: user?.reviewCount > 0 ? "Recently submitted a review" : "No reviews yet",
     helpful: 0,
     degree: "Student",
     streakCount: 0,
@@ -55,10 +55,11 @@ const Leaderboard = () => {
     {
       id: 1,
       name: "Alex Chen",
+      email: "alex.chen@student.unsw.edu.au",
       reviewCount: 47,
       points: 2350,
       rank: 1,
-      badge: "Top Reviewer",
+      badge: "🏆 Top Reviewer",
       recentActivity: "Reviewed COMP2511",
       helpful: 156,
       degree: "Computer Science",
@@ -68,23 +69,117 @@ const Leaderboard = () => {
     {
       id: 2,
       name: "Sarah Williams",
+      email: "sarah.williams@student.unsw.edu.au",
       reviewCount: 39,
       points: 1950,
       rank: 2,
-      badge: "Verified Student",
+      badge: "✅ Verified Student",
       recentActivity: "Reviewed MGMT1001",
       helpful: 142,
       degree: "Commerce",
       streakCount: 3,
       hasStreak: true
+    },
+    {
+      id: 3,
+      name: "Jordan Smith",
+      email: "jordan.smith@student.unsw.edu.au",
+      reviewCount: 34,
+      points: 1700,
+      rank: 3,
+      badge: "📚 Course Expert",
+      recentActivity: "Reviewed PSYC1001",
+      helpful: 128,
+      degree: "Psychology",
+      streakCount: 5,
+      hasStreak: true
+    },
+    {
+      id: 4,
+      name: "Emily Davis",
+      email: "emily.davis@student.unsw.edu.au",
+      reviewCount: 28,
+      points: 1400,
+      rank: 4,
+      badge: "🌟 Helpful Reviewer",
+      recentActivity: "Reviewed MATH1131",
+      helpful: 89,
+      degree: "Engineering",
+      streakCount: 2,
+      hasStreak: false
+    },
+    {
+      id: 5,
+      name: "Michael Brown",
+      email: "michael.brown@student.unsw.edu.au",
+      reviewCount: 25,
+      points: 1250,
+      rank: 5,
+      badge: "⚡ Active Member",
+      recentActivity: "Reviewed ECON1101",
+      helpful: 76,
+      degree: "Economics",
+      streakCount: 4,
+      hasStreak: false
+    },
+    {
+      id: 6,
+      name: "Jessica Lee",
+      email: "jessica.lee@student.unsw.edu.au",
+      reviewCount: 22,
+      points: 1100,
+      rank: 6,
+      badge: "🎯 Detail Expert",
+      recentActivity: "Reviewed FINS1613",
+      helpful: 67,
+      degree: "Finance",
+      streakCount: 1,
+      hasStreak: false
+    },
+    {
+      id: 7,
+      name: "David Wilson",
+      email: "david.wilson@student.unsw.edu.au",
+      reviewCount: 19,
+      points: 950,
+      rank: 7,
+      badge: "📝 Writer",
+      recentActivity: "Reviewed ENGG1000",
+      helpful: 54,
+      degree: "Engineering",
+      streakCount: 0,
+      hasStreak: false
+    },
+    {
+      id: 8,
+      name: "Amanda Garcia",
+      email: "amanda.garcia@student.unsw.edu.au",
+      reviewCount: 16,
+      points: 800,
+      rank: 8,
+      badge: "🚀 Rising Star",
+      recentActivity: "Reviewed BIOS1101",
+      helpful: 43,
+      degree: "Science",
+      streakCount: 3,
+      hasStreak: false
     }
   ];
 
   // Combine real users with static ones, sort by points
-  const topContributors = [...staticTopContributors, ...leaderboardData]
+  const allUsers = [...staticTopContributors, ...leaderboardData];
+  const topContributors = allUsers
     .sort((a, b) => (b.points || 0) - (a.points || 0))
     .slice(0, 10)
     .map((user, index) => ({ ...user, rank: index + 1 }));
+
+  // Update current user rank based on actual position
+  if (currentUser.email === user?.email) {
+    const userPosition = allUsers
+      .sort((a, b) => (b.points || 0) - (a.points || 0))
+      .findIndex((u) => u.email === user?.email);
+    currentUser.rank = userPosition >= 0 ? userPosition + 1 : allUsers.length + 1;
+  }
 
   const achievements = [
     {
@@ -153,6 +248,70 @@ const Leaderboard = () => {
             Recognizing our top contributors who help fellow students make informed decisions
           </p>
         </div>
+
+        {isLoading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading leaderboard...</p>
+          </div>
+        ) : (
+          <>
+            {/* Current User Stats - Prominent Display */}
+            {user && (
+              <div className="mb-8">
+                <Card className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-primary/20">
+                  <CardContent className="p-6">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center justify-center w-12">
+                        <span className="text-lg font-bold text-primary">#{currentUser.rank}</span>
+                      </div>
+                      
+                      <Avatar className="h-12 w-12">
+                        <AvatarFallback>
+                          {currentUser.name.split(' ').map(n => n[0]).join('')}
+                        </AvatarFallback>
+                      </Avatar>
+                      
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <span className="font-semibold text-primary">{currentUser.name}</span>
+                          <Badge variant="secondary" className="text-xs">
+                            {currentUser.badge}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs bg-primary/10">
+                            {currentUser.degree}
+                          </Badge>
+                          {currentUser.hasStreak && (
+                            <Badge className="text-xs bg-course-rating text-foreground">
+                              🔥 Hot Streak ({currentUser.streakCount})
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {currentUser.recentActivity}
+                        </div>
+                      </div>
+                      
+                      <div className="text-right">
+                        <div className="flex items-center space-x-4 text-sm">
+                          <div className="flex items-center space-x-1">
+                            <MessageSquare className="h-3 w-3" />
+                            <span>{currentUser.reviewCount}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Star className="h-3 w-3" />
+                            <span>{currentUser.helpful}</span>
+                          </div>
+                          <div className="font-semibold text-primary">
+                            {currentUser.points} pts
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
 
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Leaderboard */}
@@ -433,6 +592,8 @@ const Leaderboard = () => {
             </CardContent>
           </Card>
         </div>
+          </>
+        )}
       </div>
     </div>
   );
