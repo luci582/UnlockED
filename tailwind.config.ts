@@ -24,6 +24,7 @@ export default {
 			spacing: {
 				'18': '4.5rem',
 				'88': '22rem',
+				'safe-area-inset-bottom': 'env(safe-area-inset-bottom)',
 			},
 			colors: {
 				border: 'hsl(var(--border))',

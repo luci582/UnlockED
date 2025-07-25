@@ -1,12 +1,14 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Search, SlidersHorizontal, Grid, List, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import CourseCard from "@/components/Course/CourseCard";
+import CourseCardSkeleton from "@/components/Course/CourseCardSkeleton";
 import FilterPanel from "@/components/Filter/FilterPanel";
 import { Course, allCourses } from "@/data/courses";
+import { useCourseComparison } from "@/hooks/use-course-comparison";
 
 interface Filters {
   faculty: string[];
@@ -16,7 +18,9 @@ interface Filters {
 }
 
 const CoursesDirectory = () => {
+  const { addCourse, removeCourse, isSelected, selectedCourses } = useCourseComparison();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [isLoading, setIsLoading] = useState(true);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showDesktopFilters, setShowDesktopFilters] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -28,9 +32,18 @@ const CoursesDirectory = () => {
     skills: [],
   });
 
+  // Simulate loading data
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500); // Show skeleton for 1.5 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
   // Filter and sort courses
   const filteredCourses = useMemo(() => {
-    let filtered = allCourses.filter(course => {
+    const filtered = allCourses.filter(course => {
       // Search filter - now includes skills/tags
       const searchMatch = searchQuery === "" || 
         course.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -71,7 +84,7 @@ const CoursesDirectory = () => {
     }
 
     return filtered;
-  }, [allCourses, searchQuery, filters, sortBy]);
+  }, [searchQuery, filters, sortBy]);
 
   const handleFiltersChange = (newFilters: Filters) => {
     setFilters(newFilters);
@@ -84,6 +97,21 @@ const CoursesDirectory = () => {
         : [...prev.skills, skill];
       return { ...prev, skills: newSkills };
     });
+  };
+
+  const handleCompareToggle = (courseId: string) => {
+    const course = allCourses.find(c => c.id === courseId);
+    if (!course) return;
+
+    if (isSelected(courseId)) {
+      removeCourse(courseId);
+    } else {
+      if (selectedCourses.length >= 3) {
+        // Could show a toast here that max 3 courses can be compared
+        return;
+      }
+      addCourse(course);
+    }
   };
 
   return (
@@ -181,11 +209,17 @@ const CoursesDirectory = () => {
           <div className="flex-1">
             <div className="mb-4 flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
-                Showing {filteredCourses.length} courses
+                {isLoading ? "Loading courses..." : `Showing ${filteredCourses.length} courses`}
               </p>
             </div>
 
-            {viewMode === "grid" ? (
+            {isLoading ? (
+              <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <CourseCardSkeleton key={index} />
+                ))}
+              </div>
+            ) : viewMode === "grid" ? (
               <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                 {filteredCourses.map((course) => (
                   <CourseCard 
@@ -193,6 +227,8 @@ const CoursesDirectory = () => {
                     {...course} 
                     onSkillClick={handleSkillClick}
                     selectedSkills={filters.skills}
+                    onCompareToggle={handleCompareToggle}
+                    isSelected={isSelected(course.id)}
                   />
                 ))}
               </div>
@@ -204,6 +240,8 @@ const CoursesDirectory = () => {
                       {...course} 
                       onSkillClick={handleSkillClick}
                       selectedSkills={filters.skills}
+                      onCompareToggle={handleCompareToggle}
+                      isSelected={isSelected(course.id)}
                     />
                   </div>
                 ))}

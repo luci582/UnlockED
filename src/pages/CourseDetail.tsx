@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
-import { Star, ThumbsUp, Clock, Users, Monitor, ChevronLeft, Play, MessageSquare, ExternalLink, Filter, CheckCircle, BookOpen, Lightbulb } from "lucide-react";
+import { Star, ArrowUp, Clock, Users, Monitor, ChevronLeft, Play, MessageSquare, ExternalLink, Filter, CheckCircle, BookOpen, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { courseDetails } from "@/data/courses";
+import RatingDistributionChart from "@/components/Course/RatingDistributionChart";
 
 const CourseDetail = () => {
   const { id } = useParams();
@@ -21,6 +22,15 @@ const CourseDetail = () => {
   if (!course) {
     return <Navigate to="/courses" replace />;
   }
+
+  // Mock rating distribution data
+  const ratingDistribution = {
+    5: 45,
+    4: 23,
+    3: 12,
+    2: 4,
+    1: 2
+  };
 
   const allReviews = [
     {
@@ -209,6 +219,14 @@ const CourseDetail = () => {
               </Card>
             </div>
 
+            {/* Rating Distribution */}
+            <div className="mb-8">
+              <RatingDistributionChart 
+                ratings={ratingDistribution} 
+                totalReviews={course.reviewCount} 
+              />
+            </div>
+
             <div className="grid gap-8 lg:grid-cols-2">
               {/* Peer Tips */}
               <Card>
@@ -333,12 +351,12 @@ const CourseDetail = () => {
                   </div>
                   <p className="text-foreground mb-4">{review.comment}</p>
                   <div className="flex items-center space-x-4">
-                    <Button variant="ghost" size="sm" className="text-muted-foreground">
-                      <ThumbsUp className="h-4 w-4 mr-2" />
-                      {review.upvotes}
+                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                      <ArrowUp className="h-4 w-4 mr-2" />
+                      Helpful ({review.upvotes})
                     </Button>
                     {review.helpful && (
-                      <Badge variant="secondary" className="text-xs">Helpful</Badge>
+                      <Badge variant="secondary" className="text-xs">Top Review</Badge>
                     )}
                   </div>
                 </CardContent>

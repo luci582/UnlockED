@@ -1,4 +1,4 @@
-import { Trophy, Medal, Award, Star, MessageSquare, TrendingUp } from "lucide-react";
+import { Trophy, Medal, Award, Star, MessageSquare, TrendingUp, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +7,21 @@ import { Separator } from "@/components/ui/separator";
 import { Link } from "react-router-dom";
 
 const Leaderboard = () => {
+  // Current user data (would come from auth context in real app)
+  const currentUser = {
+    id: 999,
+    name: "You",
+    reviewCount: 8,
+    points: 425,
+    rank: 234,
+    badge: "New Reviewer",
+    recentActivity: "Reviewed COMP1511",
+    helpful: 12,
+    degree: "Computer Science",
+    streakCount: 2,
+    hasStreak: false
+  };
+
   const topContributors = [
     {
       id: 1,
@@ -212,6 +227,63 @@ const Leaderboard = () => {
                     </div>
                   ))}
                 </div>
+                
+                {/* "You Are Here" section - only show if user is not in top 10 */}
+                {currentUser.rank > 10 && (
+                  <>
+                    <div className="flex items-center justify-center my-4">
+                      <div className="flex-1 border-t border-dashed border-muted-foreground/30"></div>
+                      <span className="px-3 text-xs text-muted-foreground">Your Position</span>
+                      <div className="flex-1 border-t border-dashed border-muted-foreground/30"></div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-4 p-4 rounded-lg border-2 border-primary/50 bg-primary/5 transition-all duration-200">
+                      <div className="flex items-center justify-center w-12">
+                        <div className="flex items-center space-x-1">
+                          <MapPin className="h-4 w-4 text-primary" />
+                          <span className="text-lg font-bold text-primary">#{currentUser.rank}</span>
+                        </div>
+                      </div>
+                      
+                      <Avatar className="h-10 w-10 ring-2 ring-primary/30">
+                        <AvatarFallback className="bg-primary/20 text-primary font-semibold">
+                          {currentUser.name.split(' ').map(n => n[0]).join('')}
+                        </AvatarFallback>
+                      </Avatar>
+                      
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <span className="font-semibold text-primary">{currentUser.name}</span>
+                          <Badge variant="default" className="text-xs bg-primary text-primary-foreground">
+                            {currentUser.badge}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs bg-primary/10 border-primary/30">
+                            {currentUser.degree}
+                          </Badge>
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {currentUser.recentActivity}
+                        </div>
+                      </div>
+                      
+                      <div className="text-right">
+                        <div className="flex items-center space-x-4 text-sm">
+                          <div className="flex items-center space-x-1">
+                            <MessageSquare className="h-3 w-3" />
+                            <span>{currentUser.reviewCount}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Star className="h-3 w-3" />
+                            <span>{currentUser.helpful}</span>
+                          </div>
+                          <div className="font-semibold text-primary">
+                            {currentUser.points} pts
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           </div>

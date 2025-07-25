@@ -8,7 +8,12 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Badge } from "@/components/ui/badge";
 
 interface FilterPanelProps {
-  onFiltersChange?: (filters: any) => void;
+  onFiltersChange?: (filters: {
+    faculty: string[];
+    rating: number;
+    mode: string[];
+    skills: string[];
+  }) => void;
   currentFilters?: {
     faculty: string[];
     rating: number;
@@ -16,9 +21,10 @@ interface FilterPanelProps {
     skills: string[];
   };
   onSkillClick?: (skill: string) => void;
+  showActiveCount?: boolean;
 }
 
-const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick }: FilterPanelProps) => {
+const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick, showActiveCount = false }: FilterPanelProps) => {
   const [filters, setFilters] = useState(currentFilters || {
     faculty: [],
     rating: 0,
@@ -69,7 +75,12 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick }: FilterPa
     }));
   };
 
-  const updateFilters = (newFilters: any) => {
+  const updateFilters = (newFilters: {
+    faculty: string[];
+    rating: number;
+    mode: string[];
+    skills: string[];
+  }) => {
     setFilters(newFilters);
     onFiltersChange?.(newFilters);
   };
@@ -82,6 +93,13 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick }: FilterPa
       skills: [],
     };
     updateFilters(clearedFilters);
+  };
+
+  const getActiveFiltersCount = () => {
+    return filters.faculty.length + 
+           (filters.rating > 0 ? 1 : 0) + 
+           filters.mode.length + 
+           filters.skills.length;
   };
 
   const handleFacultyChange = (faculty: string, checked: boolean) => {
@@ -114,6 +132,11 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick }: FilterPa
           <CardTitle className="text-lg flex items-center space-x-2">
             <Filter className="h-5 w-5" />
             <span>Filters</span>
+            {showActiveCount && getActiveFiltersCount() > 0 && (
+              <Badge className="bg-primary text-primary-foreground">
+                {getActiveFiltersCount()}
+              </Badge>
+            )}
           </CardTitle>
           <Button variant="ghost" size="sm" onClick={clearAllFilters}>
             Clear All

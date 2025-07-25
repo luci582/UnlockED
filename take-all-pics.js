@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 
 // Configuration
 const CONFIG = {
-  baseUrl: 'http://localhost:8080',
+  baseUrl: 'http://localhost:8082', // Updated to current dev server port
   screenshotDir: './screenshots',
   viewport: {
     width: 1920,
@@ -94,26 +94,40 @@ function getScenarios() {
     {
       name: 'homepage',
       url: '/',
-      description: 'Homepage with hero section and features',
+      description: 'Homepage with hero section and improved mobile spacing',
       actions: []
     },
     {
       name: 'courses-directory',
       url: '/courses',
-      description: 'Course directory with all courses visible',
-      actions: []
+      description: 'Course directory with comparison checkboxes and enhanced features',
+      actions: [
+        {
+          type: 'wait',
+          duration: 2000 // Wait for skeleton loaders to finish
+        }
+      ]
     },
     {
       name: 'courses-with-filters',
       url: '/courses',
-      description: 'Course directory with filters panel visible',
-      actions: []
+      description: 'Course directory with filters panel visible and active filter count',
+      actions: [
+        {
+          type: 'wait',
+          duration: 2000
+        }
+      ]
     },
     {
       name: 'courses-without-filters',
       url: '/courses',
       description: 'Course directory with filters panel hidden',
       actions: [
+        {
+          type: 'wait',
+          duration: 2000
+        },
         {
           type: 'click',
           selector: '[data-testid="desktop-filter-toggle"]',
@@ -127,6 +141,10 @@ function getScenarios() {
       description: 'Mobile filter panel opened',
       actions: [
         {
+          type: 'wait',
+          duration: 2000
+        },
+        {
           type: 'click',
           selector: '[data-testid="mobile-filter-toggle"]',
           description: 'Open mobile filter panel'
@@ -136,8 +154,12 @@ function getScenarios() {
     {
       name: 'courses-filtered-by-skills',
       url: '/courses',
-      description: 'Courses filtered by Programming skill',
+      description: 'Courses filtered by Programming skill with active filter indicator',
       actions: [
+        {
+          type: 'wait',
+          duration: 2000
+        },
         {
           type: 'click',
           selector: '[data-testid="skill-filter-programming"]',
@@ -152,8 +174,12 @@ function getScenarios() {
     {
       name: 'courses-search-active',
       url: '/courses',
-      description: 'Course search functionality',
+      description: 'Course search functionality with enhanced search',
       actions: [
+        {
+          type: 'wait',
+          duration: 2000
+        },
         {
           type: 'type',
           selector: 'input[placeholder*="Search by course code"]',
@@ -169,8 +195,12 @@ function getScenarios() {
     {
       name: 'course-card-expanded-skills',
       url: '/courses',
-      description: 'Course card with expanded skills',
+      description: 'Course card with expanded skills and comparison checkbox',
       actions: [
+        {
+          type: 'wait',
+          duration: 2000
+        },
         {
           type: 'click',
           selector: 'text="+1 more"',
@@ -182,8 +212,159 @@ function getScenarios() {
         }
       ]
     },
+    {
+      name: 'course-comparison-active',
+      url: '/courses',
+      description: 'Course directory with courses selected for comparison',
+      actions: [
+        {
+          type: 'wait',
+          duration: 2000
+        },
+        {
+          type: 'click',
+          selector: 'input[type="checkbox"][id^="compare-"]',
+          description: 'Select first course for comparison'
+        },
+        {
+          type: 'wait',
+          duration: 500
+        },
+        {
+          type: 'click',
+          selector: 'input[type="checkbox"][id^="compare-"]:nth-of-type(2)',
+          description: 'Select second course for comparison'
+        },
+        {
+          type: 'wait',
+          duration: 1000
+        }
+      ]
+    },
+    {
+      name: 'course-comparison-modal',
+      url: '/courses',
+      description: 'Course comparison modal with side-by-side view',
+      actions: [
+        {
+          type: 'wait',
+          duration: 2000
+        },
+        {
+          type: 'click',
+          selector: 'input[type="checkbox"][id^="compare-"]',
+          description: 'Select first course for comparison'
+        },
+        {
+          type: 'wait',
+          duration: 500
+        },
+        {
+          type: 'click',
+          selector: 'input[type="checkbox"][id^="compare-"]:nth-of-type(2)',
+          description: 'Select second course for comparison'
+        },
+        {
+          type: 'wait',
+          duration: 1000
+        },
+        {
+          type: 'click',
+          selector: 'button:has-text("Compare")',
+          description: 'Open comparison modal'
+        },
+        {
+          type: 'wait',
+          duration: 1000
+        }
+      ]
+    },
     // Add the dynamic course scenarios here
     ...courseScenarios,
+    {
+      name: 'course-detail-rating-distribution',
+      url: `/course/comp1511`,
+      description: 'Course detail with rating distribution chart',
+      actions: [
+        {
+          type: 'wait',
+          duration: 1500
+        }
+      ]
+    },
+    {
+      name: 'multi-step-review-step1',
+      url: '/submit-review',
+      description: 'Multi-step review form - Step 1 (Basic Information)',
+      actions: []
+    },
+    {
+      name: 'multi-step-review-step2',
+      url: '/submit-review',
+      description: 'Multi-step review form - Step 2 (Optional Details)',
+      actions: [
+        {
+          type: 'type',
+          selector: '#courseCode',
+          text: 'COMP1511',
+          description: 'Fill course code'
+        },
+        {
+          type: 'type',
+          selector: '#semester',
+          text: '2024 T1',
+          description: 'Fill semester'
+        },
+        {
+          type: 'click',
+          selector: 'button:has(svg.h-8.w-8):nth-of-type(5)',
+          description: 'Select 5-star rating'
+        },
+        {
+          type: 'type',
+          selector: '#review',
+          text: 'This is a great course for learning programming fundamentals.',
+          description: 'Fill review text'
+        },
+        {
+          type: 'click',
+          selector: 'button:has-text("Next")',
+          description: 'Go to step 2'
+        },
+        {
+          type: 'wait',
+          duration: 1000
+        }
+      ]
+    },
+    {
+      name: 'profile-overview',
+      url: '/profile',
+      description: 'User profile page - Overview tab',
+      actions: []
+    },
+    {
+      name: 'profile-achievements',
+      url: '/profile',
+      description: 'User profile page - Achievements tab with progress tracking',
+      actions: [
+        {
+          type: 'click',
+          selector: 'button[value="achievements"]',
+          description: 'Switch to achievements tab'
+        },
+        {
+          type: 'wait',
+          duration: 1000
+        }
+      ]
+    },
+    {
+      name: 'leaderboard-with-you-are-here',
+      url: '/leaderboard',
+      description: 'Leaderboard with "You Are Here" marker',
+      actions: []
+    },
     {
       name: 'login-page',
       url: '/login',
@@ -239,30 +420,24 @@ function getScenarios() {
       ]
     },
     {
-      name: 'leaderboard',
-      url: '/leaderboard',
-      description: 'Leaderboard page',
-      actions: []
-    },
-    {
-      name: 'submit-review',
-      url: '/submit-review',
-      description: 'Submit review page',
-      actions: []
-    },
-    {
       name: 'mobile-navigation',
       url: '/',
-      description: 'Mobile navigation menu open',
+      description: 'Mobile bottom tab bar navigation',
       actions: [
         {
-          type: 'click',
-          selector: '[data-testid="mobile-menu-trigger"]',
-          description: 'Open mobile navigation menu'
-        },
+          type: 'wait',
+          duration: 1000
+        }
+      ]
+    },
+    {
+      name: 'mobile-navigation-active',
+      url: '/courses',
+      description: 'Mobile navigation with active courses tab',
+      actions: [
         {
           type: 'wait',
-          duration: 500
+          duration: 2000
         }
       ]
     }
@@ -451,7 +626,8 @@ class ScreenshotTaker {
         'button.lg\\:hidden[class*="SlidersHorizontal"]',
         'button.lg\\:hidden:has(svg)',
         '.lg\\:hidden button:has(svg[class*="sliders"])',
-        '.lg\\:hidden button[variant="outline"]'
+        '.lg\\:hidden button[variant="outline"]',
+        'button:has(svg[class*="SlidersHorizontal"]).lg\\:hidden'
       ];
       
       for (const fallback of fallbacks) {
@@ -472,7 +648,8 @@ class ScreenshotTaker {
         'button.hidden.lg\\:flex[class*="SlidersHorizontal"]',
         '.hidden.lg\\:flex button:has(svg)',
         'button.hidden.lg\\:flex:has(svg[class*="sliders"])',
-        '.hidden.lg\\:flex button[variant="outline"]'
+        '.hidden.lg\\:flex button[variant="outline"]',
+        'button:has(svg[class*="SlidersHorizontal"]).hidden.lg\\:flex'
       ];
       
       for (const fallback of fallbacks) {
@@ -516,7 +693,9 @@ class ScreenshotTaker {
         '.cursor-pointer:has-text("Programming")',
         '[class*="badge"]:has-text("Programming")',
         'div:has-text("Programming")',
-        '*:has-text("Programming")'
+        '*:has-text("Programming")',
+        '[data-testid*="programming"]',
+        'button:has-text("Programming")'
       ];
       
       for (const fallback of fallbacks) {
@@ -537,7 +716,8 @@ class ScreenshotTaker {
           return elements.find(el => 
             el.textContent && 
             el.textContent.trim() === 'Programming' && 
-            el.offsetParent !== null // Element is visible
+            el.offsetParent !== null && // Element is visible
+            (el.classList.contains('cursor-pointer') || el.tagName === 'BUTTON')
           );
         });
         
@@ -548,6 +728,69 @@ class ScreenshotTaker {
         }
       } catch (e) {
         // Continue to error
+      }
+    }
+    
+    // Handle comparison checkboxes
+    if (selector.includes('compare-') || selector.includes('input[type="checkbox"]')) {
+      const fallbacks = [
+        'input[type="checkbox"][id*="compare"]',
+        'input[type="checkbox"]',
+        'label:has-text("Compare")',
+        '[aria-label*="Compare"]'
+      ];
+      
+      for (const fallback of fallbacks) {
+        try {
+          await this.page.waitForSelector(fallback, { timeout: 1000, visible: true });
+          await this.page.click(fallback);
+          console.log(`   🖱️  Fallback click successful with: ${fallback}`);
+          return;
+        } catch (e) {
+          continue;
+        }
+      }
+    }
+    
+    // Handle Compare button
+    if (selector.includes('Compare')) {
+      const fallbacks = [
+        'button:has-text("Compare")',
+        '[class*="fixed"]:has-text("Compare")',
+        '.z-50 button:has-text("Compare")',
+        'button[class*="primary"]:has-text("Compare")'
+      ];
+      
+      for (const fallback of fallbacks) {
+        try {
+          await this.page.waitForSelector(fallback, { timeout: 1000, visible: true });
+          await this.page.click(fallback);
+          console.log(`   🖱️  Fallback click successful with: ${fallback}`);
+          return;
+        } catch (e) {
+          continue;
+        }
+      }
+    }
+    
+    // Handle tab buttons
+    if (selector.includes('value="achievements"')) {
+      const fallbacks = [
+        'button[value="achievements"]',
+        'button:has-text("Achievements")',
+        '[role="tab"]:has-text("Achievements")',
+        '.tabs button:has-text("Achievements")'
+      ];
+      
+      for (const fallback of fallbacks) {
+        try {
+          await this.page.waitForSelector(fallback, { timeout: 1000, visible: true });
+          await this.page.click(fallback);
+          console.log(`   🖱️  Fallback click successful with: ${fallback}`);
+          return;
+        } catch (e) {
+          continue;
+        }
       }
     }
     

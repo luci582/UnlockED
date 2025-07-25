@@ -83,15 +83,15 @@ const HomepageSimple = () => {
       {/* Stats Section */}
       <section className="py-16 border-b">
         <div className="container">
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 md:gap-6 md:grid-cols-4">
             {stats.map((stat, index) => {
               const Icon = stat.icon;
               return (
                 <Card key={index} className="text-center">
-                  <CardContent className="p-6">
-                    <Icon className={`h-6 w-6 mx-auto mb-2 ${stat.color}`} />
-                    <div className="text-2xl font-bold">{stat.value}</div>
-                    <div className="text-sm text-muted-foreground">{stat.label}</div>
+                  <CardContent className="p-4 md:p-6">
+                    <Icon className={`h-5 w-5 md:h-6 md:w-6 mx-auto mb-2 md:mb-3 ${stat.color}`} />
+                    <div className="text-lg md:text-2xl font-bold">{stat.value}</div>
+                    <div className="text-xs md:text-sm text-muted-foreground mt-1">{stat.label}</div>
                   </CardContent>
                 </Card>
               );
