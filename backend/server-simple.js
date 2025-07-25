@@ -115,6 +115,7 @@ app.post('/api/reviews', async (req, res) => {
     id: reviews.length + 1,
     userId: user.id,
     userName: user.name,
+    courseCode: reviewData.courseCode,
     ...reviewData,
     createdAt: new Date()
   };
@@ -124,6 +125,7 @@ app.post('/api/reviews', async (req, res) => {
   // Update user points and review count
   user.points = (user.points || 0) + 50;
   user.reviewCount = (user.reviewCount || 0) + 1;
+  user.lastReviewedCourse = reviewData.courseCode; // Store last reviewed course
   user.updatedAt = new Date();
   
   res.json({
@@ -134,8 +136,10 @@ app.post('/api/reviews', async (req, res) => {
 });
 
 // Get user leaderboard
-app.get('/api/leaderboard', async (req, res) => {
-  const leaderboard = Object.values(users)
+// Leaderboard endpoint
+app.get('/api/leaderboard', (req, res) => {
+  // Convert users object to array and sort by points
+  const userArray = Object.values(users)
     .sort((a, b) => (b.points || 0) - (a.points || 0))
     .map((user, index) => ({
       ...user,
@@ -144,7 +148,117 @@ app.get('/api/leaderboard', async (req, res) => {
   
   res.json({
     success: true,
-    leaderboard: leaderboard
+    users: userArray
+  });
+});
+
+// Admin endpoints
+app.get('/api/admin/users', (req, res) => {
+  const userArray = Object.values(users).map(user => ({
+    ...user,
+    createdAt: user.createdAt || new Date().toISOString()
+  }));
+  
+  res.json({
+    success: true,
+    users: userArray
+  });
+});
+
+app.get('/api/admin/reviews', (req, res) => {
+  res.json({
+    success: true,
+    reviews: reviews
+  });
+});
+
+app.delete('/api/admin/users/:userId', (req, res) => {
+  const userId = parseInt(req.params.userId);
+  
+  // Find user by id
+  const userToDelete = Object.values(users).find(user => user.id === userId);
+  if (!userToDelete) {
+    return res.status(404).json({ 
+      success: false, 
+      error: 'User not found' 
+    });
+  }
+  
+  // Remove user from users object
+  delete users[userToDelete.email];
+  
+  // Remove all reviews by this user
+  const userReviews = reviews.filter(review => review.userId === userId);
+  reviews = reviews.filter(review => review.userId !== userId);
+  
+  res.json({
+    success: true,
+    message: `User deleted along with ${userReviews.length} reviews`
+  });
+});
+
+app.delete('/api/admin/reviews/:reviewId', (req, res) => {
+  const reviewId = parseInt(req.params.reviewId);
+  
+  const reviewIndex = reviews.findIndex(review => review.id === reviewId);
+  if (reviewIndex === -1) {
+    return res.status(404).json({ 
+      success: false, 
+      error: 'Review not found' 
+    });
+  }
+  
+  const review = reviews[reviewIndex];
+  reviews.splice(reviewIndex, 1);
+  
+  // Find user and decrease their points and review count
+  const user = Object.values(users).find(u => u.id === review.userId);
+  if (user) {
+    user.points = Math.max(0, (user.points || 0) - 50);
+    user.reviewCount = Math.max(0, (user.reviewCount || 0) - 1);
+  }
+  
+  res.json({
+    success: true,
+    message: 'Review deleted successfully'
+  });
+});
+
+app.post('/api/admin/users', (req, res) => {
+  const { name, email, role } = req.body;
+  
+  if (!name || !email || !role) {
+    return res.status(400).json({ 
+      success: false, 
+      error: 'Missing required fields' 
+    });
+  }
+  
+  // Check if user already exists
+  if (users[email]) {
+    return res.status(400).json({ 
+      success: false, 
+      error: 'User with this email already exists' 
+    });
+  }
+  
+  // Create new user
+  const newUser = {
+    id: Object.keys(users).length + 1,
+    name,
+    email,
+    role,
+    points: 0,
+    reviewCount: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  
+  users[email] = newUser;
+  
+  res.json({
+    success: true,
+    user: newUser
   });
 });
 

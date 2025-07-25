@@ -288,7 +288,7 @@ const Leaderboard = () => {
                           )}
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          {currentUser.recentActivity}
+                          {currentUser.lastReviewedCourse ? `Reviewed ${currentUser.lastReviewedCourse}` : currentUser.recentActivity}
                         </div>
                       </div>
                       
@@ -360,7 +360,7 @@ const Leaderboard = () => {
                           )}
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          {contributor.recentActivity}
+                          {contributor.lastReviewedCourse ? `Reviewed ${contributor.lastReviewedCourse}` : contributor.recentActivity}
                         </div>
                       </div>
                       
@@ -417,7 +417,7 @@ const Leaderboard = () => {
                           </Badge>
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          {currentUser.recentActivity}
+                          {currentUser.lastReviewedCourse ? `Reviewed ${currentUser.lastReviewedCourse}` : currentUser.recentActivity}
                         </div>
                       </div>
                       

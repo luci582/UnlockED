@@ -7,11 +7,13 @@ import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
 import { Checkbox } from "../components/ui/checkbox";
 import { Badge } from "../components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "../hooks/use-toast";
 import { Progress } from "../components/ui/progress";
 import { useAuth } from "../hooks/use-auth";
 import { submitReview } from "../lib/api";
+import { allCourses } from "../data/courses";
 
 interface ReviewFormData {
   courseCode: string;
@@ -197,12 +199,21 @@ const MultiStepSubmitReview = () => {
                 {/* Course Code */}
                 <div className="space-y-2">
                   <Label htmlFor="courseCode">Course Code *</Label>
-                  <Input
-                    id="courseCode"
-                    placeholder="e.g., COMP1511"
-                    value={formData.courseCode}
-                    onChange={(e) => setFormData(prev => ({...prev, courseCode: e.target.value}))}
-                  />
+                  <Select 
+                    value={formData.courseCode} 
+                    onValueChange={(value) => setFormData(prev => ({...prev, courseCode: value}))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a course..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {allCourses.map((course) => (
+                        <SelectItem key={course.id} value={course.code}>
+                          {course.code} - {course.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {/* Semester */}

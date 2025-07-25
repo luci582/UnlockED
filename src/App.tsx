@@ -2,6 +2,7 @@ import { ThemeProvider } from "./components/Layout/ThemeProvider";
 import { CourseComparisonProvider } from "./hooks/use-course-comparison";
 import { AuthProvider } from "./hooks/use-auth";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "sonner";
 import HomepageSimple from "./pages/HomepageSimple";
 import CoursesDirectory from "./pages/CoursesDirectory";
 import CourseDetail from "./pages/CourseDetail";
@@ -10,6 +11,7 @@ import MultiStepSubmitReview from "./pages/MultiStepSubmitReview";
 import Leaderboard from "./pages/Leaderboard";
 import Login from "./pages/Login";
 import ProfilePage from "./pages/ProfilePage";
+import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import Header from "./components/Layout/Header";
 import BottomTabBar from "./components/Layout/BottomTabBar";
@@ -76,12 +78,14 @@ const App = () => {
                 } />
                 
                 {/* Admin-only routes */}
+                <Route path="/admin" element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                } />
                 <Route path="/admin/*" element={
                   <AdminRoute>
-                    <div className="container py-8">
-                      <h1 className="text-2xl font-bold">Admin Panel</h1>
-                      <p className="text-muted-foreground">Admin dashboard coming soon...</p>
-                    </div>
+                    <AdminDashboard />
                   </AdminRoute>
                 } />
                 
@@ -99,6 +103,7 @@ const App = () => {
               </Routes>
               <ComparisonTray />
               <BottomTabBar />
+              <Toaster position="top-right" richColors />
             </div>
           </BrowserRouter>
         </CourseComparisonProvider>
