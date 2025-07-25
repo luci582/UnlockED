@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Search, User, GraduationCap, LogOut, Settings, Menu, X, Shield, BookOpen } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Search, User, GraduationCap, Layers, Menu, X, Shield, BookOpen, Settings, LogOut } from "lucide-react";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -9,25 +9,24 @@ import {
   DropdownMenuLabel, 
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
+} from "../ui/dropdown-menu";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+} from "../ui/sheet";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Badge } from "../ui/badge";
 import { ThemeToggle } from "./ThemeToggle";
 import { useState } from "react";
-import { useAuth, usePermissions } from "@/hooks/use-auth";
+import { useAuth } from "../../hooks/use-auth";
 
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const permissions = usePermissions();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
@@ -95,9 +94,9 @@ const Header = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full" data-testid="user-menu-trigger">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src="" alt={user.firstName} />
+                    <AvatarImage src="" alt={user.name} />
                     <AvatarFallback className="bg-primary text-primary-foreground">
-                      {user.firstName[0]}{user.lastName[0]}
+                      {user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -106,7 +105,7 @@ const Header = () => {
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">
-                      {user.firstName} {user.lastName}
+                      {user.name}
                     </p>
                     <p className="text-xs leading-none text-muted-foreground">
                       {user.email}
@@ -114,9 +113,6 @@ const Header = () => {
                     <div className="flex items-center space-x-2 mt-1">
                       <Badge variant="outline" className="text-xs">
                         {user.role}
-                      </Badge>
-                      <Badge variant="secondary" className="text-xs">
-                        {user.totalPoints} pts
                       </Badge>
                     </div>
                   </div>
@@ -127,14 +123,14 @@ const Header = () => {
                   <span>Profile</span>
                 </DropdownMenuItem>
                 
-                {permissions.canManageCourses && (
+                {(user.role === 'INSTRUCTOR' || user.role === 'ADMIN') && (
                   <DropdownMenuItem onClick={() => navigate("/instructor")}>
                     <BookOpen className="mr-2 h-4 w-4" />
                     <span>Instructor Dashboard</span>
                   </DropdownMenuItem>
                 )}
                 
-                {permissions.isAdmin && (
+                {user.role === 'ADMIN' && (
                   <DropdownMenuItem onClick={() => navigate("/admin")}>
                     <Shield className="mr-2 h-4 w-4" />
                     <span>Admin Panel</span>
@@ -206,14 +202,14 @@ const Header = () => {
                   <div className="border-t pt-4 mt-4">
                     <div className="flex items-center space-x-3 px-3 py-2">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src="" alt={user.firstName} />
+                        <AvatarImage src="" alt={user.name} />
                         <AvatarFallback className="bg-primary text-primary-foreground">
-                          {user.firstName[0]}{user.lastName[0]}
+                          {user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <p className="text-sm font-medium">
-                          {user.firstName} {user.lastName}
+                          {user.name}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {user.email}
@@ -221,9 +217,6 @@ const Header = () => {
                         <div className="flex items-center space-x-2 mt-1">
                           <Badge variant="outline" className="text-xs">
                             {user.role}
-                          </Badge>
-                          <Badge variant="secondary" className="text-xs">
-                            {user.totalPoints} pts
                           </Badge>
                         </div>
                       </div>
@@ -242,7 +235,7 @@ const Header = () => {
                         Profile
                       </Button>
                       
-                      {permissions.canManageCourses && (
+                      {(user.role === 'INSTRUCTOR' || user.role === 'ADMIN') && (
                         <Button 
                           variant="ghost" 
                           className="justify-start" 
@@ -257,7 +250,7 @@ const Header = () => {
                         </Button>
                       )}
                       
-                      {permissions.isAdmin && (
+                      {user.role === 'ADMIN' && (
                         <Button 
                           variant="ghost" 
                           className="justify-start" 

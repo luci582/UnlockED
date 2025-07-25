@@ -1,260 +1,162 @@
-import bcrypt from 'bcryptjs'
-import { prisma } from './prisma'
+import { User, Role, AuthResult, SignupData, LoginData } from '../types/user';
 
-// Define types based on Prisma schema
-export type UserRole = 'STUDENT' | 'INSTRUCTOR' | 'ADMIN'
+// API base URL - will use backend server
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
-export interface User {
-  id: string
-  email: string
-  username: string
-  firstName: string
-  lastName: string
-  role: UserRole
-  totalPoints: number
-  isVerified: boolean
-  profileImage?: string | null
-  bio?: string | null
-}
+// Simulated current user for demo
+let currentUser: User | null = null;
 
-export interface AuthResult {
-  success: boolean
-  user?: User
-  error?: string
-}
-
-export interface SignupData {
-  email: string
-  username: string
-  firstName: string
-  lastName: string
-  password: string
-  role?: UserRole
-  adminKey?: string
-}
-
-// Hash password for storage
-export const hashPassword = async (password: string): Promise<string> => {
-  const saltRounds = 12
-  return bcrypt.hash(password, saltRounds)
-}
-
-// Verify password against hash
-export const verifyPassword = async (password: string, hash: string): Promise<boolean> => {
-  return bcrypt.compare(password, hash)
-}
-
-// Authenticate user with email and password
-export const authenticateUser = async (email: string, password: string): Promise<AuthResult> => {
+export async function authenticateUser(email: string, password: string, adminKey?: string): Promise<User | null> {
   try {
-    // Find user by email
-    const user = await prisma.user.findUnique({
-      where: { email },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-        totalPoints: true,
-        isVerified: true,
-        profileImage: true,
-        bio: true,
-        passwordHash: true
-      }
-    })
-
-    if (!user) {
-      return {
-        success: false,
-        error: 'Invalid email or password'
-      }
-    }
-
-    // Verify password
-    const isValidPassword = await verifyPassword(password, user.passwordHash)
-    if (!isValidPassword) {
-      return {
-        success: false,
-        error: 'Invalid email or password'
-      }
-    }
-
-    // Update last active time
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { lastActiveAt: new Date() }
-    })
-
-    // Return user without password hash
-    const { passwordHash, ...userWithoutPassword } = user
-    return {
-      success: true,
-      user: userWithoutPassword
-    }
-  } catch (error) {
-    console.error('Authentication error:', error)
-    return {
-      success: false,
-      error: 'Authentication failed'
-    }
-  }
-}
-
-// Create new user account
-export const createUser = async (userData: SignupData): Promise<AuthResult> => {
-  try {
-    // Check if email or username already exists
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { email: userData.email },
-          { username: userData.username }
-        ]
-      }
-    })
-
-    if (existingUser) {
-      return {
-        success: false,
-        error: existingUser.email === userData.email 
-          ? 'Email already registered' 
-          : 'Username already taken'
-      }
-    }
-
-    // Determine user role
-    let role = userData.role || 'STUDENT'
-    
-    // Check for admin key
-    if (userData.adminKey === 'teamlockedin124') {
-      role = 'ADMIN'
-    }
-
-    // Hash password
-    const passwordHash = await hashPassword(userData.password)
-
-    // Create user
-    const newUser = await prisma.user.create({
-      data: {
-        email: userData.email,
-        username: userData.username,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        passwordHash,
-        role,
-        isVerified: false // In a real app, you'd send verification email
+    const response = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-        totalPoints: true,
-        isVerified: true,
-        profileImage: true,
-        bio: true
-      }
-    })
+      body: JSON.stringify({
+        email,
+        password,
+        adminKey
+      }),
+    });
 
-    return {
-      success: true,
-      user: newUser
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Authentication failed');
     }
+
+    const data = await response.json();
+    
+    // Store token in localStorage
+    localStorage.setItem('authToken', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    
+    currentUser = data.user;
+    return data.user;
   } catch (error) {
-    console.error('User creation error:', error)
-    return {
-      success: false,
-      error: 'Failed to create account'
-    }
+    console.error('Authentication error:', error);
+    return null;
   }
 }
 
-// Get user by ID
-export const getUserById = async (userId: string): Promise<User | null> => {
+export async function createUser(
+  email: string, 
+  password: string, 
+  name: string, 
+  role: Role = 'STUDENT',
+  adminKey?: string
+): Promise<User | null> {
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-        totalPoints: true,
-        isVerified: true,
-        profileImage: true,
-        bio: true
-      }
-    })
+    const response = await fetch(`${API_BASE}/auth/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        name,
+        role,
+        adminKey
+      }),
+    });
 
-    return user
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Account creation failed');
+    }
+
+    const data = await response.json();
+    
+    // Store token in localStorage
+    localStorage.setItem('authToken', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    
+    currentUser = data.user;
+    return data.user;
   } catch (error) {
-    console.error('Get user error:', error)
-    return null
+    console.error('Account creation error:', error);
+    return null;
   }
 }
 
-// Permission checking utilities
-export const hasPermission = (userRole: UserRole, requiredRole: UserRole): boolean => {
-  const roleHierarchy = {
-    'STUDENT': 1,
-    'INSTRUCTOR': 2,
-    'ADMIN': 3
-  }
-
-  return roleHierarchy[userRole] >= roleHierarchy[requiredRole]
-}
-
-export const canManageCourses = (userRole: UserRole): boolean => {
-  return hasPermission(userRole, 'INSTRUCTOR')
-}
-
-export const canModerateReviews = (userRole: UserRole): boolean => {
-  return hasPermission(userRole, 'ADMIN')
-}
-
-export const canManageUsers = (userRole: UserRole): boolean => {
-  return userRole === 'ADMIN'
-}
-
-// Check if user can edit/delete their own content
-export const canEditOwnContent = (userId: string, contentUserId: string, userRole: UserRole): boolean => {
-  return userId === contentUserId || hasPermission(userRole, 'ADMIN')
-}
-
-// Session management utilities
-export const createSession = (user: User): string => {
-  // In a real app, you'd create a proper JWT token
-  // For now, we'll use a simple session stored in localStorage
-  const sessionData = {
-    user,
-    createdAt: new Date().toISOString(),
-    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
+export function getCurrentUser(): User | null {
+  if (currentUser) {
+    return currentUser;
   }
   
-  return JSON.stringify(sessionData)
-}
-
-export const validateSession = (sessionData: string): User | null => {
-  try {
-    const session = JSON.parse(sessionData)
-    const expiresAt = new Date(session.expiresAt)
-    
-    if (expiresAt < new Date()) {
-      return null // Session expired
+  // Try to get user from localStorage
+  const storedUser = localStorage.getItem('user');
+  if (storedUser) {
+    try {
+      currentUser = JSON.parse(storedUser);
+      return currentUser;
+    } catch (error) {
+      console.error('Error parsing stored user:', error);
+      localStorage.removeItem('user');
     }
-    
-    return session.user
-  } catch (error) {
-    return null // Invalid session
   }
+  
+  return null;
 }
 
-export const clearSession = (): void => {
-  localStorage.removeItem('userSession')
+export function signOut(): void {
+  currentUser = null;
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('user');
 }
+
+export function isAuthenticated(): boolean {
+  return getCurrentUser() !== null;
+}
+
+export function hasRole(role: Role): boolean {
+  const user = getCurrentUser();
+  return user?.role === role;
+}
+
+export function isAdmin(): boolean {
+  return hasRole('ADMIN');
+}
+
+export function isInstructor(): boolean {
+  const user = getCurrentUser();
+  return user?.role === 'INSTRUCTOR' || user?.role === 'ADMIN';
+}
+
+export function isStudent(): boolean {
+  return hasRole('STUDENT');
+}
+
+export function canAccessAdmin(): boolean {
+  return isAdmin();
+}
+
+export function canAccessInstructor(): boolean {
+  return isInstructor();
+}
+
+// Legacy API for backward compatibility
+export const login = async (loginData: LoginData): Promise<AuthResult> => {
+  const user = await authenticateUser(loginData.email, loginData.password, loginData.adminKey);
+  return {
+    success: user !== null,
+    user: user || undefined,
+    error: user ? undefined : 'Authentication failed'
+  };
+};
+
+export const signup = async (signupData: SignupData): Promise<AuthResult> => {
+  const user = await createUser(
+    signupData.email,
+    signupData.password,
+    signupData.name,
+    signupData.role,
+    signupData.adminKey
+  );
+  return {
+    success: user !== null,
+    user: user || undefined,
+    error: user ? undefined : 'Account creation failed'
+  };
+};

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { User, validateSession, clearSession } from '@/lib/auth'
+import { getCurrentUser, signOut, isAuthenticated } from '../lib/auth'
+import { User } from '../types/user'
 
 interface AuthContextType {
   user: User | null
@@ -21,15 +22,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Check for existing session on mount
   useEffect(() => {
-    const sessionData = localStorage.getItem('userSession')
-    if (sessionData) {
-      const validatedUser = validateSession(sessionData)
-      if (validatedUser) {
-        setUser(validatedUser)
-      } else {
-        // Session expired or invalid
-        clearSession()
-      }
+    const currentUser = getCurrentUser()
+    if (currentUser) {
+      setUser(currentUser)
     }
     setIsLoading(false)
   }, [])
@@ -47,7 +42,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     setUser(null)
-    clearSession()
+    signOut()
   }
 
   const updateUser = (userData: Partial<User>) => {

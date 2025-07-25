@@ -1,20 +1,20 @@
-import { ThemeProvider } from "@/components/Layout/ThemeProvider";
-import { CourseComparisonProvider } from "@/hooks/use-course-comparison";
-import { AuthProvider } from "@/hooks/use-auth";
+import { ThemeProvider } from "./components/Layout/ThemeProvider";
+import { CourseComparisonProvider } from "./hooks/use-course-comparison";
+import { AuthProvider } from "./hooks/use-auth";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import HomepageSimple from "@/pages/HomepageSimple";
-import CoursesDirectory from "@/pages/CoursesDirectory";
-import CourseDetail from "@/pages/CourseDetail";
-import SubmitReview from "@/pages/SubmitReview";
-import MultiStepSubmitReview from "@/pages/MultiStepSubmitReview";
-import Leaderboard from "@/pages/Leaderboard";
-import Login from "@/pages/Login";
-import ProfilePage from "@/pages/ProfilePage";
-import NotFound from "@/pages/NotFound";
-import Header from "@/components/Layout/Header";
-import BottomTabBar from "@/components/Layout/BottomTabBar";
-import ComparisonTray from "@/components/Course/ComparisonTray";
-import { ProtectedRoute, AdminRoute, InstructorRoute } from "@/components/Auth/ProtectedRoute";
+import HomepageSimple from "./pages/HomepageSimple";
+import CoursesDirectory from "./pages/CoursesDirectory";
+import CourseDetail from "./pages/CourseDetail";
+import SubmitReview from "./pages/SubmitReview";
+import MultiStepSubmitReview from "./pages/MultiStepSubmitReview";
+import Leaderboard from "./pages/Leaderboard";
+import Login from "./pages/Login";
+import ProfilePage from "./pages/ProfilePage";
+import NotFound from "./pages/NotFound";
+import Header from "./components/Layout/Header";
+import BottomTabBar from "./components/Layout/BottomTabBar";
+import ComparisonTray from "./components/Course/ComparisonTray";
+import { ProtectedRoute, AdminRoute, InstructorRoute } from "./components/Auth/ProtectedRoute";
 
 /**
  * Main App component for UnlockED - A university course review platform

@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, User, Shield } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useAuth } from "@/hooks/use-auth";
-import { authenticateUser, createUser, UserRole } from "@/lib/auth";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { Alert, AlertDescription } from "../components/ui/alert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { useAuth } from "../hooks/use-auth";
+import { authenticateUser, createUser } from "../lib/auth";
+import { Role } from "../types/user";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -23,17 +24,17 @@ const Login = () => {
   const [loginForm, setLoginForm] = useState({
     email: "",
     password: "",
+    adminKey: "",
   });
 
   // Signup form state
   const [signupForm, setSignupForm] = useState({
     firstName: "",
     lastName: "",
-    username: "",
     email: "",
     password: "",
     confirmPassword: "",
-    role: "STUDENT" as UserRole,
+    role: "STUDENT" as Role,
     adminKey: "",
   });
 
@@ -43,17 +44,21 @@ const Login = () => {
     setError("");
 
     try {
-      const result = await authenticateUser(loginForm.email, loginForm.password);
+      const user = await authenticateUser(
+        loginForm.email, 
+        loginForm.password, 
+        loginForm.adminKey || undefined
+      );
       
-      if (result.success && result.user) {
-        login(result.user);
+      if (user) {
+        login(user);
         setSuccess("Login successful! Redirecting...");
         setTimeout(() => navigate("/"), 1000);
       } else {
-        setError(result.error || "Login failed");
+        setError("Invalid email or password");
       }
-    } catch (err) {
-      setError("An error occurred. Please try again.");
+    } catch (err: any) {
+      setError(err.message || "An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -77,288 +82,278 @@ const Login = () => {
       return;
     }
 
-    if (!signupForm.username.trim()) {
-      setError("Username is required");
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      const result = await createUser({
-        email: signupForm.email,
-        username: signupForm.username,
-        firstName: signupForm.firstName,
-        lastName: signupForm.lastName,
-        password: signupForm.password,
-        role: signupForm.role,
-        adminKey: signupForm.adminKey
-      });
+      const fullName = `${signupForm.firstName} ${signupForm.lastName}`.trim();
+      const user = await createUser(
+        signupForm.email,
+        signupForm.password,
+        fullName,
+        signupForm.role,
+        signupForm.adminKey || undefined
+      );
       
-      if (result.success && result.user) {
-        login(result.user);
+      if (user) {
+        login(user);
         setSuccess("Account created successfully! Redirecting...");
         setTimeout(() => navigate("/"), 1000);
       } else {
-        setError(result.error || "Account creation failed");
+        setError("Account creation failed");
       }
-    } catch (err) {
-      setError("An error occurred. Please try again.");
+    } catch (err: any) {
+      setError(err.message || "An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  const fillDemoCredentials = () => {
+    setLoginForm({
+      email: "demo@unlocked.edu",
+      password: "demo123",
+      adminKey: "",
+    });
+  };
+
+  const fillAdminCredentials = () => {
+    setLoginForm({
+      email: "admin@unlocked.edu", 
+      password: "admin123",
+      adminKey: "teamlockedin124",
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-primary mb-2">UnlockED</h1>
-          <p className="text-muted-foreground">Your UNSW Course Companion</p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-secondary/20 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold text-center">Welcome to UnlockED</CardTitle>
+          <CardDescription className="text-center">
+            Your UNSW course companion
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="login" className="space-y-4">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="login">Login</TabsTrigger>
+              <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            </TabsList>
 
-        <Tabs defaultValue="login" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
-          </TabsList>
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
 
-          {/* Error/Success Messages */}
-          {error && (
-            <Alert className="mb-4 border-destructive">
-              <AlertDescription className="text-destructive">{error}</AlertDescription>
-            </Alert>
-          )}
-          {success && (
-            <Alert className="mb-4 border-primary">
-              <AlertDescription className="text-primary">{success}</AlertDescription>
-            </Alert>
-          )}
+            {success && (
+              <Alert>
+                <AlertDescription>{success}</AlertDescription>
+              </Alert>
+            )}
 
-          {/* Login Tab */}
-          <TabsContent value="login">
-            <Card>
-              <CardHeader>
-                <CardTitle>Welcome Back</CardTitle>
-                <CardDescription>
-                  Sign in to your UnlockED account
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="login-email">Email</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="login-email"
-                        type="email"
-                        placeholder="Enter your email"
-                        className="pl-9"
-                        value={loginForm.email}
-                        onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
-                        required
-                      />
-                    </div>
+            <TabsContent value="login" className="space-y-4">
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="your.email@unsw.edu.au"
+                      value={loginForm.email}
+                      onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
+                      className="pl-10"
+                      required
+                    />
                   </div>
+                </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="login-password">Password</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="login-password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Enter your password"
-                        className="pl-9 pr-9"
-                        value={loginForm.password}
-                        onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
-                        required
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4 text-muted-foreground" />
-                        ) : (
-                          <Eye className="h-4 w-4 text-muted-foreground" />
-                        )}
-                      </Button>
-                    </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      value={loginForm.password}
+                      onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
+                      className="pl-10 pr-10"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-3 h-4 w-4 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
+                </div>
 
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Signing In..." : "Sign In"}
+                <div className="space-y-2">
+                  <Label htmlFor="adminKey">Admin Key (Optional)</Label>
+                  <div className="relative">
+                    <Shield className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="adminKey"
+                      type="password"
+                      placeholder="Enter admin key for elevated access"
+                      value={loginForm.adminKey}
+                      onChange={(e) => setLoginForm(prev => ({ ...prev, adminKey: e.target.value }))}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Logging in..." : "Login"}
+                </Button>
+
+                <div className="space-y-2">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={fillDemoCredentials}
+                  >
+                    Use Demo Account
                   </Button>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={fillAdminCredentials}
+                  >
+                    Use Admin Account
+                  </Button>
+                </div>
+              </form>
+            </TabsContent>
 
-                  <div className="text-center text-sm text-muted-foreground">
-                    Demo: admin@unsw.edu.au / password
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Signup Tab */}
-          <TabsContent value="signup">
-            <Card>
-              <CardHeader>
-                <CardTitle>Create Account</CardTitle>
-                <CardDescription>
-                  Join the UNSW student community
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSignup} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="firstName">First Name</Label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="firstName"
-                          placeholder="First name"
-                          className="pl-9"
-                          value={signupForm.firstName}
-                          onChange={(e) => setSignupForm(prev => ({ ...prev, firstName: e.target.value }))}
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="lastName">Last Name</Label>
-                      <Input
-                        id="lastName"
-                        placeholder="Last name"
-                        value={signupForm.lastName}
-                        onChange={(e) => setSignupForm(prev => ({ ...prev, lastName: e.target.value }))}
-                        required
-                      />
-                    </div>
-                  </div>
-
+            <TabsContent value="signup" className="space-y-4">
+              <form onSubmit={handleSignup} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="username"
-                        placeholder="Choose a username"
-                        className="pl-9"
-                        value={signupForm.username}
-                        onChange={(e) => setSignupForm(prev => ({ ...prev, username: e.target.value }))}
-                        required
-                      />
-                    </div>
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Input
+                      id="firstName"
+                      placeholder="John"
+                      value={signupForm.firstName}
+                      onChange={(e) => setSignupForm(prev => ({ ...prev, firstName: e.target.value }))}
+                      required
+                    />
                   </div>
-
                   <div className="space-y-2">
-                    <Label htmlFor="role">Account Type</Label>
-                    <Select value={signupForm.role} onValueChange={(value: UserRole) => setSignupForm(prev => ({ ...prev, role: value }))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select account type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="STUDENT">Student</SelectItem>
-                        <SelectItem value="INSTRUCTOR">Instructor</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Input
+                      id="lastName"
+                      placeholder="Doe"
+                      value={signupForm.lastName}
+                      onChange={(e) => setSignupForm(prev => ({ ...prev, lastName: e.target.value }))}
+                      required
+                    />
                   </div>
+                </div>
 
-                  {signupForm.role === 'INSTRUCTOR' && (
-                    <div className="space-y-2">
-                      <Label htmlFor="adminKey">Admin Key (Optional)</Label>
-                      <div className="relative">
-                        <Shield className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="adminKey"
-                          placeholder="Enter admin key for admin access"
-                          className="pl-9"
-                          value={signupForm.adminKey}
-                          onChange={(e) => setSignupForm(prev => ({ ...prev, adminKey: e.target.value }))}
-                        />
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Leave empty for instructor access, or enter admin key for full admin privileges
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="signup-email"
-                        type="email"
-                        placeholder="Enter your email"
-                        className="pl-9"
-                        value={signupForm.email}
-                        onChange={(e) => setSignupForm(prev => ({ ...prev, email: e.target.value }))}
-                        required
-                      />
-                    </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signupEmail">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="signupEmail"
+                      type="email"
+                      placeholder="your.email@unsw.edu.au"
+                      value={signupForm.email}
+                      onChange={(e) => setSignupForm(prev => ({ ...prev, email: e.target.value }))}
+                      className="pl-10"
+                      required
+                    />
                   </div>
+                </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="signup-password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Create a password"
-                        className="pl-9 pr-9"
-                        value={signupForm.password}
-                        onChange={(e) => setSignupForm(prev => ({ ...prev, password: e.target.value }))}
-                        required
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4 text-muted-foreground" />
-                        ) : (
-                          <Eye className="h-4 w-4 text-muted-foreground" />
-                        )}
-                      </Button>
-                    </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signupPassword">Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="signupPassword"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Create a password"
+                      value={signupForm.password}
+                      onChange={(e) => setSignupForm(prev => ({ ...prev, password: e.target.value }))}
+                      className="pl-10 pr-10"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-3 h-4 w-4 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
+                </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="confirmPassword"
                       type={showPassword ? "text" : "password"}
                       placeholder="Confirm your password"
                       value={signupForm.confirmPassword}
                       onChange={(e) => setSignupForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                      className="pl-10"
                       required
                     />
                   </div>
+                </div>
 
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Creating Account..." : "Create Account"}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                <div className="space-y-2">
+                  <Label htmlFor="role">Account Type</Label>
+                  <Select 
+                    value={signupForm.role} 
+                    onValueChange={(value) => setSignupForm(prev => ({ ...prev, role: value as Role }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select account type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="STUDENT">Student</SelectItem>
+                      <SelectItem value="INSTRUCTOR">Instructor</SelectItem>
+                      <SelectItem value="ADMIN">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-        <div className="text-center mt-6">
-          <Link to="/" className="text-sm text-primary hover:underline">
-            ← Back to Home
-          </Link>
-        </div>
-      </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signupAdminKey">Admin Key (Optional)</Label>
+                  <div className="relative">
+                    <Shield className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="signupAdminKey"
+                      type="password"
+                      placeholder="Enter admin key for elevated access"
+                      value={signupForm.adminKey}
+                      onChange={(e) => setSignupForm(prev => ({ ...prev, adminKey: e.target.value }))}
+                      className="pl-10"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Use admin key "teamlockedin124" for admin access
+                  </p>
+                </div>
+
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Creating Account..." : "Create Account"}
+                </Button>
+              </form>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 };
