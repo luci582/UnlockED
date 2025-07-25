@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 0 0% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 12%;
+
+    --primary: 54 100% 50%;
+    --primary-foreground: 0 0% 12%;
+
+    --secondary: 0 0% 14%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: 39 100% 60%;
+    --accent-foreground: 0 0% 12%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 54 100% 50%;
+
+    --radius: 1rem;
+
+    /* UNSW-themed course platform colors */
+    --course-featured: 54 100% 88%;
+    --course-rating: 54 100% 50%;
+    --course-skill-tag: 39 100% 75%;
+    
+    /* New course and effort tags using UNSW palette */
+    --course-new: 54 100% 85%;
+    --course-effort-light: 54 100% 92%;
+    --course-effort-moderate: 39 100% 80%;
+    --course-effort-heavy: 25 100% 65%;
+    --course-effort-very-heavy: 0 0% 25%;
+    
+    /* UNSW-themed gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(54 100% 50%), hsl(39 100% 60%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(54 100% 98%));
+    
+    /* UNSW-themed shadows */
+    --shadow-soft: 0 4px 20px -4px hsl(54 100% 50% / 0.15);
+    --shadow-card: 0 2px 10px -2px hsl(0 0% 20% / 0.1);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 0 0% 8%;
+    --foreground: 54 100% 85%;
+
+    --card: 0 0% 10%;
+    --card-foreground: 54 100% 85%;
+
+    --popover: 0 0% 10%;
+    --popover-foreground: 54 100% 85%;
+
+    --primary: 54 100% 70%;
+    --primary-foreground: 0 0% 8%;
+
+    --secondary: 0 0% 14%;
+    --secondary-foreground: 54 100% 85%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+
+    --accent: 39 100% 60%;
+    --accent-foreground: 0 0% 8%;
+
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 54 100% 70%;
+    
+    /* Dark mode course colors */
+    --course-featured: 54 80% 25%;
+    --course-rating: 54 100% 70%;
+    --course-skill-tag: 39 80% 45%;
+    --course-new: 54 80% 30%;
+    --course-effort-light: 54 60% 25%;
+    --course-effort-moderate: 39 70% 35%;
+    --course-effort-heavy: 25 80% 40%;
+    --course-effort-very-heavy: 0 0% 40%;
+    
+    --sidebar-background: 0 0% 8%;
+    --sidebar-foreground: 54 100% 85%;
+    --sidebar-primary: 54 100% 70%;
+    --sidebar-primary-foreground: 0 0% 8%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 54 100% 85%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 54 100% 70%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Add more breathing room globally */
+  main {
+    @apply space-y-8;
+  }
+
+  section {
+    @apply mb-12;
+  }
+
+  .container {
+    @apply px-6 md:px-8;
+  }
+}
