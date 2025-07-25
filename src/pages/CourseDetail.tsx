@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { Star, ArrowUp, Clock, Users, Monitor, ChevronLeft, Play, MessageSquare, ExternalLink, Filter, CheckCircle, BookOpen, Lightbulb } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { courseDetails } from "@/data/courses";
-import RatingDistributionChart from "@/components/Course/RatingDistributionChart";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Separator } from "../components/ui/separator";
+import { Avatar, AvatarFallback } from "../components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { courseDetails } from "../data/courses";
+import RatingDistributionChart from "../components/Course/RatingDistributionChart";
 
 const CourseDetail = () => {
   const { id } = useParams();
@@ -128,9 +128,9 @@ const CourseDetail = () => {
                     <div className="text-sm text-muted-foreground">{course.reviewCount} reviews</div>
                   </div>
                 </div>
-                <Link to="/submit-review" className="w-full">
-                  <Button className="w-full">Submit Review</Button>
-                </Link>
+                <Button asChild className="w-full">
+                  <Link to="/submit-review">Submit Review</Link>
+                </Button>
               </CardContent>
             </Card>
           </div>

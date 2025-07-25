@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { ChevronLeft, Star, MessageSquare, ArrowRight, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
-import { Progress } from "@/components/ui/progress";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
+import { Checkbox } from "../components/ui/checkbox";
+import { Badge } from "../components/ui/badge";
+import { Link, useNavigate } from "react-router-dom";
+import { useToast } from "../hooks/use-toast";
+import { Progress } from "../components/ui/progress";
+import { useAuth } from "../hooks/use-auth";
+import { submitReview } from "../lib/api";
 
 interface ReviewFormData {
   courseCode: string;
@@ -24,8 +26,11 @@ interface ReviewFormData {
 
 const MultiStepSubmitReview = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { user, updateUser } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [hoverRating, setHoverRating] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [formData, setFormData] = useState<ReviewFormData>({
     courseCode: "",
@@ -108,12 +113,54 @@ const MultiStepSubmitReview = () => {
     setCurrentStep(1);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Review Submitted!",
-      description: "Thank you for sharing your experience. You've earned 50 Reward Points!",
-    });
+    
+    if (!user?.email) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to submit a review.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      const result = await submitReview(user.email, formData);
+      
+      if (result.success) {
+        // Update user points in the frontend
+        if (result.data?.user) {
+          updateUser(result.data.user);
+        }
+        
+        toast({
+          title: "Review Submitted!",
+          description: "Thank you for sharing your experience. You've earned 50 Reward Points!",
+        });
+        
+        // Navigate to leaderboard to show updated points
+        setTimeout(() => {
+          navigate('/leaderboard');
+        }, 2000);
+      } else {
+        toast({
+          title: "Submission Failed",
+          description: result.error || "Failed to submit review. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const progressValue = (currentStep / 2) * 100;
@@ -306,8 +353,8 @@ const MultiStepSubmitReview = () => {
                     <ArrowLeft className="h-4 w-4 mr-2" />
                     Back
                   </Button>
-                  <Button type="submit" className="min-w-32">
-                    Submit Review
+                  <Button type="submit" className="min-w-32" disabled={isSubmitting}>
+                    {isSubmitting ? "Submitting..." : "Submit Review"}
                   </Button>
                 </div>
               </CardContent>

@@ -1,13 +1,13 @@
 import React from 'react'
 import { Navigate } from 'react-router-dom'
-import { useAuth } from '@/hooks/use-auth'
-import { UserRole } from '@/lib/auth'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { useAuth } from '../../hooks/use-auth'
+import { Role } from '../../types/user'
+import { Alert, AlertDescription } from '../ui/alert'
 import { Loader2 } from 'lucide-react'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
-  requiredRole?: UserRole
+  requiredRole?: Role
   requireAuth?: boolean
   fallbackPath?: string
 }

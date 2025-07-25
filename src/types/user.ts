@@ -5,6 +5,8 @@ export interface User {
   email: string;
   name: string;
   role: Role;
+  points?: number;
+  reviewCount?: number;
   createdAt: Date;
   updatedAt: Date;
 }

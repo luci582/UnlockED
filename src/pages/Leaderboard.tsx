@@ -1,28 +1,57 @@
+import { useState, useEffect } from "react";
 import { Trophy, Medal, Award, Star, MessageSquare, TrendingUp, MapPin } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import { Avatar, AvatarFallback } from "../components/ui/avatar";
+import { Separator } from "../components/ui/separator";
 import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/use-auth";
+import { getLeaderboard } from "../lib/api";
 
 const Leaderboard = () => {
-  // Current user data (would come from auth context in real app)
-  const currentUser = {
-    id: 999,
-    name: "You",
-    reviewCount: 8,
-    points: 425,
-    rank: 234,
+  const { user } = useAuth();
+  const [leaderboardData, setLeaderboardData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLeaderboard = async () => {
+      try {
+        const result = await getLeaderboard();
+        if (result.success && result.data?.leaderboard) {
+          setLeaderboardData(result.data.leaderboard);
+        }
+      } catch (error) {
+        console.error('Failed to fetch leaderboard:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLeaderboard();
+  }, []);
+
+  // Find current user in leaderboard
+  const currentUserData = leaderboardData.find((u: any) => u.email === user?.email);
+
+  // Current user data (fallback to defaults if not found)
+  const currentUser = currentUserData || {
+    id: user?.id || 999,
+    name: user?.name || "You",
+    email: user?.email || "",
+    reviewCount: user?.reviewCount || 0,
+    points: user?.points || 0,
+    rank: leaderboardData.length + 1,
     badge: "New Reviewer",
-    recentActivity: "Reviewed COMP1511",
-    helpful: 12,
-    degree: "Computer Science",
-    streakCount: 2,
+    recentActivity: "No reviews yet",
+    helpful: 0,
+    degree: "Student",
+    streakCount: 0,
     hasStreak: false
   };
 
-  const topContributors = [
+  // Static top contributors for display purposes (mix with real data)
+  const staticTopContributors = [
     {
       id: 1,
       name: "Alex Chen",
@@ -48,47 +77,14 @@ const Leaderboard = () => {
       degree: "Commerce",
       streakCount: 3,
       hasStreak: true
-    },
-    {
-      id: 3,
-      name: "Jordan Smith",
-      reviewCount: 34,
-      points: 1700,
-      rank: 3,
-      badge: "Course Expert",
-      recentActivity: "Reviewed PSYC1001",
-      helpful: 128,
-      degree: "Psychology",
-      streakCount: 5,
-      hasStreak: true
-    },
-    {
-      id: 4,
-      name: "Emily Davis",
-      reviewCount: 28,
-      points: 1400,
-      rank: 4,
-      badge: "Helpful Reviewer",
-      recentActivity: "Reviewed MATH1131",
-      helpful: 89,
-      degree: "Engineering",
-      streakCount: 2,
-      hasStreak: false
-    },
-    {
-      id: 5,
-      name: "Michael Brown",
-      reviewCount: 25,
-      points: 1250,
-      rank: 5,
-      badge: "Active Member",
-      recentActivity: "Reviewed ECON1101",
-      helpful: 76,
-      degree: "Economics",
-      streakCount: 4,
-      hasStreak: false
     }
   ];
+
+  // Combine real users with static ones, sort by points
+  const topContributors = [...staticTopContributors, ...leaderboardData]
+    .sort((a, b) => (b.points || 0) - (a.points || 0))
+    .slice(0, 10)
+    .map((user, index) => ({ ...user, rank: index + 1 }));
 
   const achievements = [
     {
