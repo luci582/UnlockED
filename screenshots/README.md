@@ -1,6 +1,6 @@
 # UnlockED Screenshots
 
-This directory contains comprehensive visual documentation of all application features in both light and dark modes, across desktop and mobile viewports.
+This directory contains screenshots of all application features in both light and dark modes, across desktop and mobile viewports.
 
 ## Directory Structure
 
@@ -9,34 +9,12 @@ This directory contains comprehensive visual documentation of all application fe
 - `mobile-light/` - Mobile screenshots in light mode
 - `mobile-dark/` - Mobile screenshots in dark mode
 
-## Overview
-
-These screenshots demonstrate the complete UnlockED user experience, including:
-
-### 🏠 Core Pages
-- Homepage with hero section and featured courses
-- Course directory with advanced filtering
-- Individual course detail pages (randomly selected)
-- User authentication flows
-
-### 🎯 Interactive Features  
-- Filter panel functionality (desktop & mobile)
-- Skill-based course filtering
-- Search functionality
-- Expandable course cards
-- Theme switching (light/dark mode)
-
-### 📱 Responsive Design
-- Mobile navigation menus
-- Responsive filter panels
-- Touch-friendly interfaces
-- Adaptive layouts
-
 ## Screenshots
 
 
 ### Homepage
 *Homepage with hero section and features*
+
 
 | Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
 |---------------|--------------|--------------|-------------|
@@ -46,6 +24,7 @@ These screenshots demonstrate the complete UnlockED user experience, including:
 ### Courses Directory
 *Course directory with all courses visible*
 
+
 | Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
 |---------------|--------------|--------------|-------------|
 | ![](light/courses-directory.png) | ![](dark/courses-directory.png) | ![](mobile-light/courses-directory.png) | ![](mobile-dark/courses-directory.png) |
@@ -53,6 +32,7 @@ These screenshots demonstrate the complete UnlockED user experience, including:
 
 ### Courses With Filters
 *Course directory with filters panel visible*
+
 
 | Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
 |---------------|--------------|--------------|-------------|
@@ -62,6 +42,7 @@ These screenshots demonstrate the complete UnlockED user experience, including:
 ### Courses Without Filters
 *Course directory with filters panel hidden*
 
+
 | Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
 |---------------|--------------|--------------|-------------|
 | ![](light/courses-without-filters.png) | ![](dark/courses-without-filters.png) | ![](mobile-light/courses-without-filters.png) | ![](mobile-dark/courses-without-filters.png) |
@@ -69,6 +50,7 @@ These screenshots demonstrate the complete UnlockED user experience, including:
 
 ### Mobile Filters Open
 *Mobile filter panel opened*
+
 
 | Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
 |---------------|--------------|--------------|-------------|
@@ -78,6 +60,7 @@ These screenshots demonstrate the complete UnlockED user experience, including:
 ### Courses Filtered By Skills
 *Courses filtered by Programming skill*
 
+
 | Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
 |---------------|--------------|--------------|-------------|
 | ![](light/courses-filtered-by-skills.png) | ![](dark/courses-filtered-by-skills.png) | ![](mobile-light/courses-filtered-by-skills.png) | ![](mobile-dark/courses-filtered-by-skills.png) |
@@ -85,6 +68,7 @@ These screenshots demonstrate the complete UnlockED user experience, including:
 
 ### Courses Search Active
 *Course search functionality*
+
 
 | Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
 |---------------|--------------|--------------|-------------|
@@ -94,13 +78,42 @@ These screenshots demonstrate the complete UnlockED user experience, including:
 ### Course Card Expanded Skills
 *Course card with expanded skills*
 
+
 | Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
 |---------------|--------------|--------------|-------------|
 | ![](light/course-card-expanded-skills.png) | ![](dark/course-card-expanded-skills.png) | ![](mobile-light/course-card-expanded-skills.png) | ![](mobile-dark/course-card-expanded-skills.png) |
 
 
+### Course Detail Overview
+*Course detail page overview tab for COMP1521*
+**Course: COMP1521**
+
+| Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
+|---------------|--------------|--------------|-------------|
+| ![](light/course-detail-overview.png) | ![](dark/course-detail-overview.png) | ![](mobile-light/course-detail-overview.png) | ![](mobile-dark/course-detail-overview.png) |
+
+
+### Course Detail Reviews
+*Course detail page reviews tab for COMP1521*
+**Course: COMP1521**
+
+| Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
+|---------------|--------------|--------------|-------------|
+| ![](light/course-detail-reviews.png) | ![](dark/course-detail-reviews.png) | ![](mobile-light/course-detail-reviews.png) | ![](mobile-dark/course-detail-reviews.png) |
+
+
+### Course Detail Student Video
+*Course detail page student video tab for COMP1521*
+**Course: COMP1521**
+
+| Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
+|---------------|--------------|--------------|-------------|
+| ![](light/course-detail-student-video.png) | ![](dark/course-detail-student-video.png) | ![](mobile-light/course-detail-student-video.png) | ![](mobile-dark/course-detail-student-video.png) |
+
+
 ### Login Page
 *Login/signup page*
+
 
 | Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
 |---------------|--------------|--------------|-------------|
@@ -110,6 +123,7 @@ These screenshots demonstrate the complete UnlockED user experience, including:
 ### Login Signup Tab
 *Signup tab on login page*
 
+
 | Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
 |---------------|--------------|--------------|-------------|
 | ![](light/login-signup-tab.png) | ![](dark/login-signup-tab.png) | ![](mobile-light/login-signup-tab.png) | ![](mobile-dark/login-signup-tab.png) |
@@ -117,6 +131,7 @@ These screenshots demonstrate the complete UnlockED user experience, including:
 
 ### Login With Demo Credentials
 *Login form filled with demo credentials*
+
 
 | Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
 |---------------|--------------|--------------|-------------|
@@ -126,6 +141,7 @@ These screenshots demonstrate the complete UnlockED user experience, including:
 ### Authenticated Header
 *Header with authenticated user dropdown*
 
+
 | Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
 |---------------|--------------|--------------|-------------|
 | ![](light/authenticated-header.png) | ![](dark/authenticated-header.png) | ![](mobile-light/authenticated-header.png) | ![](mobile-dark/authenticated-header.png) |
@@ -133,6 +149,7 @@ These screenshots demonstrate the complete UnlockED user experience, including:
 
 ### Leaderboard
 *Leaderboard page*
+
 
 | Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
 |---------------|--------------|--------------|-------------|
@@ -142,6 +159,7 @@ These screenshots demonstrate the complete UnlockED user experience, including:
 ### Submit Review
 *Submit review page*
 
+
 | Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
 |---------------|--------------|--------------|-------------|
 | ![](light/submit-review.png) | ![](dark/submit-review.png) | ![](mobile-light/submit-review.png) | ![](mobile-dark/submit-review.png) |
@@ -150,61 +168,19 @@ These screenshots demonstrate the complete UnlockED user experience, including:
 ### Mobile Navigation
 *Mobile navigation menu open*
 
+
 | Desktop Light | Desktop Dark | Mobile Light | Mobile Dark |
 |---------------|--------------|--------------|-------------|
 | ![](light/mobile-navigation.png) | ![](dark/mobile-navigation.png) | ![](mobile-light/mobile-navigation.png) | ![](mobile-dark/mobile-navigation.png) |
 
 
-## Usage & Applications
+## Usage
 
 These screenshots can be used for:
+- Documentation and README files
+- Marketing materials
+- Design reviews
+- Bug reports and feature requests
+- User onboarding guides
 
-### 📚 Documentation
-- README files and project documentation
-- Feature specification documents
-- User guide creation
-- Technical documentation
-
-### 🎨 Design & Development
-- Design reviews and feedback sessions
-- UI/UX consistency checks
-- Cross-browser testing reference
-- Responsive design validation
-
-### 📢 Marketing & Communication
-- Project showcases and portfolios
-- Client presentations
-- Social media content
-- Grant applications and reports
-
-### 🐛 Development Support
-- Bug reports with visual context
-- Feature request documentation
-- Quality assurance testing
-- User acceptance testing
-
-### 🎓 Educational Resources
-- Student project examples
-- Course material supplements
-- Tutorial creation
-- Learning pathway documentation
-
-## Regeneration
-
-To update these screenshots with the latest application state:
-
-```bash
-# Ensure development server is running on localhost:8080
-npm run dev
-
-# In a new terminal, run the screenshot script
-node take-all-pics.js
-```
-
-**Note**: The script randomly selects courses for detail page screenshots, so each run may show different courses (e.g., MGMT1001, PSYC1001, COMP1511, etc.).
-
----
-
-**Generated on**: 2025-07-25T08:45:10.893Z  
-**Application**: UnlockED - UNSW Course Companion  
-**Repository**: [UnlockED GitHub](https://github.com/luci582/UnlockED)
+Generated on: 2025-07-25T10:29:07.825Z

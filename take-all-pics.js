@@ -368,6 +368,7 @@ class ScreenshotTaker {
     
     // Go to homepage first
     await this.page.goto(CONFIG.baseUrl, { waitUntil: 'networkidle0' });
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
     try {
       // Check current theme by looking at the html class
@@ -381,15 +382,20 @@ class ScreenshotTaker {
       if (currentTheme !== theme) {
         // Try multiple possible selectors for the theme toggle button
         const possibleSelectors = [
-          'button[class*="h-9 w-9"]',
-          '[data-theme-toggle]',
-          'button:has(svg)',
-          'button[role="button"]'
+          'button[class*="h-9 w-9"]', // Common theme toggle button size
+          'button[aria-label*="theme"]',
+          'button[title*="theme"]',
+          'button:has(svg[class*="sun"])',
+          'button:has(svg[class*="moon"])',
+          // Look for buttons in the header area
+          'header button',
+          '.flex.items-center button'
         ];
         
         let themeButton = null;
         for (const selector of possibleSelectors) {
           try {
+            await this.page.waitForSelector(selector, { timeout: 1000 });
             themeButton = await this.page.$(selector);
             if (themeButton) {
               console.log(`Found theme button with selector: ${selector}`);
@@ -402,15 +408,22 @@ class ScreenshotTaker {
         
         if (themeButton) {
           await themeButton.click();
-          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for theme transition
+          await new Promise(resolve => setTimeout(resolve, 2000)); // Wait longer for theme transition
           
           // Verify the theme changed
           const newTheme = await this.page.evaluate(() => {
             return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
           });
           
+          console.log(`Theme after toggle: ${newTheme}`);
+          
           if (newTheme !== theme) {
             console.warn(`⚠️  Theme toggle didn't work as expected. Got ${newTheme}, wanted ${theme}`);
+            // Try clicking again if needed
+            if (newTheme !== theme) {
+              await themeButton.click();
+              await new Promise(resolve => setTimeout(resolve, 2000));
+            }
           }
         } else {
           console.warn(`⚠️  Could not find theme toggle button`);
@@ -433,12 +446,12 @@ class ScreenshotTaker {
     
     // Fallback strategies based on selector type
     if (selector.includes('mobile-filter-toggle')) {
-      // Try generic mobile filter button
+      // Try generic mobile filter button (should be visible only on mobile)
       const fallbacks = [
-        'button:has(.h-4.w-4)',
-        'button[aria-label*="filter"]',
-        'button[title*="filter"]',
-        '.lg\\:hidden button'
+        'button.lg\\:hidden[class*="SlidersHorizontal"]',
+        'button.lg\\:hidden:has(svg)',
+        '.lg\\:hidden button:has(svg[class*="sliders"])',
+        '.lg\\:hidden button[variant="outline"]'
       ];
       
       for (const fallback of fallbacks) {
@@ -454,11 +467,12 @@ class ScreenshotTaker {
     }
     
     if (selector.includes('desktop-filter-toggle')) {
-      // Try generic desktop filter button
+      // Try generic desktop filter button (should be visible only on desktop)
       const fallbacks = [
-        '.hidden.lg\\:flex button',
-        'button[title*="filter"]',
-        'button:has(svg) + button:has(svg)'
+        'button.hidden.lg\\:flex[class*="SlidersHorizontal"]',
+        '.hidden.lg\\:flex button:has(svg)',
+        'button.hidden.lg\\:flex:has(svg[class*="sliders"])',
+        '.hidden.lg\\:flex button[variant="outline"]'
       ];
       
       for (const fallback of fallbacks) {
@@ -476,9 +490,11 @@ class ScreenshotTaker {
     if (selector.includes('mobile-menu-trigger')) {
       // Try generic mobile menu button
       const fallbacks = [
-        '.md\\:hidden button',
-        'button:has(.h-5.w-5)',
-        'button[aria-label*="menu"]'
+        'button[class*="md:hidden"]',
+        '.md\\:hidden button:has(svg)',
+        'header button.md\\:hidden',
+        'button:has(svg[class*="menu"])',
+        'nav button.md\\:hidden'
       ];
       
       for (const fallback of fallbacks) {
@@ -494,39 +510,49 @@ class ScreenshotTaker {
     }
     
     if (selector.includes('skill-filter-programming')) {
-      // Try to find Programming skill badge
+      // Try to find Programming skill badge in different ways
       const fallbacks = [
-        'text="Programming"',
+        'span:has-text("Programming")',
+        '.cursor-pointer:has-text("Programming")',
         '[class*="badge"]:has-text("Programming")',
-        '.cursor-pointer:has-text("Programming")'
+        'div:has-text("Programming")',
+        '*:has-text("Programming")'
       ];
       
       for (const fallback of fallbacks) {
         try {
-          if (fallback.startsWith('text=')) {
-            const text = fallback.replace('text=', '').replace(/"/g, '');
-            const element = await this.page.evaluateHandle((text) => {
-              const elements = Array.from(document.querySelectorAll('*'));
-              return elements.find(el => el.textContent && el.textContent.trim() === text);
-            }, text);
-            if (element) {
-              await element.click();
-              console.log(`   🖱️  Fallback click successful with text: ${text}`);
-              return;
-            }
-          } else {
-            await this.page.waitForSelector(fallback, { timeout: 1000, visible: true });
-            await this.page.click(fallback);
-            console.log(`   🖱️  Fallback click successful with: ${fallback}`);
-            return;
-          }
+          await this.page.waitForSelector(fallback, { timeout: 1000, visible: true });
+          await this.page.click(fallback);
+          console.log(`   🖱️  Fallback click successful with: ${fallback}`);
+          return;
         } catch (e) {
           continue;
         }
       }
+      
+      // Last resort: find by text content
+      try {
+        const programmingElement = await this.page.evaluate(() => {
+          const elements = Array.from(document.querySelectorAll('*'));
+          return elements.find(el => 
+            el.textContent && 
+            el.textContent.trim() === 'Programming' && 
+            el.offsetParent !== null // Element is visible
+          );
+        });
+        
+        if (programmingElement) {
+          await this.page.evaluate((el) => el.click(), programmingElement);
+          console.log(`   🖱️  Fallback click successful with text content search`);
+          return;
+        }
+      } catch (e) {
+        // Continue to error
+      }
     }
     
-    throw new Error(`All fallback strategies failed for: ${description}`);
+    console.warn(`   ⚠️  All fallback strategies failed for: ${description}`);
+    // Don't throw error, just log warning and continue
   }
 
   async performActions(actions) {
@@ -538,13 +564,20 @@ class ScreenshotTaker {
               // Try different selector strategies
               if (action.selector.startsWith('text=')) {
                 const text = action.selector.replace('text=', '').replace(/"/g, '');
-                // Find element by text content
+                
+                // First try to find by exact text match
                 const element = await this.page.evaluateHandle((text) => {
                   const elements = Array.from(document.querySelectorAll('*'));
-                  return elements.find(el => el.textContent && el.textContent.trim() === text);
+                  return elements.find(el => 
+                    el.textContent && 
+                    el.textContent.trim() === text &&
+                    el.offsetParent !== null // Element is visible
+                  );
                 }, text);
-                if (element) {
+                
+                if (element && element.asElement()) {
                   await element.click();
+                  console.log(`   🖱️  Clicked by text: ${text}`);
                 } else {
                   throw new Error(`Element with text "${text}" not found`);
                 }
@@ -552,7 +585,7 @@ class ScreenshotTaker {
                 // Try to wait for selector with shorter timeout first
                 let elementFound = false;
                 try {
-                  await this.page.waitForSelector(action.selector, { timeout: 2000, visible: true });
+                  await this.page.waitForSelector(action.selector, { timeout: 3000, visible: true });
                   elementFound = true;
                 } catch (e) {
                   // Element not found, try fallback strategies
@@ -577,24 +610,34 @@ class ScreenshotTaker {
                   
                   if (isClickable) {
                     await this.page.click(action.selector);
+                    console.log(`   🖱️  Clicked: ${action.description}`);
                   } else {
-                    throw new Error(`Element not clickable: ${action.selector}`);
+                    console.warn(`   ⚠️  Element not clickable: ${action.selector}`);
+                    await this.tryFallbackClick(action);
                   }
                 } else {
                   // Try fallback strategies based on action type
                   await this.tryFallbackClick(action);
                 }
               }
-              console.log(`   🖱️  Clicked: ${action.description}`);
             } catch (error) {
               console.warn(`   ⚠️  Click failed: ${action.description} - ${error.message}`);
+              await this.tryFallbackClick(action);
             }
             break;
             
           case 'type':
-            await this.page.waitForSelector(action.selector, { timeout: 5000 });
-            await this.page.type(action.selector, action.text);
-            console.log(`   ⌨️  Typed: ${action.description}`);
+            try {
+              await this.page.waitForSelector(action.selector, { timeout: 5000 });
+              await this.page.click(action.selector); // Focus the input first
+              await this.page.keyboard.down('Control');
+              await this.page.keyboard.press('KeyA');
+              await this.page.keyboard.up('Control');
+              await this.page.type(action.selector, action.text);
+              console.log(`   ⌨️  Typed: ${action.description}`);
+            } catch (error) {
+              console.warn(`   ⚠️  Type failed: ${action.description} - ${error.message}`);
+            }
             break;
             
           case 'wait':
@@ -616,21 +659,37 @@ class ScreenshotTaker {
     
     console.log(`📸 Taking screenshot: ${name} (${theme}${isMobile ? ' mobile' : ''})`);
     
-    // Authenticate if required
-    if (requiresAuth && !this.isAuthenticated) {
-      await this.authenticate();
-    }
-    
-    // Set viewport for mobile if needed
+    // Set viewport for mobile if needed BEFORE any navigation
     if (isMobile) {
       await this.page.setViewport(CONFIG.mobileViewport);
     } else {
       await this.page.setViewport(CONFIG.viewport);
     }
     
-    // Navigate to page
+    // Authenticate if required
+    if (requiresAuth && !this.isAuthenticated) {
+      await this.authenticate();
+    }
+    
+    // Set theme first by going to homepage
+    await this.setTheme(theme);
+    
+    // Now navigate to the target page
     await this.page.goto(`${CONFIG.baseUrl}${url}`, { waitUntil: 'networkidle0' });
     await new Promise(resolve => setTimeout(resolve, CONFIG.delay));
+    
+    // Verify theme is still correct after navigation
+    const currentTheme = await this.page.evaluate(() => {
+      return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    });
+    
+    if (currentTheme !== theme) {
+      console.warn(`⚠️  Theme changed after navigation. Re-setting to ${theme}`);
+      await this.setTheme(theme);
+      // Re-navigate if theme changed
+      await this.page.goto(`${CONFIG.baseUrl}${url}`, { waitUntil: 'networkidle0' });
+      await new Promise(resolve => setTimeout(resolve, CONFIG.delay));
+    }
     
     // Perform any actions
     await this.performActions(actions);
