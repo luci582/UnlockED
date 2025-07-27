@@ -31,6 +31,9 @@ import {
 import { Trash2, UserPlus, Users, MessageSquare, Shield, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 
+// API base URL - consistent with auth.ts
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+
 interface User {
   id: number;
   name: string;
@@ -75,10 +78,12 @@ const AdminDashboard: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/admin/users');
+      const response = await fetch(`${API_BASE}/admin/users`);
       if (response.ok) {
         const data = await response.json();
         setUsers(data.users || []);
+      } else {
+        throw new Error(`Failed to fetch users: ${response.status}`);
       }
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -88,10 +93,12 @@ const AdminDashboard: React.FC = () => {
 
   const fetchReviews = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/admin/reviews');
+      const response = await fetch(`${API_BASE}/admin/reviews`);
       if (response.ok) {
         const data = await response.json();
         setReviews(data.reviews || []);
+      } else {
+        throw new Error(`Failed to fetch reviews: ${response.status}`);
       }
     } catch (error) {
       console.error('Error fetching reviews:', error);
@@ -103,7 +110,18 @@ const AdminDashboard: React.FC = () => {
 
   const deleteUser = async (userId: number) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/admin/users/${userId}`, {
+      // Check if it's a protected demo account
+      const user = users.find(u => u.id === userId);
+      const protectedEmails = ['admin@demo.com', 'student@demo.com', 'teacher@demo.com'];
+      
+      if (user && protectedEmails.includes(user.email)) {
+        toast.error('Cannot delete demo accounts. These accounts are protected for demonstration purposes.');
+        setIsDeleteDialogOpen(false);
+        setSelectedUser(null);
+        return;
+      }
+      
+      const response = await fetch(`${API_BASE}/admin/users/${userId}`, {
         method: 'DELETE',
       });
       
@@ -111,7 +129,8 @@ const AdminDashboard: React.FC = () => {
         setUsers(users.filter(user => user.id !== userId));
         toast.success('User deleted successfully');
       } else {
-        toast.error('Failed to delete user');
+        const errorData = await response.json();
+        toast.error(errorData.error || 'Failed to delete user');
       }
     } catch (error) {
       console.error('Error deleting user:', error);
@@ -123,7 +142,7 @@ const AdminDashboard: React.FC = () => {
 
   const deleteReview = async (reviewId: number) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/admin/reviews/${reviewId}`, {
+      const response = await fetch(`${API_BASE}/admin/reviews/${reviewId}`, {
         method: 'DELETE',
       });
       
@@ -131,7 +150,8 @@ const AdminDashboard: React.FC = () => {
         setReviews(reviews.filter(review => review.id !== reviewId));
         toast.success('Review deleted successfully');
       } else {
-        toast.error('Failed to delete review');
+        const errorData = await response.json();
+        toast.error(errorData.error || 'Failed to delete review');
       }
     } catch (error) {
       console.error('Error deleting review:', error);
@@ -146,7 +166,7 @@ const AdminDashboard: React.FC = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3001/api/admin/users', {
+      const response = await fetch(`${API_BASE}/admin/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

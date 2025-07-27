@@ -3,12 +3,45 @@ const cors = require('cors');
 
 const app = express();
 
+// Simple rate limiting storage
+const rateLimitStore = new Map();
+
+// Rate limiting middleware
+const rateLimit = (windowMs = 15 * 60 * 1000, maxRequests = 100) => {
+  return (req, res, next) => {
+    const clientIP = req.ip || req.connection.remoteAddress;
+    const now = Date.now();
+    const windowStart = now - windowMs;
+    
+    if (!rateLimitStore.has(clientIP)) {
+      rateLimitStore.set(clientIP, []);
+    }
+    
+    const requests = rateLimitStore.get(clientIP);
+    const validRequests = requests.filter(timestamp => timestamp > windowStart);
+    
+    if (validRequests.length >= maxRequests) {
+      return res.status(429).json({ 
+        error: 'Too many requests', 
+        retryAfter: Math.ceil(windowMs / 1000) 
+      });
+    }
+    
+    validRequests.push(now);
+    rateLimitStore.set(clientIP, validRequests);
+    next();
+  };
+};
+
 // Middleware
 app.use(cors({
   origin: ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:8082', 'http://localhost:8083'],
   credentials: true
 }));
 app.use(express.json());
+
+// Apply rate limiting to auth endpoints
+app.use('/api/auth', rateLimit(15 * 60 * 1000, 10)); // 10 requests per 15 minutes for auth
 
 // In-memory storage for demo purposes
 let users = {};
@@ -173,7 +206,7 @@ app.get('/api/admin/reviews', (req, res) => {
 });
 
 app.delete('/api/admin/users/:userId', (req, res) => {
-  const userId = parseInt(req.params.userId);
+  const userId = req.params.userId; // Keep as string to match email-based IDs
   
   // Find user by id
   const userToDelete = Object.values(users).find(user => user.id === userId);
@@ -181,6 +214,15 @@ app.delete('/api/admin/users/:userId', (req, res) => {
     return res.status(404).json({ 
       success: false, 
       error: 'User not found' 
+    });
+  }
+  
+  // Protect demo/admin accounts from deletion
+  const protectedEmails = ['admin@demo.com', 'student@demo.com', 'teacher@demo.com'];
+  if (protectedEmails.includes(userToDelete.email)) {
+    return res.status(403).json({ 
+      success: false, 
+      error: 'Cannot delete demo accounts. These accounts are protected for demonstration purposes.' 
     });
   }
   

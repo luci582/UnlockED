@@ -374,10 +374,24 @@ const CourseDetail = () => {
               </p>
             </CardHeader>
             <CardContent>
-              <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <Play className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-muted-foreground">Video content would be embedded here</p>
+              <div className="aspect-video bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg flex items-center justify-center border-2 border-dashed border-blue-300 dark:border-blue-700">
+                <div className="text-center p-8">
+                  <div className="relative">
+                    <Play className="h-16 w-16 text-blue-500 mx-auto mb-4 hover:text-blue-600 transition-colors cursor-pointer" />
+                    <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-lg"></div>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                    Student Success Story
+                  </h3>
+                  <p className="text-muted-foreground mb-4">
+                    "This course changed my perspective on computer science. The hands-on projects really helped me understand complex algorithms."
+                  </p>
+                  <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+                    - Sarah Chen, Computer Science Graduate
+                  </p>
+                  <div className="mt-4 text-xs text-muted-foreground">
+                    🎬 Demo video coming soon
+                  </div>
                 </div>
               </div>
             </CardContent>
