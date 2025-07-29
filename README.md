@@ -1,102 +1,319 @@
-# UnlockED - UNSW Course Companion
+# UnlockED - UNSW Course Review Platform
 
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite)](https://vitejs.dev/)
+[![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite)](https://vitejs.dev/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-4-000000?logo=express)](https://expressjs.com/)
+[![Prisma](https://img.shields.io/badge/Prisma-5-2D3748?logo=prisma)](https://www.prisma.io/)
 
-## Overview
+## 🎓 Overview
 
-UnlockED is a comprehensive course discovery and review platform designed specifically for UNSW students. It provides peer-reviewed insights, detailed course information, and advanced filtering capabilities to help students make informed decisions about their academic journey.
+UnlockED is a modern, comprehensive course review and discovery platform built specifically for UNSW students. It empowers students to make informed academic decisions through peer reviews, detailed course analytics, and gamified community engagement.
+
+### ✨ Key Features
+
+🔍 **Smart Course Discovery** - Advanced search and filtering across all UNSW faculties  
+⭐ **Peer Review System** - Authentic reviews from verified UNSW students  
+🎯 **Skills Tracking** - Comprehensive skill development mapping per course  
+🏆 **Gamification** - Point rewards, leaderboards, and achievement tracking  
+📊 **Data Analytics** - Rating distributions, workload insights, and trends  
+🎨 **Modern UI/UX** - Dark/light theme, mobile responsive, UNSW-branded design  
+🔐 **Secure Authentication** - Role-based access with JWT token security
 
 ## 🚀 Quick Start
 
 ```bash
-# 1. Clone and install
+# 1. Clone and setup
 git clone https://github.com/luci582/UnlockED.git
 cd UnlockED
 npm install
 cd backend && npm install && cd ..
 
-# 2. Set up database
+# 2. Initialize database
 cd backend
 npx prisma migrate dev --name init
-npx tsx prisma/quick-seed.ts
+npx tsx prisma/seed.ts
 cd ..
 
-# 3. Start servers (2 terminals)
-# Terminal 1 - Backend
+# 3. Start development servers
+# Terminal 1 - Backend (port 3001)
 cd backend && npm run dev
 
-# Terminal 2 - Frontend  
+# Terminal 2 - Frontend (port 8080)  
 npm run dev
 ```
 
-**🌐 Open**: http://localhost:5173  
-**🔑 Login**: `test@example.com` / `password123`
+**🌐 Access**: http://localhost:8080  
+**🔑 Login**: `test@example.com` / `password123`  
+**📊 Database**: `npx prisma studio` (from backend folder)
 
-## Features
+## 📱 Current Features
 
-### 🎓 Course Discovery
-- **Comprehensive Course Directory**: Browse and search through UNSW courses across all faculties
-- **Advanced Filtering**: Filter by faculty, rating, delivery mode, and specific skills
-- **Smart Search**: Search by course code, title, faculty, or skills
-- **Course Comparison**: Side-by-side comparison of multiple courses
-- **Multiple View Modes**: Grid and list views for optimal browsing experience
+### � Course Discovery & Reviews
+- **Browse 50+ UNSW Courses** with real data across multiple faculties
+- **Advanced Filtering** by faculty, skills, rating, workload, and delivery mode
+- **Course Comparison** - Side-by-side comparison of up to 3 courses
+- **Top Course 2024 Badges** for highly-rated courses (4.5+ stars)
+- **Detailed Course Pages** with comprehensive information and reviews
 
-### ⭐ Peer Reviews & Ratings
-- **Student Reviews**: Read authentic reviews from fellow UNSW students
-- **Detailed Rating System**: Rate courses on multiple criteria (content, teaching, difficulty, workload)
-- **Review Submission**: Multi-step review process with rich feedback options
-- **Rating Distribution**: Visual charts showing rating breakdowns
-- **Leaderboard**: Top-rated courses and most active reviewers
+### ⭐ Enhanced Review System
+- **Multi-Step Review Submission** with progress tracking
+- **Rating Breakdown** hidden for students (visible for instructors/admins)
+- **Skills Development Tracking** - Select skills gained from 40+ options
+- **Workload Assessment** with UNSW semester options (T1, T2, T3)
+- **Character Validation** with real-time feedback and tips
 
-### 🎨 Modern User Experience
-- **UNSW-Themed Design**: Official university color scheme and branding
-- **Dark/Light Mode**: Toggle between themes for comfortable viewing
-- **Responsive Design**: Seamless experience across desktop, tablet, and mobile
-- **Interactive Components**: Clickable skill tags, expandable course details, animated transitions
-- **Loading States**: Skeleton loaders and smooth transitions
+### 🏆 Gamification & Community
+- **Point System** - Earn 50 points per review submission
+- **Enhanced Leaderboard** with streak tracking and achievements
+- **User Stats Dashboard** with progress bars and next-level indicators
+- **Community Recognition** with badges and ranking system
 
-### 🔐 User Authentication & Authorization
-- **Secure Login/Signup**: Student account management with validation
-- **Role-Based Access**: Different permissions for Students, Teachers, and Admins
-- **Profile System**: Track your reviews, points, and course history
-- **Admin Dashboard**: Course and user management for administrators
-- **Session Management**: Persistent login with JWT tokens
+### 🎨 Modern UI/UX
+- **UNSW Design System** with official colors and branding
+- **Responsive Design** optimized for desktop, tablet, and mobile
+- **Dark/Light Theme Toggle** with system preference detection
+- **Interactive Components** with hover effects and smooth animations
+- **Skills Display** showing 4 main skills with expandable "+X more" option
 
-### 📊 Analytics & Gamification
-- **Point System**: Earn points for submitting reviews and engaging with content
-- **Leaderboard**: Compete with other students for top reviewer status
-- **Review Analytics**: Track your contribution to the community
-- **Course Insights**: Data-driven course recommendations
-
-## Technical Stack
+## 🛠 Tech Stack
 
 ### Frontend
-- **React 18**: Modern React with hooks and functional components
-- **TypeScript**: Type-safe development with enhanced IDE support
-- **Vite**: Fast build tool and development server
-- **React Router**: Client-side routing and navigation
+- **React 18** with TypeScript and modern hooks
+- **Vite 6** for lightning-fast development and builds
+- **Tailwind CSS** for utility-first styling
+- **shadcn/ui** component library built on Radix UI
+- **Lucide React** for beautiful, consistent icons
+- **React Router** for client-side navigation
 
 ### Backend & Database
-- **Node.js**: JavaScript runtime for server-side development
-- **Express.js**: Web application framework for API development
-- **SQLite**: Lightweight, file-based database for local development
-- **Prisma ORM**: Type-safe database operations and migrations
-- **JWT Authentication**: Secure token-based authentication
+- **Node.js 18+** with Express.js framework
+- **TypeScript** for type-safe server development
+- **SQLite** database with Prisma ORM
+- **JWT Authentication** with bcrypt password hashing
+- **Express Rate Limiting** and CORS protection
 
-### UI/UX Framework
-- **Tailwind CSS**: Utility-first CSS framework for rapid styling
-- **shadcn/ui**: High-quality, accessible component library
-- **Radix UI**: Accessible primitive components for complex interactions
-- **Lucide React**: Professional icon library with 1000+ icons
-- **Recharts**: Data visualization and charting library
+### Development Tools
+- **ESLint** for code quality and consistency
+- **Prisma Studio** for database management
+- **Vite HMR** for instant development feedback
+- **TypeScript Strict Mode** for enhanced type safety
 
-### DevOps & Deployment
-- **Nginx**: Web server and reverse proxy for production
-- **GitHub Actions**: CI/CD pipeline automation
-- **Chart.js**: Interactive data visualization
+## � Project Structure
+
+```
+UnlockED/
+├── src/                    # Frontend React application
+│   ├── components/         # Reusable UI components
+│   │   ├── Course/        # CourseCard, CourseDetail, Rating components
+│   │   ├── Filter/        # Advanced filtering and search
+│   │   ├── Layout/        # Header, navigation, theme management
+│   │   └── ui/            # shadcn/ui component library
+│   ├── pages/             # Main application routes
+│   │   ├── Homepage.tsx   # Landing page with featured courses
+│   │   ├── CoursesDirectory.tsx # Main course browsing
+│   │   ├── CourseDetail.tsx     # Individual course pages
+│   │   ├── SubmitReview.tsx     # Enhanced review submission
+│   │   ├── Leaderboard.tsx      # Community leaderboard
+│   │   └── Login.tsx            # Authentication
+│   ├── hooks/             # Custom React hooks
+│   ├── lib/               # Utilities and configurations
+│   └── types/             # TypeScript definitions
+├── backend/               # Node.js Express API
+│   ├── src/
+│   │   ├── routes/        # API endpoints (auth, courses, reviews)
+│   │   ├── middleware/    # Authentication and error handling
+│   │   └── utils/         # Logging and utilities
+│   ├── prisma/           # Database schema and seeds
+│   │   ├── schema.prisma # Database model definitions
+│   │   └── seed.ts       # Sample data population
+│   └── package.json      # Backend dependencies
+├── public/               # Static assets
+├── package.json          # Frontend dependencies
+├── vite.config.ts        # Vite configuration
+└── tailwind.config.ts    # Tailwind CSS setup
+```
+
+## �️ Database & Authentication
+
+### Current Data
+- **8 UNSW Courses** with realistic ratings and comprehensive details
+- **8 Faculty Categories** (Engineering, Science, Commerce, etc.)
+- **40+ Skills** mapped to courses (React, JavaScript, Machine Learning, etc.)
+- **User Roles**: Student, Instructor, Admin with role-based access
+
+### Enhanced Features
+- **COMP6080** - 9 web development skills (React, JavaScript, Node.js, etc.)
+- **COMP3900** - 10 software engineering skills (Project Management, Agile, etc.)
+- **Realistic Ratings** (3.8-4.8 stars) with "Top Course 2024" badges
+- **Skills Progression** showing 4 main skills with expandable details
+
+### Test Accounts
+```
+Student: test@example.com / password123
+Admin: admin@example.com / admin123
+```
+
+## 🚀 Development Workflow
+
+### Daily Development
+```bash
+# Backend (Terminal 1)
+cd backend && npm run dev
+# → Runs on http://localhost:3001
+
+# Frontend (Terminal 2)  
+npm run dev
+# → Runs on http://localhost:8080
+```
+
+### Database Operations
+```bash
+cd backend
+
+# View data in browser
+npx prisma studio
+
+# Reset with fresh data
+npm run db:reset
+
+# Apply schema changes
+npx prisma migrate dev
+
+# Add test users only
+npx tsx prisma/seed.ts
+```
+
+### Available Scripts
+
+#### Frontend
+- `npm run dev` - Start development server (port 8080)
+- `npm run build` - Production build
+- `npm run preview` - Preview production build
+- `npm run lint` - ESLint code quality check
+
+#### Backend
+- `npm run dev` - Start API server with hot reload
+- `npm run build` - Compile TypeScript
+- `npm run db:studio` - Open database GUI
+- `npm run db:reset` - Reset and reseed database
+
+## 🔧 Configuration
+
+### Environment Setup
+The application works out-of-the-box with SQLite. No additional configuration needed.
+
+### Port Configuration
+- **Frontend**: http://localhost:8080 (Vite dev server)
+- **Backend**: http://localhost:3001 (Express API server)
+- **Database**: SQLite file-based (no external server needed)
+
+## 🐛 Common Issues & Solutions
+
+### Backend Not Starting
+```bash
+# Check if port 3001 is available
+sudo lsof -i :3001
+
+# Restart backend
+cd backend && npm run dev
+```
+
+### Frontend Build Issues
+```bash
+# Clear cache and reinstall
+npm cache clean --force
+rm -rf node_modules package-lock.json
+npm install
+```
+
+### Database Issues
+```bash
+cd backend
+# Reset database completely
+npx prisma migrate reset --force
+npx prisma migrate dev --name init
+npx tsx prisma/seed.ts
+```
+
+### Login Not Working
+```bash
+cd backend
+# Ensure test users exist
+npx tsx prisma/seed.ts
+# Test: test@example.com / password123
+```
+
+## 🎯 Recent Enhancements (July 2025)
+
+### UI/UX Improvements
+- ✅ **Enhanced CourseCard** with skill prioritization and visual hierarchy
+- ✅ **Improved Leaderboard** with stats cards, progress bars, and streak tracking
+- ✅ **Advanced Submit Review Form** with progress tracking and validation
+- ✅ **Better Skills Display** showing 4 skills with working "+X more" expansion
+- ✅ **UNSW Semester Dropdown** with T1, T2, T3 options for 2022-2025
+
+### Data Enhancements
+- ✅ **Comprehensive Skills Database** with 40+ technical and soft skills
+- ✅ **Course-Skill Mapping** for COMP6080 (9 skills) and COMP3900 (10 skills)
+- ✅ **Realistic Course Ratings** across 8 courses with Top Course badges
+- ✅ **Faculty Categories** properly assigned to all courses
+
+### Functionality Fixes
+- ✅ **Working Submit Button** with proper validation and feedback
+- ✅ **Fixed Skills Expansion** in course cards
+- ✅ **Enhanced Form Validation** with character limits and progress tracking
+- ✅ **Improved Course Routing** supporting both UUID and course codes
+
+## 📈 Upcoming Features
+
+- **Course Recommendations** based on skill preferences
+- **Advanced Analytics Dashboard** for instructors
+- **Review Moderation System** with community voting
+- **Mobile App** for iOS and Android
+- **Integration with UNSW Systems** for real-time course data
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Make your changes** following our coding standards
+4. **Test thoroughly** including both development and production builds
+5. **Commit your changes**: `git commit -m 'Add amazing feature'`
+6. **Push to the branch**: `git push origin feature/amazing-feature`
+7. **Open a Pull Request** with a clear description
+
+### Development Guidelines
+- Follow TypeScript best practices and maintain type safety
+- Use consistent code formatting (ESLint configuration provided)
+- Write meaningful commit messages
+- Test both development and production builds
+- Update documentation for new features
+- Ensure mobile responsiveness for UI changes
+
+## 📄 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## 🔗 Resources
+
+- **[React Documentation](https://react.dev/)** - Frontend framework
+- **[Vite Documentation](https://vitejs.dev/)** - Build tool and dev server
+- **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS
+- **[shadcn/ui](https://ui.shadcn.com/)** - Component library
+- **[Prisma Documentation](https://www.prisma.io/docs)** - Database ORM
+- **[Express.js](https://expressjs.com/)** - Backend framework
+
+---
+
+**Last Updated**: July 29, 2025  
+**Status**: Active Development  
+**Version**: 2.1.0 (Enhanced UI/UX Edition)
+
+**UnlockED** - Empowering UNSW students to make informed course decisions through community-driven insights and modern technology. 🎓✨
 
 ### Development Tools
 - **ESLint**: Code quality and consistency
