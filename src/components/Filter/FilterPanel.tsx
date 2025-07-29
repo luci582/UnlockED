@@ -7,6 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Badge } from "@/components/ui/badge";
 
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+}
+
 interface FilterPanelProps {
   onFiltersChange?: (filters: {
     faculty: string[];
@@ -32,21 +39,53 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick, showActive
     skills: [],
   });
 
+  const [faculties, setFaculties] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch categories/faculties from API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/courses');
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success && result.courses) {
+            // Extract unique faculty categories from courses
+            const allCategories = new Set<string>();
+            result.courses.forEach((course: any) => {
+              if (course.categories) {
+                course.categories.forEach((cat: any) => {
+                  allCategories.add(cat.category.name);
+                });
+              }
+            });
+            setFaculties(Array.from(allCategories).sort());
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+        // Fallback to hardcoded list
+        setFaculties([
+          "Arts & Social Sciences",
+          "Business School",
+          "Computer Science & Engineering", 
+          "Engineering",
+          "Medicine & Health",
+          "Science"
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   useEffect(() => {
     if (currentFilters) {
       setFilters(currentFilters);
     }
   }, [currentFilters]);
-
-  const faculties = [
-    "Business School",
-    "Engineering", 
-    "Science",
-    "Arts & Social Sciences",
-    "Medicine & Health",
-    "Law & Justice",
-    "Built Environment"
-  ];
 
   const deliveryModes = [
     { id: "online", label: "Online", icon: Monitor },

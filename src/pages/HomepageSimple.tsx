@@ -3,8 +3,37 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import CourseCard from "@/components/Course/CourseCard";
+import { useAuth } from "@/hooks/use-auth";
+import { useEffect, useState } from "react";
+import { fetchCourses, DatabaseCourse } from "@/lib/api";
 
 const HomepageSimple = () => {
+  const { user } = useAuth();
+  const [topCourses, setTopCourses] = useState<DatabaseCourse[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch top courses (rating >= 4.5) for Featured Courses section
+  useEffect(() => {
+    const loadTopCourses = async () => {
+      try {
+        const response = await fetchCourses(1, 50); // Fetch more courses to filter
+        if (response.success && response.data) {
+          // Filter for courses with rating >= 4.5 (Top Course 2024)
+          const filteredCourses = response.data.filter(course => 
+            course.rating && course.rating >= 4.5
+          );
+          setTopCourses(filteredCourses);
+        }
+      } catch (error) {
+        console.error('Failed to load top courses:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTopCourses();
+  }, []);
+  
   const stats = [
     {
       icon: BookOpen,
@@ -31,20 +60,6 @@ const HomepageSimple = () => {
       color: "text-secondary"
     }
   ];
-
-  // Just one test course to see if CourseCard works
-  const testCourse = {
-    id: "comp1511",
-    title: "Programming Fundamentals",
-    code: "COMP1511", 
-    faculty: "Engineering",
-    rating: 4.5,
-    reviewCount: 234,
-    skills: ["Programming", "Problem Solving", "Logic"],
-    mode: "hybrid" as const,
-    featured: true,
-    effortLevel: "moderate" as const
-  };
 
   return (
     <main className="min-h-screen bg-background">
@@ -118,11 +133,37 @@ const HomepageSimple = () => {
             </Link>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <CourseCard {...testCourse} />
-            <Card className="text-center p-8">
-              <h3 className="text-lg font-semibold">More courses coming soon</h3>
-              <p className="text-muted-foreground mt-2">Additional CourseCard components will be added</p>
-            </Card>
+            {loading ? (
+              // Loading skeleton
+              Array.from({ length: 3 }).map((_, index) => (
+                <Card key={index} className="animate-pulse">
+                  <div className="p-6 space-y-3">
+                    <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                    <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+                    <div className="space-y-2">
+                      <div className="h-3 bg-gray-300 rounded"></div>
+                      <div className="h-3 bg-gray-300 rounded w-5/6"></div>
+                    </div>
+                  </div>
+                </Card>
+              ))
+            ) : topCourses.length > 0 ? (
+              // Display top courses with hidden ratings
+              topCourses.map((course) => (
+                <CourseCard 
+                  key={course.id} 
+                  {...course} 
+                  userRole={user?.role || null}
+                  hideRating={true} // Hide ratings on homepage
+                />
+              ))
+            ) : (
+              // Fallback if no top courses
+              <Card className="text-center p-8 col-span-full">
+                <h3 className="text-lg font-semibold">Top courses coming soon</h3>
+                <p className="text-muted-foreground mt-2">Stay tuned for our featured course selection</p>
+              </Card>
+            )}
           </div>
         </div>
       </section>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
-import { Star, ArrowUp, Clock, Users, Monitor, ChevronLeft, Play, MessageSquare, ExternalLink, Filter, CheckCircle, BookOpen, Lightbulb } from "lucide-react";
+import { Star, ArrowUp, Clock, Users, Monitor, ChevronLeft, Play, MessageSquare, ExternalLink, Filter, CheckCircle, BookOpen, Lightbulb, Trophy } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
@@ -9,8 +9,10 @@ import { Avatar, AvatarFallback } from "../components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { fetchCourseById, DatabaseCourse } from "../lib/api";
 import RatingDistributionChart from "../components/Course/RatingDistributionChart";
+import { useAuth } from "../hooks/use-auth";
 
 const CourseDetail = () => {
+  const { user } = useAuth();
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("overview");
   const [reviewSort, setReviewSort] = useState("most-recent");
@@ -18,6 +20,10 @@ const CourseDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAllSkills, setShowAllSkills] = useState(false);
+
+  // Check if course should show "Top Course 2024" badge and if rating should be visible
+  const isTopCourse = course && course.rating >= 4.5;
+  const shouldShowRating = user?.role !== "STUDENT";
 
   useEffect(() => {
     const loadCourse = async () => {
@@ -229,16 +235,26 @@ const CourseDetail = () => {
             {/* Course Info */}
             <div className="lg:col-span-2">
               <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h1 className="text-3xl font-bold mb-2">{course.title}</h1>
+                <div className="flex-1">
+                  <div className="flex items-start justify-between mb-2">
+                    <h1 className="text-3xl font-bold">{course.title}</h1>
+                    {isTopCourse && (
+                      <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold border-0 shadow-lg ml-4">
+                        <Trophy className="h-3 w-3 mr-1" />
+                        Top Course 2024
+                      </Badge>
+                    )}
+                  </div>
                   <p className="text-lg text-muted-foreground mb-4">{course.description}</p>
                   
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="flex items-center gap-2">
-                      <Star className="h-5 w-5 fill-primary text-primary" />
-                      <span className="font-semibold">{course.rating?.toFixed(1) || 'N/A'}</span>
-                      <span className="text-muted-foreground">({course.reviewCount} reviews)</span>
-                    </div>
+                    {shouldShowRating && (
+                      <div className="flex items-center gap-2">
+                        <Star className="h-5 w-5 fill-primary text-primary" />
+                        <span className="font-semibold">{course.rating?.toFixed(1) || 'N/A'}</span>
+                        <span className="text-muted-foreground">({course.reviewCount} reviews)</span>
+                      </div>
+                    )}
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm">{course.enrollmentCount} enrolled</span>
@@ -349,14 +365,14 @@ const CourseDetail = () => {
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
-            Reviews ({course.reviewCount})
+            Reviews {shouldShowRating && `(${course.reviewCount})`}
           </button>
         </div>
 
         {/* Tab Content */}
         {activeTab === "overview" && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
+          <div className={`grid grid-cols-1 gap-8 ${shouldShowRating ? 'lg:grid-cols-3' : 'lg:grid-cols-1'}`}>
+            <div className={shouldShowRating ? "lg:col-span-2 space-y-6" : "space-y-6"}>
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -393,19 +409,21 @@ const CourseDetail = () => {
               )}
             </div>
 
-            <div className="lg:col-span-1">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Rating Breakdown</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <RatingDistributionChart 
-                    ratings={ratingDistribution} 
-                    totalReviews={course.reviewCount} 
-                  />
-                </CardContent>
-              </Card>
-            </div>
+            {shouldShowRating && (
+              <div className="lg:col-span-1">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Rating Breakdown</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <RatingDistributionChart 
+                      ratings={ratingDistribution} 
+                      totalReviews={course.reviewCount} 
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </div>
         )}
 
@@ -600,7 +618,7 @@ const CourseDetail = () => {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">
-                Student Reviews ({course.reviewCount})
+                Student Reviews {shouldShowRating && `(${course.reviewCount})`}
               </h2>
               <Select value={reviewSort} onValueChange={setReviewSort}>
                 <SelectTrigger className="w-48">
@@ -643,18 +661,20 @@ const CourseDetail = () => {
                               <span className="font-semibold">
                                 {review.user?.firstName || review.author?.split(' ')[0] || 'Anonymous'} {review.user?.lastName || review.author?.split(' ')[1] || ''}
                               </span>
-                              <div className="flex items-center">
-                                {[...Array(5)].map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    className={`h-4 w-4 ${
-                                      i < review.rating
-                                        ? "fill-primary text-primary"
-                                        : "text-muted-foreground"
-                                    }`}
-                                  />
-                                ))}
-                              </div>
+                              {shouldShowRating && (
+                                <div className="flex items-center">
+                                  {[...Array(5)].map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      className={`h-4 w-4 ${
+                                        i < review.rating
+                                          ? "fill-primary text-primary"
+                                          : "text-muted-foreground"
+                                      }`}
+                                    />
+                                  ))}
+                                </div>
+                              )}
                               <span className="text-sm text-muted-foreground">
                                 {review.date || new Date(review.createdAt).toLocaleDateString()}
                               </span>
@@ -680,19 +700,21 @@ const CourseDetail = () => {
                 )}
               </div>
 
-              <div className="lg:col-span-1">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Rating Breakdown</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <RatingDistributionChart 
-                      ratings={ratingDistribution} 
-                      totalReviews={course.reviewCount} 
-                    />
-                  </CardContent>
-                </Card>
-              </div>
+              {shouldShowRating && (
+                <div className="lg:col-span-1">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Rating Breakdown</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <RatingDistributionChart 
+                        ratings={ratingDistribution} 
+                        totalReviews={course.reviewCount} 
+                      />
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
             </div>
           </div>
         )}

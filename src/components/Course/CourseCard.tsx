@@ -1,4 +1,4 @@
-import { Star, Users, Clock, ArrowRight, Plus, Check, Monitor, MapPin } from "lucide-react";
+import { Star, Users, Clock, ArrowRight, Plus, Check, Monitor, MapPin, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,12 +8,24 @@ import { useState } from "react";
 interface CourseCardProps {
   id: string;
   title: string;
-  code: string;
-  faculty: string;
-  rating: number;
+  code?: string;
+  categories?: Array<{
+    category: {
+      id: string;
+      name: string;
+      slug?: string;
+      description?: string;
+    };
+  }>;
+  rating?: number;
   reviewCount: number;
-  skills: string[];
-  mode: "online" | "in-person" | "hybrid";
+  skills?: Array<{
+    skill: {
+      id: string;
+      name: string;
+    };
+  }>;
+  mode?: "online" | "in-person" | "hybrid";
   featured?: boolean;
   isNew?: boolean;
   effortLevel?: "light" | "moderate" | "heavy" | "very-heavy";
@@ -21,6 +33,11 @@ interface CourseCardProps {
   selectedSkills?: string[];
   onCompareToggle?: (courseId: string) => void;
   isSelected?: boolean;
+  userRole?: "STUDENT" | "INSTRUCTOR" | "ADMIN" | null;
+  instructor?: string;
+  hideRating?: boolean; // New prop to hide rating regardless of user role
+  // Legacy support for old data structure
+  faculty?: string;
 }
 
 /**
@@ -40,7 +57,7 @@ const CourseCard = ({
   id,
   title,
   code,
-  faculty,
+  categories,
   rating,
   reviewCount,
   skills,
@@ -52,8 +69,40 @@ const CourseCard = ({
   selectedSkills = [],
   onCompareToggle,
   isSelected = false,
+  userRole = null,
+  instructor,
+  hideRating = false,
+  // Legacy support
+  faculty,
 }: CourseCardProps) => {
   const [showAllSkills, setShowAllSkills] = useState(false);
+
+  // Extract skills names from the new structure, fallback to legacy
+  const skillNames = skills?.map(s => s.skill.name) || [];
+  
+  // Get faculty from categories (prefer faculty categories) or fallback to legacy faculty
+  const facultyName = categories?.find(c => 
+    c.category.name.includes('School') || 
+    c.category.name.includes('Engineering') || 
+    c.category.name.includes('Science') ||
+    c.category.name.includes('Arts') ||
+    c.category.name.includes('Medicine') ||
+    c.category.name.includes('Law')
+  )?.category.name || faculty || 'General';
+
+  // Extract course code from title (e.g., "COMP1511 - Programming Fundamentals" -> "comp1511")
+  const extractCourseCode = (title: string) => {
+    const match = title.match(/^([A-Z]+\d+)/);
+    return match ? match[1].toLowerCase() : id;
+  };
+  
+  const courseCode = extractCourseCode(title);
+
+  // Check if course should show "Top Course 2024" badge
+  const isTopCourse = rating && rating >= 4.5;
+  
+  // Check if rating should be hidden (for students or when explicitly hidden)
+  const shouldShowRating = !hideRating && userRole !== "STUDENT";
 
   const getEffortLabel = (effort: string) => {
     switch (effort) {
@@ -84,8 +133,8 @@ const CourseCard = ({
     }
   };
 
-  const displayedSkills = showAllSkills ? skills : skills.slice(0, 3);
-  const hasMoreSkills = skills.length > 3;
+  const displayedSkills = showAllSkills ? skillNames : skillNames.slice(0, 4);
+  const hasMoreSkills = skillNames.length > 4;
 
   return (
     <Card className={`group relative overflow-hidden transition-all duration-300 
@@ -100,7 +149,15 @@ const CourseCard = ({
       ${featured ? "border-primary/30 shadow-md bg-primary/5 dark:bg-primary/10" : "hover:border-primary/20"}
       ${isSelected ? "ring-2 ring-primary/20 border-primary/40" : ""}
     `}>
-      {featured && (
+      {/* Top Course 2024 Badge */}
+      {isTopCourse && (
+        <div className="absolute top-0 right-0 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1.5 text-xs font-bold rounded-bl-lg flex items-center gap-1.5 shadow-lg z-10">
+          <Trophy className="h-3 w-3 fill-current" />
+          Top Course 2024
+        </div>
+      )}
+      
+      {featured && !isTopCourse && (
         <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-3 py-1.5 text-xs font-semibold rounded-bl-lg flex items-center gap-1.5 shadow-sm">
           <Star className="h-3 w-3 fill-current" />
           Featured
@@ -130,15 +187,17 @@ const CourseCard = ({
               </div>
             </div>
             {/* Faculty */}
-            <p className="text-xs sm:text-sm text-muted-foreground font-medium">{faculty}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground font-medium">{facultyName}</p>
           </div>
           
           {/* Rating and Compare Section */}
           <div className="flex flex-col items-end gap-1.5 sm:gap-2 flex-shrink-0">
-            <div className="flex items-center gap-0.5 sm:gap-1">
-              <Star className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-primary text-primary" />
-              <span className="text-xs sm:text-sm font-bold text-foreground">{rating.toFixed(1)}</span>
-            </div>
+            {shouldShowRating && (
+              <div className="flex items-center gap-0.5 sm:gap-1">
+                <Star className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-primary text-primary" />
+                <span className="text-xs sm:text-sm font-bold text-foreground">{rating.toFixed(1)}</span>
+              </div>
+            )}
             {onCompareToggle && (
               <Button
                 variant={isSelected ? "default" : "outline"}
@@ -189,21 +248,24 @@ const CourseCard = ({
           </div>
         </div>
         
-        {/* Skills Section with adaptive layout */}
-        <div className="flex flex-wrap gap-2 flex-1 content-start 
+        {/* Skills Section with enhanced styling and better organization */}
+        <div className="flex flex-wrap gap-1.5 sm:gap-2 flex-1 content-start 
           /* Adaptive max height based on screen size */
-          max-h-[60px] sm:max-h-[70px] lg:max-h-[80px] xl:max-h-[70px] 2xl:max-h-[60px]
+          max-h-[80px] sm:max-h-[90px] lg:max-h-[100px] xl:max-h-[90px] 2xl:max-h-[80px]
           /* Ultra-wide and narrow screen adaptations */
-          [@media(min-aspect-ratio:21/9)]:max-h-[50px]
-          [@media(max-aspect-ratio:4/3)]:max-h-[100px]
+          [@media(min-aspect-ratio:21/9)]:max-h-[60px]
+          [@media(max-aspect-ratio:4/3)]:max-h-[120px]
           overflow-y-auto skills-container">
-          {displayedSkills.map((skill) => {
+          {displayedSkills.slice(0, 4).map((skill, index) => {
             const isSkillSelected = selectedSkills.includes(skill);
+            const isHighPriority = ['React', 'JavaScript', 'Python', 'Machine Learning', 'Node.js'].includes(skill);
             return (
               <Badge 
                 key={skill} 
                 variant={isSkillSelected ? "default" : "secondary"} 
-                className={`text-xs font-medium px-2.5 py-1 transition-all duration-200 border
+                className={`text-xs font-medium px-2 py-1 transition-all duration-200 border relative
+                  /* Enhanced visual hierarchy */
+                  ${isHighPriority ? 'ring-1 ring-primary/20 font-semibold' : ''}
                   /* Responsive text sizing */
                   sm:text-xs lg:text-xs xl:text-xs
                   /* Responsive padding */
@@ -211,12 +273,18 @@ const CourseCard = ({
                   ${onSkillClick 
                     ? `cursor-pointer ${
                         isSkillSelected 
-                          ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm border-primary/20' 
-                          : 'bg-secondary/80 dark:bg-secondary/60 hover:bg-primary/15 hover:text-primary hover:shadow-sm hover:border-primary/30 border-secondary/50'
-                      } hover:scale-105 active:scale-95` 
+                          ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-md border-primary/30 scale-105' 
+                          : `${isHighPriority 
+                              ? 'bg-gradient-to-r from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 text-primary border-primary/30' 
+                              : 'bg-secondary/80 dark:bg-secondary/60 hover:bg-primary/15 hover:text-primary border-secondary/50'
+                            } hover:shadow-sm hover:border-primary/40 hover:scale-105 active:scale-95`
+                      } transform` 
                     : isSkillSelected 
-                      ? 'bg-primary text-primary-foreground border-primary/20' 
-                      : 'bg-secondary/80 dark:bg-secondary/60 border-secondary/50'
+                      ? 'bg-primary text-primary-foreground border-primary/30 shadow-sm' 
+                      : `${isHighPriority 
+                          ? 'bg-gradient-to-r from-primary/10 to-primary/5 text-primary border-primary/30' 
+                          : 'bg-secondary/80 dark:bg-secondary/60 border-secondary/50'
+                        }`
                   }`}
                 onClick={() => onSkillClick?.(skill)}
               >
@@ -227,14 +295,16 @@ const CourseCard = ({
           {hasMoreSkills && !showAllSkills && (
             <Badge 
               variant="outline" 
-              className="text-xs font-medium px-2.5 py-1 cursor-pointer 
+              className="text-xs font-medium px-2 py-1 cursor-pointer 
                 sm:px-3 sm:py-1.5 lg:px-3 lg:py-1.5
                 hover:bg-primary/15 hover:text-primary hover:border-primary/50 
                 transition-all duration-200 hover:scale-105 active:scale-95
-                border-dashed border-muted-foreground/30 hover:border-primary/50"
+                border-dashed border-muted-foreground/30 hover:border-primary/50
+                bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20
+                text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800"
               onClick={() => setShowAllSkills(true)}
             >
-              +{skills.length - 3} more
+              +{skillNames.length - 4} more
             </Badge>
           )}
           {showAllSkills && hasMoreSkills && (
@@ -255,7 +325,7 @@ const CourseCard = ({
 
       {/* Footer Section - Responsive View Course Button */}
       <CardFooter className="pt-0 flex-shrink-0">
-        <Link to={`/course/${id}`} className="w-full">
+        <Link to={`/course/${courseCode}`} className="w-full">
           <Button className="w-full group/btn font-medium transition-all duration-200 
             hover:shadow-sm hover:bg-primary/90 h-8 sm:h-9 text-xs sm:text-sm" size="sm">
             <span className="hidden sm:inline">View Course</span>

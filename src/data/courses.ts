@@ -2,7 +2,14 @@ export interface Course {
   id: string;
   title: string;
   code: string;
-  faculty: string;
+  categories: Array<{
+    category: {
+      id: string;
+      name: string;
+      slug: string;
+      description?: string;
+    };
+  }>;
   rating: number;
   reviewCount: number;
   skills: string[];

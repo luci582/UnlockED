@@ -110,34 +110,50 @@ const Login = () => {
     }
   };
 
-  const fillDemoCredentials = () => {
+  const fillStudentCredentials = () => {
     setLoginForm({
-      email: "john.doe@student.com",
+      email: "student@unsw.edu.au",
+      password: "password123",
+    });
+  };
+
+  const fillTeacherCredentials = () => {
+    setLoginForm({
+      email: "teacher@unsw.edu.au",
       password: "password123",
     });
   };
 
   const fillAdminCredentials = () => {
     setLoginForm({
-      email: "admin@unlocked.edu", 
+      email: "admin@unsw.edu.au", 
       password: "password123",
     });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-secondary/20 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Welcome to UnlockED</CardTitle>
-          <CardDescription className="text-center">
-            Your UNSW course companion
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-yellow-100 dark:from-gray-900 dark:via-gray-800 dark:to-yellow-900/20 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-xl border-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-yellow-200/50">
+        <CardHeader className="space-y-2 text-center">
+          <div className="mx-auto w-12 h-12 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mb-4 shadow-lg">
+            <Shield className="w-6 h-6 text-gray-800" />
+          </div>
+          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent dark:from-yellow-400 dark:to-yellow-500">
+            Welcome to UnlockED
+          </CardTitle>
+          <CardDescription className="text-center text-gray-700 dark:text-gray-300">
+            Your UNSW course discovery and review platform
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="login" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 bg-yellow-100 dark:bg-gray-700">
+              <TabsTrigger value="login" className="data-[state=active]:bg-yellow-400 data-[state=active]:text-gray-800 dark:data-[state=active]:bg-yellow-500 dark:data-[state=active]:text-gray-900 font-medium">
+                Login
+              </TabsTrigger>
+              <TabsTrigger value="signup" className="data-[state=active]:bg-yellow-400 data-[state=active]:text-gray-800 dark:data-[state=active]:bg-yellow-500 dark:data-[state=active]:text-gray-900 font-medium">
+                Sign Up
+              </TabsTrigger>
             </TabsList>
 
             {error && (
@@ -193,27 +209,57 @@ const Login = () => {
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Logging in..." : "Login"}
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-gray-800 font-bold border border-yellow-600 shadow-lg hover:shadow-xl transition-all duration-200" 
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-gray-600/30 border-t-gray-800 rounded-full animate-spin" />
+                      Logging in...
+                    </div>
+                  ) : (
+                    "Login"
+                  )}
                 </Button>
 
                 <div className="space-y-2">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    className="w-full" 
-                    onClick={fillDemoCredentials}
-                  >
-                    Use Test Account (Student)
-                  </Button>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    className="w-full" 
-                    onClick={fillAdminCredentials}
-                  >
-                    Use Admin Account
-                  </Button>
+                  <div className="text-xs text-gray-600 dark:text-gray-400 mb-2 text-center font-medium">
+                    Quick Login Options:
+                  </div>
+                  <div className="grid grid-cols-1 gap-2">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm"
+                      className="w-full text-xs border-yellow-300 hover:bg-yellow-50 hover:border-yellow-400 text-gray-700 hover:text-gray-800" 
+                      onClick={fillStudentCredentials}
+                    >
+                      <User className="w-3 h-3 mr-1" />
+                      Student Demo
+                    </Button>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm"
+                      className="w-full text-xs border-yellow-300 hover:bg-yellow-50 hover:border-yellow-400 text-gray-700 hover:text-gray-800" 
+                      onClick={fillTeacherCredentials}
+                    >
+                      <Shield className="w-3 h-3 mr-1" />
+                      Teacher Demo
+                    </Button>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm"
+                      className="w-full text-xs border-yellow-300 hover:bg-yellow-50 hover:border-yellow-400 text-gray-700 hover:text-gray-800" 
+                      onClick={fillAdminCredentials}
+                    >
+                      <Shield className="w-3 h-3 mr-1" />
+                      Admin Demo
+                    </Button>
+                  </div>
                 </div>
               </form>
             </TabsContent>
@@ -308,11 +354,29 @@ const Login = () => {
                       <SelectValue placeholder="Select account type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="STUDENT">Student</SelectItem>
-                      <SelectItem value="INSTRUCTOR">Instructor</SelectItem>
-                      <SelectItem value="ADMIN">Admin</SelectItem>
+                      <SelectItem value="STUDENT">
+                        <div className="flex items-center gap-2">
+                          <User className="w-4 h-4" />
+                          Student - Add reviews, browse courses
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="INSTRUCTOR">
+                        <div className="flex items-center gap-2">
+                          <Shield className="w-4 h-4" />
+                          Instructor - Create/manage courses
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="ADMIN">
+                        <div className="flex items-center gap-2">
+                          <Shield className="w-4 h-4" />
+                          Admin - Full platform access
+                        </div>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                    Choose your role based on your intended use of the platform
+                  </p>
                 </div>
 
                 <div className="space-y-2">
@@ -328,17 +392,39 @@ const Login = () => {
                       className="pl-10"
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Use admin key "teamlockedin124" for admin access (optional)
-                  </p>
+                  <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                    <p>• Required for admin/instructor roles</p>
+                    <p>• Demo key: <code className="bg-yellow-100 dark:bg-gray-700 text-gray-800 dark:text-yellow-400 px-1 rounded font-mono">teamlockedin124</code></p>
+                    <p>• Students don't need an admin key</p>
+                  </div>
                 </div>
 
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Creating Account..." : "Create Account"}
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-yellow-400 font-bold border border-gray-700 shadow-lg hover:shadow-xl transition-all duration-200" 
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-yellow-400/30 border-t-yellow-400 rounded-full animate-spin" />
+                      Creating Account...
+                    </div>
+                  ) : (
+                    "Create Account"
+                  )}
                 </Button>
               </form>
             </TabsContent>
           </Tabs>
+          
+          <div className="mt-6 pt-4 border-t border-yellow-200 dark:border-gray-600">
+            <div className="text-center text-xs text-gray-600 dark:text-gray-400 space-y-1">
+              <p>🎓 Discover courses • 📝 Read reviews • ⭐ Rate experiences</p>
+              <p className="text-xs font-medium text-yellow-600 dark:text-yellow-400">
+                Built for UNSW students by students
+              </p>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

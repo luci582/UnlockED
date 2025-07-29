@@ -9,6 +9,7 @@ import CourseCardSkeleton from "@/components/Course/CourseCardSkeleton";
 import FilterPanel from "@/components/Filter/FilterPanel";
 import { fetchCourses, DatabaseCourse } from "@/lib/api";
 import { useCourseComparison } from "@/hooks/use-course-comparison";
+import { useAuth } from "@/hooks/use-auth";
 
 interface Filters {
   faculty: string[];
@@ -17,37 +18,7 @@ interface Filters {
   skills: string[];
 }
 
-// Convert database course to the format expected by the UI
-const convertDatabaseCourse = (dbCourse: DatabaseCourse) => {
-  // Extract course code from title if it follows UNSW format (e.g., "COMP1511 - Programming Fundamentals")
-  const codeMatch = dbCourse.title.match(/^([A-Z]{4}\d{4})\s*-\s*/);
-  const courseCode = codeMatch ? codeMatch[1] : dbCourse.id.substring(0, 8).toUpperCase();
-  
-  // Check if course is new (created within last 30 days)
-  const createdDate = new Date(dbCourse.createdAt);
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  const isNew = createdDate > thirtyDaysAgo;
-  
-  return {
-    id: dbCourse.id,
-    title: dbCourse.title,
-    code: courseCode,
-    faculty: dbCourse.institution || "UNSW Sydney",
-    rating: dbCourse.rating || 0,
-    reviewCount: dbCourse.reviewCount,
-    skills: dbCourse.skills?.map(s => s.skill.name) || [],
-    mode: "hybrid" as const, // Most UNSW courses are hybrid
-    effortLevel: dbCourse.difficulty.toLowerCase() === 'beginner' ? 'light' as const :
-                 dbCourse.difficulty.toLowerCase() === 'intermediate' ? 'moderate' as const :
-                 dbCourse.difficulty.toLowerCase() === 'advanced' ? 'heavy' as const : 'moderate' as const,
-    featured: dbCourse.rating && dbCourse.rating >= 4.5,
-    instructor: dbCourse.instructor,
-    difficulty: dbCourse.difficulty,
-    enrollmentCount: dbCourse.enrollmentCount,
-    isNew: isNew, // Add this for the "New" badge
-  };
-};
+
 
 interface Filters {
   faculty: string[];
@@ -57,6 +28,7 @@ interface Filters {
 }
 
 const CoursesDirectory = () => {
+  const { user } = useAuth();
   const { addCourse, removeCourse, isSelected, selectedCourses } = useCourseComparison();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isLoading, setIsLoading] = useState(true);
@@ -64,7 +36,7 @@ const CoursesDirectory = () => {
   const [showDesktopFilters, setShowDesktopFilters] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("rating");
-  const [courses, setCourses] = useState<any[]>([]);
+  const [courses, setCourses] = useState<DatabaseCourse[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<Filters>({
     faculty: [],
@@ -80,8 +52,7 @@ const CoursesDirectory = () => {
       try {
         const result = await fetchCourses();
         if (result.success && result.data) {
-          const convertedCourses = result.data.map(convertDatabaseCourse);
-          setCourses(convertedCourses);
+          setCourses(result.data);
         } else {
           setError(result.error || 'Failed to load courses');
         }
@@ -99,25 +70,28 @@ const CoursesDirectory = () => {
   // Filter and sort courses
   const filteredCourses = useMemo(() => {
     const filtered = courses.filter(course => {
-      // Search filter - now includes skills/tags
+      // Search filter - now includes skills/tags and categories
+      const courseSkills = course.skills?.map(s => s.skill.name) || [];
+      const courseCategories = course.categories?.map(c => c.category.name) || [];
       const searchMatch = searchQuery === "" || 
-        course.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
         course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.faculty.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()));
+        course.instructor.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        courseSkills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        courseCategories.some(category => category.toLowerCase().includes(searchQuery.toLowerCase()));
 
-      // Faculty filter
-      const facultyMatch = filters.faculty.length === 0 || filters.faculty.includes(course.faculty);
+      // Faculty filter (now using categories)
+      const facultyMatch = filters.faculty.length === 0 || 
+        courseCategories.some(category => filters.faculty.includes(category));
 
       // Rating filter
-      const ratingMatch = filters.rating === 0 || course.rating >= filters.rating;
+      const ratingMatch = filters.rating === 0 || (course.rating && course.rating >= filters.rating);
 
-      // Mode filter
-      const modeMatch = filters.mode.length === 0 || filters.mode.includes(course.mode);
+      // Mode filter (Note: courses from DB don't have mode, so we'll skip this for now)
+      const modeMatch = filters.mode.length === 0; // || filters.mode.includes(course.mode);
 
       // Skills filter - course must have ALL selected skills
       const skillsMatch = filters.skills.length === 0 || 
-        filters.skills.every(skill => course.skills.includes(skill));
+        filters.skills.every(skill => courseSkills.includes(skill));
 
       return searchMatch && facultyMatch && ratingMatch && modeMatch && skillsMatch;
     });
@@ -125,16 +99,24 @@ const CoursesDirectory = () => {
     // Sort courses
     switch (sortBy) {
       case "rating":
-        filtered.sort((a, b) => b.rating - a.rating);
+        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         break;
       case "reviews":
         filtered.sort((a, b) => b.reviewCount - a.reviewCount);
         break;
       case "alphabetical":
-        filtered.sort((a, b) => a.code.localeCompare(b.code));
+        // Extract course code from title for sorting
+        filtered.sort((a, b) => {
+          const getCode = (title: string) => {
+            const match = title.match(/^([A-Z]{4}\d{4})/);
+            return match ? match[1] : title;
+          };
+          return getCode(a.title).localeCompare(getCode(b.title));
+        });
         break;
       case "newest":
-        filtered.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+        // Sort by creation date
+        filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         break;
     }
 
@@ -165,7 +147,25 @@ const CoursesDirectory = () => {
         // Could show a toast here that max 3 courses can be compared
         return;
       }
-      addCourse(course);
+      
+      // Convert DatabaseCourse to Course format for comparison
+      const convertedCourse = {
+        id: course.id,
+        title: course.title,
+        code: course.title.match(/^([A-Z]{4}\d{4})/)?.[1] || course.id.substring(0, 8).toUpperCase(),
+        faculty: course.institution || "UNSW Sydney",
+        rating: course.rating || 0,
+        reviewCount: course.reviewCount,
+        skills: course.skills?.map(s => s.skill.name) || [],
+        mode: "hybrid" as const,
+        featured: course.rating && course.rating >= 4.5,
+        isNew: new Date(course.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+        effortLevel: course.difficulty.toLowerCase() === 'beginner' ? 'light' as const :
+                     course.difficulty.toLowerCase() === 'intermediate' ? 'moderate' as const :
+                     course.difficulty.toLowerCase() === 'advanced' ? 'heavy' as const : 'moderate' as const,
+      };
+      
+      addCourse(convertedCourse);
     }
   };
 
@@ -291,6 +291,7 @@ const CoursesDirectory = () => {
                     selectedSkills={filters.skills}
                     onCompareToggle={handleCompareToggle}
                     isSelected={isSelected(course.id)}
+                    userRole={user?.role || null}
                   />
                 ))}
               </div>
@@ -304,6 +305,7 @@ const CoursesDirectory = () => {
                       selectedSkills={filters.skills}
                       onCompareToggle={handleCompareToggle}
                       isSelected={isSelected(course.id)}
+                      userRole={user?.role || null}
                     />
                   </div>
                 ))}

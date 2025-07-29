@@ -81,12 +81,13 @@ router.post('/', authenticateToken, requireInstructor, async (req: any, res: any
   }
 });
 
-// GET /api/courses/:id - Get single course by ID
+// GET /api/courses/:id - Get single course by ID or course code
 router.get('/:id', async (req: any, res: any) => {
   try {
     const { id } = req.params;
 
-    const course = await prisma.course.findUnique({
+    // Try to find course by ID first, then by course code in title
+    let course = await prisma.course.findUnique({
       where: { 
         id: id,
         isActive: true 
@@ -121,6 +122,48 @@ router.get('/:id', async (req: any, res: any) => {
         }
       }
     });
+
+    // If not found by ID, try to find by course code in title (e.g., "comp1511" matches "COMP1511 - Programming Fundamentals")
+    if (!course) {
+      const upperCaseId = id.toUpperCase();
+      const courses = await prisma.course.findMany({
+        where: { 
+          isActive: true 
+        },
+        include: {
+          skills: {
+            include: {
+              skill: true
+            }
+          },
+          categories: {
+            include: {
+              category: true
+            }
+          },
+          reviews: {
+            include: {
+              user: {
+                select: {
+                  firstName: true,
+                  lastName: true
+                }
+              }
+            },
+            orderBy: { createdAt: 'desc' }
+          },
+          _count: {
+            select: {
+              reviews: true,
+              enrollments: true
+            }
+          }
+        }
+      });
+      
+      // Find course by matching the beginning of the title (case insensitive)
+      course = courses.find(c => c.title.toUpperCase().startsWith(upperCaseId)) || null;
+    }
 
     if (!course) {
       return res.status(404).json({ error: 'Course not found' });

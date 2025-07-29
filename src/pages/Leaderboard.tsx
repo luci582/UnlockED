@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Trophy, Medal, Award, Star, MessageSquare, TrendingUp, MapPin } from "lucide-react";
+import { Trophy, Medal, Award, Star, MessageSquare, TrendingUp, MapPin, Crown, Zap, Target, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback } from "../components/ui/avatar";
 import { Separator } from "../components/ui/separator";
+import { Progress } from "../components/ui/progress";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/use-auth";
 import { getLeaderboard } from "../lib/api";
@@ -37,10 +38,10 @@ const Leaderboard = () => {
   // Current user data (fallback to defaults if not found)
   const currentUser = currentUserData || {
     id: user?.id || 999,
-    name: user?.name || "You",
+    name: user?.username || "You",
     email: user?.email || "",
     reviewCount: user?.reviewCount || 0,
-    points: user?.points || 0,
+    points: 0, // Default points for new users
     rank: 999, // Will be calculated properly below
     badge: "🆕 New Reviewer",
     recentActivity: user?.reviewCount > 0 ? "Recently submitted a review" : "No reviews yet",
@@ -241,12 +242,43 @@ const Leaderboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container py-8">
-        {/* Header */}
+        {/* Enhanced Header with Stats Overview */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Community Leaderboard</h1>
-          <p className="text-muted-foreground">
-            Recognizing our top contributors who help fellow students make informed decisions
-          </p>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <Crown className="h-8 w-8 text-yellow-500" />
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+                  Community Leaderboard
+                </h1>
+              </div>
+              <p className="text-muted-foreground">
+                Recognizing our top contributors who help fellow students make informed decisions
+              </p>
+            </div>
+            <div className="hidden lg:flex items-center gap-4">
+              <Card className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-blue-200 dark:border-blue-800">
+                <div className="flex items-center gap-2">
+                  <Users className="h-5 w-5 text-blue-600" />
+                  <div>
+                    <div className="text-sm font-medium text-blue-800 dark:text-blue-200">Active Users</div>
+                    <div className="text-lg font-bold text-blue-900 dark:text-blue-100">{leaderboardData.length || staticTopContributors.length}</div>
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200 dark:border-green-800">
+                <div className="flex items-center gap-2">
+                  <Target className="h-5 w-5 text-green-600" />
+                  <div>
+                    <div className="text-sm font-medium text-green-800 dark:text-green-200">Total Reviews</div>
+                    <div className="text-lg font-bold text-green-900 dark:text-green-100">
+                      {(leaderboardData.length > 0 ? leaderboardData : staticTopContributors).reduce((sum: number, user: any) => sum + user.reviewCount, 0)}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
         </div>
 
         {isLoading ? (
@@ -256,56 +288,101 @@ const Leaderboard = () => {
           </div>
         ) : (
           <>
-            {/* Current User Stats - Prominent Display */}
+            {/* Enhanced Current User Stats Card */}
             {user && (
               <div className="mb-8">
-                <Card className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-primary/20">
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center justify-center w-12">
-                        <span className="text-lg font-bold text-primary">#{currentUser.rank}</span>
+                <Card className="overflow-hidden bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 border-primary/20 shadow-lg">
+                  <CardContent className="p-0">
+                    <div className="bg-gradient-to-r from-primary/10 to-transparent p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-4">
+                          <div className="relative">
+                            <Avatar className="h-16 w-16 border-2 border-primary/20">
+                              <AvatarFallback className="text-lg font-bold bg-primary/10">
+                                {currentUser.name.split(' ').map(n => n[0]).join('')}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs font-bold">
+                              #{currentUser.rank}
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <h3 className="text-xl font-bold text-primary">{currentUser.name}</h3>
+                              {currentUser.hasStreak && (
+                                <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white animate-pulse">
+                                  🔥 {currentUser.streakCount} day streak
+                                </Badge>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge variant="secondary" className="text-xs">
+                                {currentUser.badge}
+                              </Badge>
+                              <Badge variant="outline" className="text-xs bg-primary/10 border-primary/30">
+                                {currentUser.degree}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              {currentUser.recentActivity}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <Link to="/submit-review">
+                          <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg">
+                            <Zap className="h-4 w-4 mr-2" />
+                            Write Review
+                          </Button>
+                        </Link>
                       </div>
                       
-                      <Avatar className="h-12 w-12">
-                        <AvatarFallback>
-                          {currentUser.name.split(' ').map(n => n[0]).join('')}
-                        </AvatarFallback>
-                      </Avatar>
-                      
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <span className="font-semibold text-primary">{currentUser.name}</span>
-                          <Badge variant="secondary" className="text-xs">
-                            {currentUser.badge}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs bg-primary/10">
-                            {currentUser.degree}
-                          </Badge>
-                          {currentUser.hasStreak && (
-                            <Badge className="text-xs bg-course-rating text-foreground">
-                              🔥 Hot Streak ({currentUser.streakCount})
-                            </Badge>
-                          )}
+                      {/* Stats Grid */}
+                      <div className="grid grid-cols-4 gap-4">
+                        <div className="text-center">
+                          <div className="flex items-center justify-center mb-1">
+                            <MessageSquare className="h-4 w-4 text-blue-600 mr-1" />
+                            <span className="text-2xl font-bold text-blue-600">{currentUser.reviewCount}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">Reviews</p>
                         </div>
-                        <div className="text-sm text-muted-foreground">
-                          {currentUser.lastReviewedCourse ? `Reviewed ${currentUser.lastReviewedCourse}` : currentUser.recentActivity}
+                        
+                        <div className="text-center">
+                          <div className="flex items-center justify-center mb-1">
+                            <Star className="h-4 w-4 text-yellow-500 mr-1" />
+                            <span className="text-2xl font-bold text-yellow-600">{currentUser.helpful}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">Helpful</p>
+                        </div>
+                        
+                        <div className="text-center">
+                          <div className="flex items-center justify-center mb-1">
+                            <Trophy className="h-4 w-4 text-primary mr-1" />
+                            <span className="text-2xl font-bold text-primary">{currentUser.points}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">Points</p>
+                        </div>
+                        
+                        <div className="text-center">
+                          <div className="flex items-center justify-center mb-1">
+                            <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
+                            <span className="text-2xl font-bold text-green-600">#{currentUser.rank}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">Rank</p>
                         </div>
                       </div>
                       
-                      <div className="text-right">
-                        <div className="flex items-center space-x-4 text-sm">
-                          <div className="flex items-center space-x-1">
-                            <MessageSquare className="h-3 w-3" />
-                            <span>{currentUser.reviewCount}</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Star className="h-3 w-3" />
-                            <span>{currentUser.helpful}</span>
-                          </div>
-                          <div className="font-semibold text-primary">
-                            {currentUser.points} pts
-                          </div>
+                      {/* Progress to next level */}
+                      <div className="mt-4 pt-4 border-t border-primary/10">
+                        <div className="flex items-center justify-between text-sm mb-2">
+                          <span className="text-muted-foreground">Progress to next badge</span>
+                          <span className="font-medium">{Math.min(currentUser.points, 2500)}/2500 pts</span>
                         </div>
+                        <Progress 
+                          value={(currentUser.points / 2500) * 100} 
+                          className="h-2"
+                        />
                       </div>
                     </div>
                   </CardContent>
