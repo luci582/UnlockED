@@ -9,6 +9,32 @@
 
 UnlockED is a comprehensive course discovery and review platform designed specifically for UNSW students. It provides peer-reviewed insights, detailed course information, and advanced filtering capabilities to help students make informed decisions about their academic journey.
 
+## 🚀 Quick Start
+
+```bash
+# 1. Clone and install
+git clone https://github.com/luci582/UnlockED.git
+cd UnlockED
+npm install
+cd backend && npm install && cd ..
+
+# 2. Set up database
+cd backend
+npx prisma migrate dev --name init
+npx tsx prisma/quick-seed.ts
+cd ..
+
+# 3. Start servers (2 terminals)
+# Terminal 1 - Backend
+cd backend && npm run dev
+
+# Terminal 2 - Frontend  
+npm run dev
+```
+
+**🌐 Open**: http://localhost:5173  
+**🔑 Login**: `test@example.com` / `password123`
+
 ## Features
 
 ### 🎓 Course Discovery
@@ -56,7 +82,7 @@ UnlockED is a comprehensive course discovery and review platform designed specif
 ### Backend & Database
 - **Node.js**: JavaScript runtime for server-side development
 - **Express.js**: Web application framework for API development
-- **PostgreSQL**: Production-ready relational database
+- **SQLite**: Lightweight, file-based database for local development
 - **Prisma ORM**: Type-safe database operations and migrations
 - **JWT Authentication**: Secure token-based authentication
 
@@ -116,11 +142,26 @@ UnlockED is a comprehensive course discovery and review platform designed specif
 
 3. **Set up environment variables**
    ```bash
+   # Copy the example environment file
    cp .env.example .env
-   # Edit .env with your configuration
    ```
 
-4. **Run the application**
+4. **Set up the database**
+   ```bash
+   # Navigate to backend directory
+   cd backend
+   
+   # Initialize the database with tables
+   npx prisma migrate dev --name init
+   
+   # Seed the database with test data
+   npx tsx prisma/quick-seed.ts
+   
+   # Return to root directory
+   cd ..
+   ```
+
+5. **Run the application**
    ```bash
    # Start the backend (from the backend directory)
    cd backend
@@ -130,14 +171,23 @@ UnlockED is a comprehensive course discovery and review platform designed specif
    npm run dev
    ```
 
-5. **Access the application**
+6. **Access the application**
    - **🌐 Frontend**: http://localhost:5173 (Vite dev server)
    - **🔧 Backend API**: http://localhost:3001 
-   - **📊 Health Check**: http://localhost:3001/api/test
+   - **📊 API Health Check**: http://localhost:3001/api/health
+   - **🗄️ Database Studio**: Run `npx prisma studio` in the backend directory
 
-6. **Default Admin Access**
-   - Use admin key: `teamlockedin124` during signup for admin privileges
-   - Regular users can sign up without any admin key
+7. **Test Login Credentials**
+   
+   The database is seeded with these test accounts:
+   
+   **Student Account:**
+   - Email: `test@example.com`
+   - Password: `password123`
+   
+   **Admin Account:**
+   - Email: `admin@example.com`
+   - Password: `admin123`
 
 ### Development Setup (Local)
 
@@ -155,10 +205,19 @@ For development with hot reload and debugging:
    ```bash
    # Copy environment files
    cp .env.example .env
-   # Edit .env with your configuration if needed
    ```
 
-3. **Start development servers**
+3. **Database setup**
+   ```bash
+   cd backend
+   # Create database tables
+   npx prisma migrate dev --name init
+   # Add test data
+   npx tsx prisma/quick-seed.ts
+   cd ..
+   ```
+
+4. **Start development servers**
    ```bash
    # Terminal 1: Start backend
    cd backend
@@ -169,9 +228,10 @@ For development with hot reload and debugging:
    npm run dev
    ```
 
-4. **Access development servers**
+5. **Access development servers**
    - **Frontend**: http://localhost:5173
    - **Backend**: http://localhost:3001
+   - **Database Studio**: `npx prisma studio` (from backend directory)
 
 ### Environment Configuration
 
@@ -182,13 +242,15 @@ UnlockED uses different environment configurations for development and productio
 # API Configuration - points to local backend
 VITE_API_URL="http://localhost:3001/api"
 
-# Database Configuration (if using local PostgreSQL)
-DATABASE_URL="postgresql://unlocked_user:unlocked_password@localhost:5432/unlocked_db"
+# Database Configuration (SQLite file-based database)
+DATABASE_URL="file:./dev.db"
+
+# JWT Configuration
+JWT_SECRET="your-super-secret-jwt-key-change-this-in-production"
+JWT_EXPIRES_IN="7d"
 
 # Development Settings
 NODE_ENV="development"
-ENABLE_QUERY_LOGGING="true"
-PRISMA_QUERY_LOG_LEVEL="info"
 ```
 
 #### Production (`.env.production`) 
@@ -198,8 +260,6 @@ VITE_API_URL="https://your-api-domain.com/api"
 
 # Production Settings
 NODE_ENV="production"
-ENABLE_QUERY_LOGGING="false"
-PRISMA_QUERY_LOG_LEVEL="error"
 ```
 
 #### Optional Configuration
@@ -233,13 +293,19 @@ UnlockED features a role-based authentication system with three user types:
 - **Profile Management**: User profile with review history and points
 
 ### Getting Admin Access
-To access admin features during signup:
+To access admin features:
+
+**Option 1: Use Pre-created Admin Account**
+- Email: `admin@example.com`
+- Password: `admin123`
+
+**Option 2: Create New Admin Account**
 1. Register with any valid email and password
 2. Enter the admin key: `teamlockedin124`
 3. Your account will be granted admin privileges automatically
 
 ### Current Implementation
-The current version uses an in-memory authentication system for demonstration. In production, this integrates with PostgreSQL and Prisma for persistent user management.
+The application uses SQLite as the database with Prisma ORM for type-safe database operations. User authentication is handled via JWT tokens with bcrypt password hashing for security.
 
 ### Available Scripts
 
@@ -251,16 +317,15 @@ The current version uses an in-memory authentication system for demonstration. I
 
 #### Database Management
 - `npm run db:generate` - Generate Prisma client from schema
-- `npm run db:push` - Push schema changes to database
-- `npm run db:seed` - Populate database with sample data
+- `npm run db:push` - Push schema changes to database  
+- `npm run db:migrate` - Run database migrations
+- `npm run db:seed` - Populate database with sample data (full dataset)
 - `npm run db:reset` - Reset and reseed database
 - `npm run db:studio` - Open Prisma Studio (database GUI)
-- `npm run db:check` - Verify database connection and schema
 
-#### Database Utilities
-- `npm run db:migrate` - Run database migrations
-- `npm run db:deploy` - Deploy migrations to production
-- `npm run db:format` - Format Prisma schema file
+#### Quick Database Setup
+- `npx tsx prisma/quick-seed.ts` - Add just test users for login (from backend directory)
+- `npx prisma migrate dev --name init` - Initialize database with tables
 
 ## Project Structure
 
@@ -326,16 +391,23 @@ UnlockED/
 - **Review Analytics**: Rating calculations and review moderation
 
 ### Sample Data & Demo Accounts
-The application comes with realistic sample data including:
-- **5 User Accounts** (Students, Teachers, Admin)
-- **6 Sample Courses** across different faculties
-- **10 Skills** with prerequisite relationships
-- **Multiple Reviews** with ratings and detailed feedback
+The application comes with test accounts for immediate use:
 
-**Demo Credentials:**
-- **Admin**: `admin@unsw.edu.au` / `password`
-- **Teacher**: `teacher@unsw.edu.au` / `password`
-- **Student**: `student@unsw.edu.au` / `password`
+**Test Credentials:**
+- **Student**: `test@example.com` / `password123`
+- **Admin**: `admin@example.com` / `admin123`
+
+For a full dataset with courses and reviews, run the complete seed:
+```bash
+cd backend
+npm run db:seed
+```
+
+This will add:
+- **6 Sample Courses** across different faculties
+- **10 Skills** with prerequisite relationships  
+- **Multiple Reviews** with ratings and detailed feedback
+- **Additional Users** (Students, Teachers)
 
 ## Key Features Implementation
 
@@ -430,15 +502,30 @@ Perfect for understanding the user experience, design decisions, and feature imp
 - **Fix**: Ensure both frontend and backend services are running
   ```bash
   # Test backend directly
-  curl http://localhost:3001/api/test
+  curl http://localhost:3001/api/health
   
   # Check if services are running
   ps aux | grep node
   ```
 
-**Admin Key Not Working**
-- **Cause**: Incorrect admin key or case sensitivity
-- **Solution**: Use exact key: `teamlockedin124` (case-sensitive)
+**Can't Login with Test Credentials**
+- **Cause**: Database not seeded with test users
+- **Solution**: Run the quick seed script
+  ```bash
+  cd backend
+  npx tsx prisma/quick-seed.ts
+  ```
+- **Test with**: `test@example.com` / `password123`
+
+**Database Issues**
+- **Cause**: Database not initialized or corrupted
+- **Solution**: Reset and recreate the database
+  ```bash
+  cd backend
+  npx prisma migrate reset --force
+  npx prisma migrate dev --name init
+  npx tsx prisma/quick-seed.ts
+  ```
 
 **Port Already in Use**
 - **Cause**: Another service is using ports 5173 or 3001
@@ -504,8 +591,9 @@ Perfect for understanding the user experience, design decisions, and feature imp
 If you encounter issues not covered here:
 1. **Check application logs**: Look at console output from `npm run dev`
 2. **Verify port availability**: `netstat -tulpn | grep :5173\|:3001`
-3. **Test API directly**: `curl http://localhost:3001/api/test`
-4. **Review environment**: Ensure `.env.production` is properly configured
+3. **Test API directly**: `curl http://localhost:3001/api/health`
+4. **Reset database**: `cd backend && npx prisma migrate reset --force`
+5. **Review environment**: Ensure `.env` file exists and has correct values
 
 ## License
 
@@ -560,14 +648,18 @@ npm run dev
 
 ### Database Operations
 ```bash
-# Reset and reseed database with fresh data
+# Initialize database (first time setup)
+cd backend
+npx prisma migrate dev --name init
+
+# Add test users for login
+npx tsx prisma/quick-seed.ts
+
+# Reset and reseed database with full sample data
 npm run db:reset
 
 # View database in browser
-npm run db:studio
-
-# Generate Prisma client after schema changes
-npm run db:generate
+npx prisma studio
 ```
 
 ### Building for Production
@@ -581,8 +673,8 @@ npm run preview
 
 ---
 
-**Last Updated**: January 2025  
+**Last Updated**: July 2025  
 **Status**: Active Development  
-**Version**: 2.0.0 (Docker-free edition)
+**Version**: 2.0.0 (SQLite Edition - Ready to Use)
 
 **UnlockED** - Empowering UNSW students to make informed course decisions through community-driven insights, comprehensive data, and modern technology.
