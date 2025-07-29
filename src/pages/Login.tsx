@@ -112,15 +112,15 @@ const Login = () => {
 
   const fillDemoCredentials = () => {
     setLoginForm({
-      email: "test@example.com",
+      email: "john.doe@student.com",
       password: "password123",
     });
   };
 
   const fillAdminCredentials = () => {
     setLoginForm({
-      email: "admin@example.com", 
-      password: "admin123",
+      email: "admin@unlocked.edu", 
+      password: "password123",
     });
   };
 

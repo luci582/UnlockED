@@ -70,3 +70,91 @@ export const getLeaderboard = async (): Promise<ApiResponse<any>> => {
     };
   }
 };
+
+// Courses API
+export interface DatabaseCourse {
+  id: string;
+  title: string;
+  description: string;
+  instructor: string;
+  institution?: string;
+  difficulty: string;
+  rating?: number;
+  reviewCount: number;
+  enrollmentCount: number;
+  duration?: string;
+  price?: number;
+  isFree: boolean;
+  createdAt: string; // ISO string from database
+  skills?: Array<{
+    skill: {
+      id: string;
+      name: string;
+    };
+  }>;
+  categories?: Array<{
+    category: {
+      id: string;
+      name: string;
+    };
+  }>;
+}
+
+export const fetchCourses = async (page: number = 1, limit: number = 20): Promise<ApiResponse<DatabaseCourse[]>> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/courses?page=${page}&limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    return {
+      success: true,
+      data: result.courses
+    };
+  } catch (error) {
+    console.error('Courses fetch error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+};
+
+export const fetchCourseById = async (id: string): Promise<ApiResponse<DatabaseCourse & { reviews: any[] }>> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/courses/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('Course not found');
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    return {
+      success: true,
+      data: result.course
+    };
+  } catch (error) {
+    console.error('Course fetch error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+};

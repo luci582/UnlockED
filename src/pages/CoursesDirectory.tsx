@@ -7,8 +7,47 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import CourseCard from "@/components/Course/CourseCard";
 import CourseCardSkeleton from "@/components/Course/CourseCardSkeleton";
 import FilterPanel from "@/components/Filter/FilterPanel";
-import { Course, allCourses } from "@/data/courses";
+import { fetchCourses, DatabaseCourse } from "@/lib/api";
 import { useCourseComparison } from "@/hooks/use-course-comparison";
+
+interface Filters {
+  faculty: string[];
+  rating: number;
+  mode: string[];
+  skills: string[];
+}
+
+// Convert database course to the format expected by the UI
+const convertDatabaseCourse = (dbCourse: DatabaseCourse) => {
+  // Extract course code from title if it follows UNSW format (e.g., "COMP1511 - Programming Fundamentals")
+  const codeMatch = dbCourse.title.match(/^([A-Z]{4}\d{4})\s*-\s*/);
+  const courseCode = codeMatch ? codeMatch[1] : dbCourse.id.substring(0, 8).toUpperCase();
+  
+  // Check if course is new (created within last 30 days)
+  const createdDate = new Date(dbCourse.createdAt);
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const isNew = createdDate > thirtyDaysAgo;
+  
+  return {
+    id: dbCourse.id,
+    title: dbCourse.title,
+    code: courseCode,
+    faculty: dbCourse.institution || "UNSW Sydney",
+    rating: dbCourse.rating || 0,
+    reviewCount: dbCourse.reviewCount,
+    skills: dbCourse.skills?.map(s => s.skill.name) || [],
+    mode: "hybrid" as const, // Most UNSW courses are hybrid
+    effortLevel: dbCourse.difficulty.toLowerCase() === 'beginner' ? 'light' as const :
+                 dbCourse.difficulty.toLowerCase() === 'intermediate' ? 'moderate' as const :
+                 dbCourse.difficulty.toLowerCase() === 'advanced' ? 'heavy' as const : 'moderate' as const,
+    featured: dbCourse.rating && dbCourse.rating >= 4.5,
+    instructor: dbCourse.instructor,
+    difficulty: dbCourse.difficulty,
+    enrollmentCount: dbCourse.enrollmentCount,
+    isNew: isNew, // Add this for the "New" badge
+  };
+};
 
 interface Filters {
   faculty: string[];
@@ -25,6 +64,8 @@ const CoursesDirectory = () => {
   const [showDesktopFilters, setShowDesktopFilters] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("rating");
+  const [courses, setCourses] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<Filters>({
     faculty: [],
     rating: 0,
@@ -32,18 +73,32 @@ const CoursesDirectory = () => {
     skills: [],
   });
 
-  // Simulate loading data
+  // Fetch courses from database
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500); // Show skeleton for 1.5 seconds
+    const loadCourses = async () => {
+      setIsLoading(true);
+      try {
+        const result = await fetchCourses();
+        if (result.success && result.data) {
+          const convertedCourses = result.data.map(convertDatabaseCourse);
+          setCourses(convertedCourses);
+        } else {
+          setError(result.error || 'Failed to load courses');
+        }
+      } catch (err) {
+        setError('Failed to load courses');
+        console.error('Error loading courses:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    return () => clearTimeout(timer);
+    loadCourses();
   }, []);
 
   // Filter and sort courses
   const filteredCourses = useMemo(() => {
-    const filtered = allCourses.filter(course => {
+    const filtered = courses.filter(course => {
       // Search filter - now includes skills/tags
       const searchMatch = searchQuery === "" || 
         course.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -84,7 +139,7 @@ const CoursesDirectory = () => {
     }
 
     return filtered;
-  }, [searchQuery, filters, sortBy]);
+  }, [searchQuery, filters, sortBy, courses]);
 
   const handleFiltersChange = (newFilters: Filters) => {
     setFilters(newFilters);
@@ -100,7 +155,7 @@ const CoursesDirectory = () => {
   };
 
   const handleCompareToggle = (courseId: string) => {
-    const course = allCourses.find(c => c.id === courseId);
+    const course = courses.find(c => c.id === courseId);
     if (!course) return;
 
     if (isSelected(courseId)) {
@@ -213,7 +268,14 @@ const CoursesDirectory = () => {
               </p>
             </div>
 
-            {isLoading ? (
+            {error ? (
+              <div className="text-center py-12">
+                <p className="text-red-500 mb-4">Error loading courses: {error}</p>
+                <Button variant="outline" onClick={() => window.location.reload()}>
+                  Retry
+                </Button>
+              </div>
+            ) : isLoading ? (
               <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                 {Array.from({ length: 6 }).map((_, index) => (
                   <CourseCardSkeleton key={index} />

@@ -1,6 +1,6 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
-import { authenticateToken, requireInstructor } from '../middleware/auth';
+import { authenticateToken, requireInstructor, requireAdmin } from '../middleware/auth';
 import { logger } from '../utils/logger';
 
 const router = express.Router();
@@ -50,10 +50,14 @@ router.post('/', authenticateToken, requireInstructor, async (req: any, res: any
   try {
     const courseData = req.body;
     
+    // Add metadata for new courses
     const course = await prisma.course.create({
       data: {
         ...courseData,
-        instructorId: req.user.id
+        createdById: req.user.id,
+        status: 'PUBLISHED',
+        // Tag as new course for first 30 days
+        createdAt: new Date(),
       },
       include: {
         skills: {
@@ -73,6 +77,117 @@ router.post('/', authenticateToken, requireInstructor, async (req: any, res: any
     res.status(201).json({ success: true, course });
   } catch (error) {
     logger.error('Create course error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// GET /api/courses/:id - Get single course by ID
+router.get('/:id', async (req: any, res: any) => {
+  try {
+    const { id } = req.params;
+
+    const course = await prisma.course.findUnique({
+      where: { 
+        id: id,
+        isActive: true 
+      },
+      include: {
+        skills: {
+          include: {
+            skill: true
+          }
+        },
+        categories: {
+          include: {
+            category: true
+          }
+        },
+        reviews: {
+          include: {
+            user: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
+          },
+          orderBy: { createdAt: 'desc' }
+        },
+        _count: {
+          select: {
+            reviews: true,
+            enrollments: true
+          }
+        }
+      }
+    });
+
+    if (!course) {
+      return res.status(404).json({ error: 'Course not found' });
+    }
+
+    res.json({ success: true, course });
+  } catch (error) {
+    logger.error('Get course by ID error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// DELETE /api/courses/:id/teacher - Delete own course (Teacher only)
+router.delete('/:id/teacher', authenticateToken, requireInstructor, async (req: any, res: any) => {
+  try {
+    const { id } = req.params;
+
+    // Check if course exists and belongs to the teacher
+    const existingCourse = await prisma.course.findUnique({
+      where: { id }
+    });
+
+    if (!existingCourse) {
+      return res.status(404).json({ error: 'Course not found' });
+    }
+
+    // Check if the user is the creator of the course or is an admin
+    if (existingCourse.createdById !== req.user.id && req.user.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'You can only delete courses you created' });
+    }
+
+    // Delete the course
+    await prisma.course.delete({
+      where: { id }
+    });
+
+    logger.info(`Course deleted: ${existingCourse.title} by teacher ${req.user.email}`);
+    res.json({ success: true, message: 'Course deleted successfully' });
+  } catch (error) {
+    logger.error('Delete course error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// DELETE /api/courses/:id - Delete course (Admin only)
+router.delete('/:id', authenticateToken, requireAdmin, async (req: any, res: any) => {
+  try {
+    const { id } = req.params;
+
+    // Check if course exists
+    const existingCourse = await prisma.course.findUnique({
+      where: { id }
+    });
+
+    if (!existingCourse) {
+      return res.status(404).json({ error: 'Course not found' });
+    }
+
+    // Delete the course
+    await prisma.course.delete({
+      where: { id }
+    });
+
+    logger.info(`Course deleted: ${existingCourse.title} by admin ${req.user.email}`);
+    res.json({ success: true, message: 'Course deleted successfully' });
+  } catch (error) {
+    logger.error('Delete course error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
