@@ -2,13 +2,6 @@
 
 ## ✅ Security Measures Implemented
 
-### Docker Security
-- ✅ Non-root user (`nodeuser`) in containers
-- ✅ Health checks for container monitoring
-- ✅ Custom Docker network isolation
-- ✅ Container restart policies configured
-- ✅ Multi-stage builds to reduce attack surface
-
 ### Web Security Headers (nginx.conf)
 - ✅ X-Frame-Options: SAMEORIGIN (prevents clickjacking)
 - ✅ X-XSS-Protection: 1; mode=block

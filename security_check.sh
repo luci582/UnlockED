@@ -52,23 +52,6 @@ check_npm_vulnerabilities() {
     fi
 }
 
-# Function to check Docker security
-check_docker_security() {
-    echo -e "\n🐳 Checking Docker Security Configuration..."
-    
-    check_file_content "backend/Dockerfile" "USER nodeuser" "Non-root user in Docker container"
-    check_file_content "docker-compose.yml" "restart: unless-stopped" "Container restart policy configured"
-    check_file_content "backend/Dockerfile" "HEALTHCHECK" "Health checks implemented"
-    
-    if [ -f "docker-compose.yml" ]; then
-        if grep -q "networks:" docker-compose.yml; then
-            echo -e "✅ ${GREEN}PASS${NC}: Custom Docker network configured"
-        else
-            echo -e "⚠️  ${YELLOW}WARN${NC}: Consider using custom Docker networks"
-        fi
-    fi
-}
-
 # Function to check security headers in nginx config
 check_security_headers() {
     echo -e "\n🛡️  Checking Security Headers in nginx.conf..."
@@ -92,7 +75,7 @@ check_authentication_security() {
     echo -e "\n� Checking Authentication Security..."
     
     # Note: Current implementation uses simple auth, check for bcrypt dependency
-    if grep -q "bcrypt" backend/package-docker.json 2>/dev/null || grep -q "bcrypt" backend/package.json 2>/dev/null; then
+    if grep -q "bcrypt" backend/package.json 2>/dev/null; then
         echo -e "✅ ${GREEN}PASS${NC}: bcrypt dependency found"
     else
         echo -e "⚠️  ${YELLOW}INFO${NC}: Using simple auth implementation (suitable for development)"
@@ -250,14 +233,12 @@ generate_security_score() {
     echo "================================"
     
     echo "UnlockED Security Features Implemented:"
-    echo "• Docker containerization with non-root user"
     echo "• Nginx reverse proxy with security headers"
     echo "• CORS configuration for API protection"
     echo "• Environment-based configuration"
     echo "• React-based frontend (XSS protection)"
     echo "• JWT-based authentication system"
     echo "• Input validation in authentication"
-    echo "• Container health checks"
     
     echo -e "\n🎯 Recommendations for Enhanced Security:"
     echo "1. Implement rate limiting on authentication endpoints"
@@ -271,12 +252,6 @@ generate_security_score() {
     echo "9. Implement proper error handling (don't expose stack traces)"
     echo "10. Add input sanitization for user-generated content"
     
-    echo -e "\n🔒 Docker Security Enhancements:"
-    echo "• Use specific version tags instead of 'latest'"
-    echo "• Implement Docker secrets for sensitive data"
-    echo "• Use multi-stage builds to reduce attack surface"
-    echo "• Scan images for vulnerabilities regularly"
-    
     echo -e "\n🏆 Overall Security Status: ${GREEN}GOOD FOUNDATION${NC}"
     echo -e "The application has solid security fundamentals with room for production hardening."
     echo -e "Recommended next steps: Implement production security measures before deployment."
@@ -287,7 +262,6 @@ echo "Starting security verification for UnlockED..."
 echo ""
 
 check_npm_vulnerabilities
-check_docker_security
 check_security_headers
 check_authentication_security
 check_api_security

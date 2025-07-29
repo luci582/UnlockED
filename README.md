@@ -1,6 +1,9 @@
 # UnlockED - UNSW Course Companion
 
-# UnlockED - UNSW Course Companion
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite)](https://vitejs.dev/)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js)](https://nodejs.org/)
 
 ## Overview
 
@@ -65,8 +68,6 @@ UnlockED is a comprehensive course discovery and review platform designed specif
 - **Recharts**: Data visualization and charting library
 
 ### DevOps & Deployment
-- **Docker**: Containerization for consistent deployments
-- **Docker Compose**: Multi-container application orchestration
 - **Nginx**: Web server and reverse proxy for production
 - **GitHub Actions**: CI/CD pipeline automation
 - **Chart.js**: Interactive data visualization
@@ -80,10 +81,7 @@ UnlockED is a comprehensive course discovery and review platform designed specif
 - **Radix UI**: Unstyled, accessible components (via shadcn/ui)
 
 ### Deployment & Infrastructure
-- **Docker**: Containerized deployment with Alpine Linux base images
-- **Docker Compose**: Multi-service orchestration
 - **Nginx**: Production-ready web server with optimized configuration
-- **Health Checks**: Automated container health monitoring
 - **Production Build**: Optimized static assets with gzip compression
 
 ### State Management
@@ -94,13 +92,10 @@ UnlockED is a comprehensive course discovery and review platform designed specif
 ## Getting Started
 
 ### Prerequisites
-- **Docker & Docker Compose** - [Install Docker](https://docs.docker.com/get-docker/) (Recommended)
-- OR **Node.js** (v18 or higher) - [Install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **Node.js** (v18 or higher) - [Install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 - **Git** - [Install Git](https://git-scm.com/downloads)
 
-### Quick Start with Docker (Recommended)
-
-UnlockED is fully containerized and can be launched with a single command:
+### Quick Start
 
 1. **Clone the repository**
    ```bash
@@ -108,54 +103,41 @@ UnlockED is fully containerized and can be launched with a single command:
    cd UnlockED
    ```
 
-2. **Launch the application**
+2. **Install dependencies**
    ```bash
-   # Option 1: Use Docker Compose directly
-   docker compose up -d --build
+   # Install frontend dependencies
+   npm install
    
-   # Option 2: Use the deploy script (Linux/macOS)
-   chmod +x deploy.sh
-   ./deploy.sh
+   # Install backend dependencies
+   cd backend
+   npm install
+   cd ..
    ```
 
-3. **Access the application**
-   - **🌐 Frontend**: http://localhost (port 80)
-   - **🔧 Backend API**: http://localhost:3001 
-   - **📊 Health Check**: http://localhost/api/test
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
 
-4. **Default Admin Access**
+4. **Run the application**
+   ```bash
+   # Start the backend (from the backend directory)
+   cd backend
+   npm run dev
+   
+   # In a new terminal, start the frontend (from the root directory)
+   npm run dev
+   ```
+
+5. **Access the application**
+   - **🌐 Frontend**: http://localhost:5173 (Vite dev server)
+   - **🔧 Backend API**: http://localhost:3001 
+   - **📊 Health Check**: http://localhost:3001/api/test
+
+6. **Default Admin Access**
    - Use admin key: `teamlockedin124` during signup for admin privileges
    - Regular users can sign up without any admin key
-
-### Docker Management Commands
-
-```bash
-# View real-time logs
-docker compose logs -f
-
-# View specific service logs
-docker compose logs -f frontend
-docker compose logs -f backend
-
-# Stop all services
-docker compose down
-
-# Rebuild and restart (after code changes)
-docker compose down
-docker compose build --no-cache
-docker compose up -d
-
-# Check service status and health
-docker compose ps
-docker ps
-
-# Access backend container shell
-docker compose exec backend sh
-
-# Remove all containers and volumes (clean reset)
-docker compose down -v
-docker system prune -f
-```
 
 ### Development Setup (Local)
 
@@ -211,8 +193,8 @@ PRISMA_QUERY_LOG_LEVEL="info"
 
 #### Production (`.env.production`) 
 ```bash
-# API Configuration - uses nginx proxy in Docker
-VITE_API_URL="/api"
+# API Configuration - production API endpoint
+VITE_API_URL="https://your-api-domain.com/api"
 
 # Production Settings
 NODE_ENV="production"
@@ -283,34 +265,43 @@ The current version uses an in-memory authentication system for demonstration. I
 ## Project Structure
 
 ```
-src/
-├── components/          # Reusable UI components
-│   ├── Course/         # Course-related components
-│   ├── Filter/         # Filtering and search components
-│   ├── Layout/         # Header, navigation, theme components
-│   ├── Review/         # Review submission and display
-│   └── ui/             # shadcn/ui component library
-├── pages/              # Route components
-│   ├── CoursesDirectory.tsx
-│   ├── Homepage.tsx
-│   ├── Login.tsx
-│   ├── CourseDetail.tsx
-│   └── Leaderboard.tsx
-├── hooks/              # Custom React hooks
-├── lib/                # Utility functions and configurations
-│   ├── database.ts     # Database operations and queries
-│   ├── prisma.ts       # Prisma client configuration
-│   └── utils.ts        # General utility functions
-├── types/              # TypeScript type definitions
-│   └── database.ts     # Database type definitions
-└── main.tsx            # Application entry point
-
-prisma/
-├── schema.prisma       # Database schema definition
-├── seed.ts            # Database seeding script
-└── migrations/        # Database migration files
-
-scripts/
+UnlockED/
+├── backend/                 # Node.js Express API server
+│   ├── src/
+│   │   ├── routes/         # API endpoints (auth, courses, reviews)
+│   │   ├── middleware/     # Authentication and error handling
+│   │   └── utils/          # Logging and utilities
+│   ├── prisma/             # Database schema and migrations
+│   │   ├── schema.prisma   # Database schema definition
+│   │   ├── seed.ts         # Database seeding script
+│   │   └── migrations/     # Database migration files
+│   ├── package.json        # Backend dependencies
+│   └── server.ts           # Express server entry point
+├── src/                    # React frontend application
+│   ├── components/         # Reusable UI components
+│   │   ├── Course/        # Course-related components
+│   │   ├── Filter/        # Filtering and search components
+│   │   ├── Layout/        # Header, navigation, theme components
+│   │   └── ui/            # shadcn/ui component library
+│   ├── pages/             # Route components and main views
+│   │   ├── CoursesDirectory.tsx
+│   │   ├── Homepage.tsx
+│   │   ├── Login.tsx
+│   │   ├── CourseDetail.tsx
+│   │   └── Leaderboard.tsx
+│   ├── hooks/             # Custom React hooks
+│   ├── lib/               # Utility functions and configurations
+│   │   ├── database.ts    # Database operations and queries
+│   │   ├── prisma.ts      # Prisma client configuration
+│   │   └── utils.ts       # General utility functions
+│   ├── types/             # TypeScript type definitions
+│   └── main.tsx           # Application entry point
+├── public/                # Static assets
+├── package.json           # Frontend dependencies and scripts
+├── vite.config.ts         # Vite build configuration
+├── tailwind.config.ts     # Tailwind CSS configuration
+└── README.md              # Project documentation
+```
 ├── check-database.js  # Database verification utility
 └── setup-env.js      # Environment setup helper
 ```
@@ -345,28 +336,6 @@ The application comes with realistic sample data including:
 - **Admin**: `admin@unsw.edu.au` / `password`
 - **Teacher**: `teacher@unsw.edu.au` / `password`
 - **Student**: `student@unsw.edu.au` / `password`
-
-## Docker Architecture
-
-### Container Services
-- **Frontend Container**: Nginx + React production build
-  - Alpine Linux base image for minimal size
-  - Multi-stage build for optimized production assets
-  - Gzip compression and security headers
-  - Health checks with automatic restart
-  
-- **Backend Container**: Node.js Express API
-  - Alpine Linux base image with Node.js 18
-  - Non-root user for enhanced security
-  - In-memory data storage for simplicity
-  - Health checks and graceful shutdown
-
-### Production Features
-- **Load Balancer Ready**: Nginx reverse proxy configuration
-- **Security**: Non-root containers, security headers, restricted permissions
-- **Monitoring**: Health checks for all services with automatic recovery
-- **Scalability**: Stateless backend design for horizontal scaling
-- **Optimization**: Gzip compression, static asset caching, optimized builds
 
 ## Key Features Implementation
 
@@ -454,71 +423,53 @@ Perfect for understanding the user experience, design decisions, and feature imp
 
 ### Common Issues and Solutions
 
-#### 🐳 Docker Issues
-
-**"Cannot GET /api/auth/login" Error**
-- **Cause**: API routing issue between frontend and backend containers
-- **Solution**: Restart Docker services
-  ```bash
-  docker compose down
-  docker compose up -d --build
-  ```
-
-**Port Already in Use**
-- **Cause**: Another service is using ports 80 or 3001
-- **Solution**: Stop conflicting services or change ports in `docker-compose.yml`
-  ```bash
-  # Check what's using the ports
-  sudo lsof -i :80
-  sudo lsof -i :3001
-  
-  # Kill processes if needed
-  sudo kill -9 <PID>
-  ```
-
-**Container Health Check Failures**
-- **Cause**: Services not ready or networking issues
-- **Solution**: Check logs and restart services
-  ```bash
-  docker compose logs -f backend
-  docker compose logs -f frontend
-  docker compose restart
-  ```
-
-#### 🔐 Authentication Issues
+#### � Authentication Issues
 
 **Login/Signup Not Working**
 - **Cause**: Backend API not accessible from frontend
-- **Fix**: Ensure Docker containers are running and communicating
+- **Fix**: Ensure both frontend and backend services are running
   ```bash
   # Test backend directly
   curl http://localhost:3001/api/test
   
-  # Check container networking
-  docker compose ps
-  docker compose logs backend
+  # Check if services are running
+  ps aux | grep node
   ```
 
 **Admin Key Not Working**
 - **Cause**: Incorrect admin key or case sensitivity
 - **Solution**: Use exact key: `teamlockedin124` (case-sensitive)
 
+**Port Already in Use**
+- **Cause**: Another service is using ports 5173 or 3001
+- **Solution**: Stop conflicting services or change ports
+  ```bash
+  # Check what's using the ports
+  sudo lsof -i :5173
+  sudo lsof -i :3001
+  
+  # Kill processes if needed
+  sudo kill -9 <PID>
+  ```
+
 #### 🌐 Network & API Issues
 
 **Frontend Not Loading**
-- **Cause**: Nginx container not running or port 80 blocked
-- **Solution**: Check Docker status and port availability
+- **Cause**: Development server not running or port blocked
+- **Solution**: Check if the frontend is running
   ```bash
-  docker compose ps
-  sudo netstat -tulpn | grep :80
+  # Check if Vite dev server is running
+  ps aux | grep vite
+  sudo netstat -tulpn | grep :5173
   ```
 
 **API Requests Failing**
 - **Cause**: CORS issues or incorrect API URL
 - **Solution**: Verify environment configuration
   ```bash
-  # Check if .env.production is being used in Docker
-  docker compose exec frontend cat /app/.env
+  # Check current environment variables
+  cat .env
+  # Ensure VITE_API_URL points to the correct backend
   ```
 
 #### 💾 Development Setup Issues
@@ -544,16 +495,15 @@ Perfect for understanding the user experience, design decisions, and feature imp
 
 ### Performance Optimization
 
-- **Docker**: Use `docker compose down -v` to clear volumes if experiencing data issues
-- **Build Cache**: Use `--no-cache` flag when rebuilding containers after significant changes
-- **Logs**: Regularly check `docker compose logs` for performance bottlenecks
-- **Resources**: Ensure Docker has sufficient memory allocation (4GB+ recommended)
+- **Build Cache**: Clear npm cache if experiencing build issues: `npm cache clean --force`
+- **Development**: Use `npm run dev` for hot reload during development
+- **Production**: Optimize builds with `npm run build`
 
 ### Getting Help
 
 If you encounter issues not covered here:
-1. **Check Docker logs**: `docker compose logs -f`
-2. **Verify port availability**: `netstat -tulpn | grep :80\|:3001`
+1. **Check application logs**: Look at console output from `npm run dev`
+2. **Verify port availability**: `netstat -tulpn | grep :5173\|:3001`
 3. **Test API directly**: `curl http://localhost:3001/api/test`
 4. **Review environment**: Ensure `.env.production` is properly configured
 
@@ -568,7 +518,7 @@ We welcome contributions! Please follow these steps:
 1. **Fork the repository**
 2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
 3. **Make your changes** and ensure they follow the coding standards
-4. **Test thoroughly** including Docker builds
+4. **Test thoroughly** including production builds
 5. **Commit your changes**: `git commit -m 'Add amazing feature'`
 6. **Push to the branch**: `git push origin feature/amazing-feature`
 7. **Open a Pull Request** with a clear description
@@ -577,7 +527,7 @@ We welcome contributions! Please follow these steps:
 - Follow TypeScript best practices and maintain type safety
 - Use consistent code formatting (ESLint configuration provided)
 - Write meaningful commit messages
-- Test both development and Docker production builds
+- Test both development and production builds
 - Update documentation for new features
 
 ## Support & Resources
@@ -586,15 +536,53 @@ For questions, issues, or contributions:
 - **🐛 Bug Reports**: [Open an issue](https://github.com/luci582/UnlockED/issues) on GitHub
 - **💡 Feature Requests**: Use GitHub discussions for feature proposals  
 - **📖 Documentation**: Check existing docs and README files
-- **🔧 Technical Issues**: Include Docker logs and system information
+- **🔧 Technical Issues**: Include logs and system information
 
 ### Useful Links
-- **[Docker Documentation](https://docs.docker.com/)**: Container platform guide
 - **[React Documentation](https://react.dev/)**: Frontend framework reference
 - **[Vite Documentation](https://vitejs.dev/)**: Build tool and dev server
 - **[Tailwind CSS](https://tailwindcss.com/)**: Utility-first CSS framework
 - **[shadcn/ui](https://ui.shadcn.com/)**: Component library documentation
+- **[Prisma Documentation](https://www.prisma.io/docs)**: Database ORM and tooling
+- **[Express.js Documentation](https://expressjs.com/)**: Backend framework
+
+## Development Workflow
+
+### Daily Development
+```bash
+# Start both servers in development mode
+# Terminal 1 - Backend
+cd backend && npm run dev
+
+# Terminal 2 - Frontend  
+npm run dev
+```
+
+### Database Operations
+```bash
+# Reset and reseed database with fresh data
+npm run db:reset
+
+# View database in browser
+npm run db:studio
+
+# Generate Prisma client after schema changes
+npm run db:generate
+```
+
+### Building for Production
+```bash
+# Build frontend for production
+npm run build
+
+# Preview production build locally
+npm run preview
+```
 
 ---
+
+**Last Updated**: January 2025  
+**Status**: Active Development  
+**Version**: 2.0.0 (Docker-free edition)
 
 **UnlockED** - Empowering UNSW students to make informed course decisions through community-driven insights, comprehensive data, and modern technology.
