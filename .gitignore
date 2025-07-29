@@ -41,7 +41,5 @@ coverage/
 .parcel-cache/
 
 # Database
-*.db
-*.sqlite
 backend/node_modules/
 node_modules/
