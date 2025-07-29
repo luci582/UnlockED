@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { allCourses } from "@/data/courses";
 
 const SubmitReview = () => {
   const { toast } = useToast();
@@ -241,13 +242,26 @@ const SubmitReview = () => {
               <div className="grid gap-6 md:grid-cols-2">
                 <div>
                   <Label htmlFor="courseCode" className="text-sm font-medium">Course Code *</Label>
-                  <Input 
-                    id="courseCode" 
-                    placeholder="e.g., COMP1511" 
-                    className="mt-2"
-                    value={courseName}
+                  <select 
+                    id="courseCode"
+                    value={courseName} 
                     onChange={(e) => setCourseName(e.target.value)}
-                  />
+                    className="mt-2 h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 appearance-none cursor-pointer"
+                    style={{
+                      backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+                      backgroundPosition: 'right 0.5rem center',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundSize: '1.5em 1.5em',
+                      paddingRight: '2.5rem'
+                    }}
+                  >
+                    <option value="">Select a course...</option>
+                    {allCourses.map((course) => (
+                      <option key={course.id} value={course.code}>
+                        {course.code} - {course.title}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <Label htmlFor="instructor" className="text-sm font-medium">Instructor</Label>
@@ -260,20 +274,28 @@ const SubmitReview = () => {
                   />
                 </div>
               </div>
-              <div>
+              <div className="w-full">
                 <Label htmlFor="semester" className="text-sm font-medium">Semester Taken *</Label>
-                <Select value={semester} onValueChange={setSemester}>
-                  <SelectTrigger className="mt-2">
-                    <SelectValue placeholder="Select semester (e.g., 2024 T1)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {semesterOptions.map((sem) => (
-                      <SelectItem key={sem} value={sem}>
-                        {sem}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <select 
+                  id="semester"
+                  value={semester} 
+                  onChange={(e) => setSemester(e.target.value)}
+                  className="mt-2 h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 appearance-none cursor-pointer"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+                    backgroundPosition: 'right 0.5rem center',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: '1.5em 1.5em',
+                    paddingRight: '2.5rem'
+                  }}
+                >
+                  <option value="">Select semester (e.g., 2024 T1)</option>
+                  {semesterOptions.map((sem) => (
+                    <option key={sem} value={sem}>
+                      {sem}
+                    </option>
+                  ))}
+                </select>
               </div>
             </CardContent>
           </Card>

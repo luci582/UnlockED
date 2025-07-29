@@ -141,7 +141,7 @@ const CourseDetail = () => {
             </Card>
           </div>
 
-          {/* Skills Tags */}
+          {/* Competencies Tags */}
           <div className="mt-6">
             <h3 className="text-sm font-medium text-muted-foreground mb-3">Skills You'll Develop</h3>
             <div className="flex flex-wrap gap-2">

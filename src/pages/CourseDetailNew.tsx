@@ -242,7 +242,7 @@ const CourseDetail = () => {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Lightbulb className="h-5 w-5" />
-                      Skills You'll Learn
+                      Competencies You'll Learn
                     </CardTitle>
                   </CardHeader>
                   <CardContent>

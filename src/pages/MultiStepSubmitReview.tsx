@@ -12,7 +12,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "../hooks/use-toast";
 import { Progress } from "../components/ui/progress";
 import { useAuth } from "../hooks/use-auth";
-import { submitReview } from "../lib/api";
 import { allCourses } from "../data/courses";
 
 interface ReviewFormData {
@@ -61,6 +60,14 @@ const MultiStepSubmitReview = () => {
     "Programming", "Problem Solving", "Critical Thinking", "Communication",
     "Leadership", "Teamwork", "Research", "Writing", "Statistics",
     "Excel", "Public Speaking", "Analysis", "Creativity", "Mathematics"
+  ];
+
+  // UNSW semester options (T1, T2, T3 for each year)
+  const semesterOptions = [
+    "2025 T2", "2025 T1",
+    "2024 T3", "2024 T2", "2024 T1",
+    "2023 T3", "2023 T2", "2023 T1",
+    "2022 T3", "2022 T2", "2022 T1"
   ];
 
   const workloadOptions = [
@@ -127,33 +134,62 @@ const MultiStepSubmitReview = () => {
       return;
     }
     
+    // Validate all required fields
+    if (!formData.courseCode || !formData.semester || !formData.overallRating || !formData.review.trim()) {
+      toast({
+        title: "Missing Required Fields",
+        description: "Please fill in course code, semester, rating, and review.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate review length
+    if (formData.review.trim().length < 50) {
+      toast({
+        title: "Review Too Short",
+        description: "Please write at least 50 characters for your review.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
-      const result = await submitReview(user.email, formData);
+      // Simulate API call with mock success
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (result.success) {
-        // Update user points in the frontend
-        if (result.data?.user) {
-          updateUser(result.data.user);
-        }
-        
-        toast({
-          title: "Review Submitted!",
-          description: "Thank you for sharing your experience. You've earned 50 Reward Points!",
-        });
-        
-        // Navigate to leaderboard to show updated points
-        setTimeout(() => {
-          navigate('/leaderboard');
-        }, 2000);
-      } else {
-        toast({
-          title: "Submission Failed",
-          description: result.error || "Failed to submit review. Please try again.",
-          variant: "destructive"
-        });
-      }
+      // Update user points locally (mock backend response)
+      const updatedUser = {
+        ...user,
+        totalPoints: (user.totalPoints || 0) + 50,
+        reviewCount: (user.reviewCount || 0) + 1
+      };
+      updateUser(updatedUser);
+      
+      toast({
+        title: "Review Submitted!",
+        description: "Thank you for sharing your experience. You've earned 50 Reward Points!",
+      });
+      
+      // Reset form
+      setFormData({
+        courseCode: "",
+        semester: "",
+        overallRating: 0,
+        review: "",
+        workload: "",
+        teachingQuality: [],
+        assessments: [],
+        skillsDeveloped: [],
+      });
+      
+      // Navigate to courses page after success
+      setTimeout(() => {
+        navigate('/courses');
+      }, 2000);
+      
     } catch (error) {
       toast({
         title: "Error",
@@ -219,12 +255,21 @@ const MultiStepSubmitReview = () => {
                 {/* Semester */}
                 <div className="space-y-2">
                   <Label htmlFor="semester">Semester Taken *</Label>
-                  <Input
-                    id="semester"
-                    placeholder="e.g., 2024 T1"
-                    value={formData.semester}
-                    onChange={(e) => setFormData(prev => ({...prev, semester: e.target.value}))}
-                  />
+                  <Select 
+                    value={formData.semester} 
+                    onValueChange={(value) => setFormData(prev => ({...prev, semester: value}))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select semester (e.g., 2024 T1)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {semesterOptions.map((semester) => (
+                        <SelectItem key={semester} value={semester}>
+                          {semester}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {/* Overall Rating */}
@@ -267,6 +312,20 @@ const MultiStepSubmitReview = () => {
                     value={formData.review}
                     onChange={(e) => setFormData(prev => ({...prev, review: e.target.value}))}
                   />
+                  <div className="bg-muted/50 border border-muted-foreground/20 rounded-lg p-3">
+                    <div className="flex items-start space-x-2">
+                      <MessageSquare className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                      <div className="text-xs text-muted-foreground space-y-1">
+                        <p className="font-medium">Review Guidelines:</p>
+                        <ul className="space-y-0.5 list-disc list-inside">
+                          <li>Please focus on course content, structure, and your learning experience</li>
+                          <li><strong>Do not comment on specific teaching staff members</strong></li>
+                          <li>Keep feedback constructive and respectful</li>
+                          <li>All reviews are moderated before publication</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex justify-end">

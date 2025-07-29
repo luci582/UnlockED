@@ -248,7 +248,7 @@ const CourseCard = ({
           </div>
         </div>
         
-        {/* Skills Section with enhanced styling and better organization */}
+        {/* Competencies Section with enhanced styling and better organization */}
         <div className="flex flex-wrap gap-1.5 sm:gap-2 flex-1 content-start 
           /* Adaptive max height based on screen size */
           max-h-[80px] sm:max-h-[90px] lg:max-h-[100px] xl:max-h-[90px] 2xl:max-h-[80px]

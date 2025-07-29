@@ -256,7 +256,7 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick, showActive
         {/* Skills Filter */}
         <Collapsible open={openSections.skills} onOpenChange={() => toggleSection('skills')}>
           <CollapsibleTrigger className="flex w-full items-center justify-between py-2" data-testid="skills-filter-trigger">
-            <Label className="font-medium">Skills</Label>
+            <Label className="font-medium">Competencies</Label>
             <ChevronDown className={`h-4 w-4 transition-transform ${openSections.skills ? 'rotate-180' : ''}`} />
           </CollapsibleTrigger>
           <CollapsibleContent className="pt-2 space-y-2">
