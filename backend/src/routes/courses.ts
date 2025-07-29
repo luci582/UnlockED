@@ -38,7 +38,28 @@ router.get('/', async (req: any, res: any) => {
       orderBy: { createdAt: 'desc' }
     });
 
-    res.json({ success: true, courses });
+    // Transform courses to include effortLevel from learningOutcomes
+    const transformedCourses = courses.map(course => {
+      let effortLevel = null;
+      
+      try {
+        if (course.learningOutcomes) {
+          const outcomes = typeof course.learningOutcomes === 'string' 
+            ? JSON.parse(course.learningOutcomes) 
+            : course.learningOutcomes;
+          effortLevel = outcomes.effortLevel || null;
+        }
+      } catch (e) {
+        // If parsing fails, effortLevel remains null
+      }
+
+      return {
+        ...course,
+        effortLevel
+      };
+    });
+
+    res.json({ success: true, courses: transformedCourses });
   } catch (error) {
     logger.error('Get courses error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -169,7 +190,26 @@ router.get('/:id', async (req: any, res: any) => {
       return res.status(404).json({ error: 'Course not found' });
     }
 
-    res.json({ success: true, course });
+    // Transform course to include effortLevel from learningOutcomes
+    let effortLevel = null;
+    
+    try {
+      if (course.learningOutcomes) {
+        const outcomes = typeof course.learningOutcomes === 'string' 
+          ? JSON.parse(course.learningOutcomes) 
+          : course.learningOutcomes;
+        effortLevel = outcomes.effortLevel || null;
+      }
+    } catch (e) {
+      // If parsing fails, effortLevel remains null
+    }
+
+    const transformedCourse = {
+      ...course,
+      effortLevel
+    };
+
+    res.json({ success: true, course: transformedCourse });
   } catch (error) {
     logger.error('Get course by ID error:', error);
     res.status(500).json({ error: 'Internal server error' });

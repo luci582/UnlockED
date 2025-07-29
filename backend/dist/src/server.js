@@ -27,7 +27,7 @@ app.use((0, helmet_1.default)({
 app.use((0, cors_1.default)({
     origin: process.env.NODE_ENV === 'production'
         ? ['https://yourdomain.com']
-        : ['http://localhost:5173', 'http://localhost:3000'],
+        : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:8080'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -64,6 +64,13 @@ app.get('/api/health', (req, res) => {
         timestamp: new Date().toISOString(),
         environment: process.env.NODE_ENV,
         version: '1.0.0'
+    });
+});
+app.get('/api', (req, res) => {
+    res.json({
+        message: 'Welcome to the UnlockED API!',
+        version: '1.0.0',
+        timestamp: new Date().toISOString()
     });
 });
 // API routes

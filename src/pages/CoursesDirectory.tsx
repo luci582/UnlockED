@@ -69,14 +69,19 @@ const CoursesDirectory = () => {
 
   // Filter and sort courses
   const filteredCourses = useMemo(() => {
-    // First, map courses to add effortLevel based on difficulty
-    const coursesWithEffort = courses.map(course => ({
-      ...course,
-      effortLevel: course.difficulty?.toLowerCase() === 'beginner' ? 'light' as const :
-                   course.difficulty?.toLowerCase() === 'intermediate' ? 'moderate' as const :
-                   course.difficulty?.toLowerCase() === 'advanced' ? 'heavy' as const : 
-                   'moderate' as const
-    }));
+    // Courses now come with effortLevel from the API, but provide fallback if missing
+    const coursesWithEffort = courses.map(course => {
+      const effortLevel = course.effortLevel || 
+                         (course.difficulty?.toLowerCase() === 'beginner' ? 'light' :
+                         course.difficulty?.toLowerCase() === 'intermediate' ? 'moderate' :
+                         course.difficulty?.toLowerCase() === 'advanced' ? 'heavy' : 
+                         'moderate');
+      
+      return {
+        ...course,
+        effortLevel: effortLevel as "light" | "moderate" | "heavy" | "very-heavy"
+      };
+    });
 
     const filtered = coursesWithEffort.filter(course => {
       // Search filter - now includes skills/tags and categories

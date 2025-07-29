@@ -79,6 +79,7 @@ export interface DatabaseCourse {
   instructor: string;
   institution?: string;
   difficulty: string;
+  effortLevel?: string; // Workload level: 'light', 'moderate', 'heavy', 'very-heavy'
   rating?: number;
   reviewCount: number;
   enrollmentCount: number;

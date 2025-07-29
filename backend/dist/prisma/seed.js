@@ -131,19 +131,19 @@ async function main() {
                 skillId: skills.find(s => s.name === 'React').id,
                 prerequisiteSkillId: skills.find(s => s.name === 'JavaScript').id,
                 isRequired: true,
-                minimumLevel: client_1.SkillLevel.MEDIUM
+                minimumLevel: 'MEDIUM'
             },
             {
                 skillId: skills.find(s => s.name === 'TypeScript').id,
                 prerequisiteSkillId: skills.find(s => s.name === 'JavaScript').id,
                 isRequired: true,
-                minimumLevel: client_1.SkillLevel.MEDIUM
+                minimumLevel: 'MEDIUM'
             },
             {
                 skillId: skills.find(s => s.name === 'Machine Learning').id,
                 prerequisiteSkillId: skills.find(s => s.name === 'Python').id,
                 isRequired: true,
-                minimumLevel: client_1.SkillLevel.HEAVY
+                minimumLevel: 'HEAVY'
             }
         ]
     });
@@ -223,7 +223,7 @@ async function main() {
                 username: 'admin',
                 firstName: 'Admin',
                 lastName: 'User',
-                role: client_1.UserRole.ADMIN,
+                role: 'ADMIN',
                 passwordHash,
                 totalPoints: 1000,
                 isVerified: true
@@ -261,7 +261,7 @@ async function main() {
                 username: 'mikewilson',
                 firstName: 'Mike',
                 lastName: 'Wilson',
-                role: client_1.UserRole.INSTRUCTOR,
+                role: 'INSTRUCTOR',
                 bio: 'Senior software engineer with 10+ years experience',
                 passwordHash,
                 totalPoints: 500,
@@ -289,7 +289,7 @@ async function main() {
             {
                 userId: users[1].id, // John
                 skillId: skills.find(s => s.name === 'JavaScript').id,
-                level: client_1.SkillLevel.HEAVY,
+                level: 'HEAVY',
                 yearsExperience: 3,
                 isVerified: true,
                 verificationSource: 'Course Completion'
@@ -297,7 +297,7 @@ async function main() {
             {
                 userId: users[1].id, // John
                 skillId: skills.find(s => s.name === 'React').id,
-                level: client_1.SkillLevel.MEDIUM,
+                level: 'MEDIUM',
                 yearsExperience: 2,
                 isVerified: true,
                 verificationSource: 'Portfolio'
@@ -305,7 +305,7 @@ async function main() {
             {
                 userId: users[2].id, // Jane
                 skillId: skills.find(s => s.name === 'Python').id,
-                level: client_1.SkillLevel.VERY_HEAVY,
+                level: 'VERY_HEAVY',
                 yearsExperience: 4,
                 isVerified: true,
                 verificationSource: 'Course Completion'
@@ -313,7 +313,7 @@ async function main() {
             {
                 userId: users[2].id, // Jane
                 skillId: skills.find(s => s.name === 'Machine Learning').id,
-                level: client_1.SkillLevel.HEAVY,
+                level: 'HEAVY',
                 yearsExperience: 2,
                 isVerified: true,
                 verificationSource: 'Test'
@@ -321,7 +321,7 @@ async function main() {
             {
                 userId: users[4].id, // Sarah
                 skillId: skills.find(s => s.name === 'UI/UX Design').id,
-                level: client_1.SkillLevel.VERY_HEAVY,
+                level: 'VERY_HEAVY',
                 yearsExperience: 5,
                 isVerified: true,
                 verificationSource: 'Portfolio'
@@ -341,7 +341,7 @@ async function main() {
                 instructor: 'Jonas Schmedtmann',
                 institution: 'Udemy',
                 duration: '69 hours',
-                difficulty: client_1.Difficulty.BEGINNER,
+                difficulty: 'BEGINNER',
                 price: 89.99,
                 language: 'English',
                 prerequisites: JSON.stringify(['Basic computer skills']),
@@ -364,7 +364,7 @@ async function main() {
                 instructor: 'Maximilian Schwarzmüller',
                 institution: 'Udemy',
                 duration: '48 hours',
-                difficulty: client_1.Difficulty.INTERMEDIATE,
+                difficulty: 'INTERMEDIATE',
                 price: 94.99,
                 language: 'English',
                 prerequisites: JSON.stringify(['JavaScript fundamentals', 'HTML & CSS']),
@@ -387,7 +387,7 @@ async function main() {
                 instructor: 'Kirill Eremenko',
                 institution: 'SuperDataScience',
                 duration: '44 hours',
-                difficulty: client_1.Difficulty.INTERMEDIATE,
+                difficulty: 'INTERMEDIATE',
                 price: 84.99,
                 language: 'English',
                 prerequisites: JSON.stringify(['Basic Python knowledge', 'High school mathematics']),
@@ -410,7 +410,7 @@ async function main() {
                 instructor: 'David J. Malan',
                 institution: 'Harvard University',
                 duration: '12 weeks',
-                difficulty: client_1.Difficulty.BEGINNER,
+                difficulty: 'BEGINNER',
                 isFree: true,
                 language: 'English',
                 prerequisites: JSON.stringify(['None']),
@@ -433,7 +433,7 @@ async function main() {
                 instructor: 'Google Career Certificates',
                 institution: 'Coursera',
                 duration: '6 months',
-                difficulty: client_1.Difficulty.BEGINNER,
+                difficulty: 'BEGINNER',
                 price: 49.00,
                 language: 'English',
                 prerequisites: JSON.stringify(['Basic computer skills']),
@@ -456,7 +456,7 @@ async function main() {
                 instructor: 'Jonas Schmedtmann',
                 institution: 'Udemy',
                 duration: '42 hours',
-                difficulty: client_1.Difficulty.ADVANCED,
+                difficulty: 'ADVANCED',
                 price: 89.99,
                 language: 'English',
                 prerequisites: JSON.stringify(['JavaScript proficiency', 'Basic understanding of APIs']),
@@ -475,23 +475,23 @@ async function main() {
     await prisma.courseSkill.createMany({
         data: [
             // JavaScript Course
-            { courseId: courses[0].id, skillId: skills.find(s => s.name === 'JavaScript').id, level: client_1.SkillLevel.VERY_HEAVY, isCore: true, percentage: 90 },
+            { courseId: courses[0].id, skillId: skills.find(s => s.name === 'JavaScript').id, level: 'VERY_HEAVY', isCore: true, percentage: 90 },
             // React Course
-            { courseId: courses[1].id, skillId: skills.find(s => s.name === 'React').id, level: client_1.SkillLevel.VERY_HEAVY, isCore: true, percentage: 80 },
-            { courseId: courses[1].id, skillId: skills.find(s => s.name === 'JavaScript').id, level: client_1.SkillLevel.HEAVY, isCore: true, percentage: 60 },
+            { courseId: courses[1].id, skillId: skills.find(s => s.name === 'React').id, level: 'VERY_HEAVY', isCore: true, percentage: 80 },
+            { courseId: courses[1].id, skillId: skills.find(s => s.name === 'JavaScript').id, level: 'HEAVY', isCore: true, percentage: 60 },
             // Machine Learning Course
-            { courseId: courses[2].id, skillId: skills.find(s => s.name === 'Machine Learning').id, level: client_1.SkillLevel.VERY_HEAVY, isCore: true, percentage: 85 },
-            { courseId: courses[2].id, skillId: skills.find(s => s.name === 'Python').id, level: client_1.SkillLevel.HEAVY, isCore: true, percentage: 70 },
-            { courseId: courses[2].id, skillId: skills.find(s => s.name === 'Data Analysis').id, level: client_1.SkillLevel.MEDIUM, isCore: false, percentage: 40 },
+            { courseId: courses[2].id, skillId: skills.find(s => s.name === 'Machine Learning').id, level: 'VERY_HEAVY', isCore: true, percentage: 85 },
+            { courseId: courses[2].id, skillId: skills.find(s => s.name === 'Python').id, level: 'HEAVY', isCore: true, percentage: 70 },
+            { courseId: courses[2].id, skillId: skills.find(s => s.name === 'Data Analysis').id, level: 'MEDIUM', isCore: false, percentage: 40 },
             // CS50 Course
-            { courseId: courses[3].id, skillId: skills.find(s => s.name === 'Python').id, level: client_1.SkillLevel.MEDIUM, isCore: false, percentage: 30 },
-            { courseId: courses[3].id, skillId: skills.find(s => s.name === 'SQL').id, level: client_1.SkillLevel.LIGHT, isCore: false, percentage: 20 },
+            { courseId: courses[3].id, skillId: skills.find(s => s.name === 'Python').id, level: 'MEDIUM', isCore: false, percentage: 30 },
+            { courseId: courses[3].id, skillId: skills.find(s => s.name === 'SQL').id, level: 'LIGHT', isCore: false, percentage: 20 },
             // UI/UX Course
-            { courseId: courses[4].id, skillId: skills.find(s => s.name === 'UI/UX Design').id, level: client_1.SkillLevel.VERY_HEAVY, isCore: true, percentage: 95 },
+            { courseId: courses[4].id, skillId: skills.find(s => s.name === 'UI/UX Design').id, level: 'VERY_HEAVY', isCore: true, percentage: 95 },
             // Node.js Course
-            { courseId: courses[5].id, skillId: skills.find(s => s.name === 'Node.js').id, level: client_1.SkillLevel.VERY_HEAVY, isCore: true, percentage: 80 },
-            { courseId: courses[5].id, skillId: skills.find(s => s.name === 'JavaScript').id, level: client_1.SkillLevel.HEAVY, isCore: true, percentage: 60 },
-            { courseId: courses[5].id, skillId: skills.find(s => s.name === 'SQL').id, level: client_1.SkillLevel.MEDIUM, isCore: false, percentage: 30 }
+            { courseId: courses[5].id, skillId: skills.find(s => s.name === 'Node.js').id, level: 'VERY_HEAVY', isCore: true, percentage: 80 },
+            { courseId: courses[5].id, skillId: skills.find(s => s.name === 'JavaScript').id, level: 'HEAVY', isCore: true, percentage: 60 },
+            { courseId: courses[5].id, skillId: skills.find(s => s.name === 'SQL').id, level: 'MEDIUM', isCore: false, percentage: 30 }
         ]
     });
     // Create Course Categories
@@ -611,7 +611,7 @@ async function main() {
                 name: 'First Review',
                 description: 'Write your first course review',
                 icon: 'star',
-                type: client_1.AchievementType.FIRST_REVIEW,
+                type: 'FIRST_REVIEW',
                 criteria: { reviewCount: 1 },
                 points: 50
             }
@@ -621,7 +621,7 @@ async function main() {
                 name: 'Review Master',
                 description: 'Write 10 course reviews',
                 icon: 'crown',
-                type: client_1.AchievementType.REVIEW_COUNT,
+                type: 'REVIEW_COUNT',
                 criteria: { reviewCount: 10 },
                 points: 500
             }
@@ -631,7 +631,7 @@ async function main() {
                 name: 'Course Completer',
                 description: 'Complete your first course',
                 icon: 'graduation-cap',
-                type: client_1.AchievementType.COURSE_COMPLETION,
+                type: 'COURSE_COMPLETION',
                 criteria: { coursesCompleted: 1 },
                 points: 100
             }
@@ -641,7 +641,7 @@ async function main() {
                 name: 'Learning Streak',
                 description: 'Maintain a 7-day review streak',
                 icon: 'fire',
-                type: client_1.AchievementType.STREAK,
+                type: 'STREAK',
                 criteria: { streakDays: 7 },
                 points: 200
             }
@@ -651,7 +651,7 @@ async function main() {
                 name: 'Helpful Reviewer',
                 description: 'Get 50 helpful votes on your reviews',
                 icon: 'heart',
-                type: client_1.AchievementType.HELPFUL_REVIEWS,
+                type: 'HELPFUL_REVIEWS',
                 criteria: { helpfulVotes: 50 },
                 points: 300
             }

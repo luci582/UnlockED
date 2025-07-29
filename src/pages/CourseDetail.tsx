@@ -44,7 +44,22 @@ const CourseDetail = () => {
             rating: response.data.rating || (Math.random() * 1.5 + 3.5), // Random rating between 3.5-5
             reviewCount: response.data.reviewCount || Math.floor(Math.random() * 200 + 50), // 50-250 reviews
             enrollmentCount: response.data.enrollmentCount || Math.floor(Math.random() * 1000 + 200), // 200-1200 enrolled
-            reviews: response.data.reviews?.length > 0 ? response.data.reviews : generateFakeReviews(response.data.title)
+            reviews: response.data.reviews?.length > 0 ? response.data.reviews : generateFakeReviews(response.data.title),
+            // Add workload data based on course difficulty or random assignment
+            effortLevel: (() => {
+              const diff = response.data.difficulty?.toLowerCase();
+              if (diff === 'beginner') return 'light';
+              if (diff === 'intermediate') return 'moderate';
+              if (diff === 'advanced') return 'heavy';
+              // For courses without difficulty, assign based on course type
+              const title = response.data.title.toLowerCase();
+              if (title.includes('math') || title.includes('calculus') || title.includes('comp2521')) return 'heavy';
+              if (title.includes('psyc') || title.includes('mgmt')) return 'moderate';
+              if (title.includes('arts') || title.includes('intro')) return 'light';
+              // Random fallback
+              const workloads = ['light', 'moderate', 'heavy', 'very-heavy'];
+              return workloads[Math.floor(Math.random() * workloads.length)];
+            })()
           };
           setCourse(enhancedCourse);
         } else {
@@ -263,6 +278,34 @@ const CourseDetail = () => {
 
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="secondary">{formattedDifficulty}</Badge>
+                    {course.effortLevel && (
+                      <Badge className={(() => {
+                        const effort = course.effortLevel;
+                        const colorMap = {
+                          light: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border-green-200 dark:border-green-800",
+                          moderate: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800",
+                          heavy: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300 border-orange-200 dark:border-orange-800",
+                          "very-heavy": "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 border-red-200 dark:border-red-800"
+                        };
+                        const labelMap = {
+                          light: "Light Workload",
+                          moderate: "Moderate Workload", 
+                          heavy: "Heavy Workload",
+                          "very-heavy": "Very Heavy Workload"
+                        };
+                        return `text-xs font-medium px-2 py-0.5 border ${colorMap[effort] || 'bg-muted text-muted-foreground border-border'}`;
+                      })()}>
+                        {(() => {
+                          const labelMap = {
+                            light: "Light Workload",
+                            moderate: "Moderate Workload",
+                            heavy: "Heavy Workload", 
+                            "very-heavy": "Very Heavy Workload"
+                          };
+                          return labelMap[course.effortLevel] || course.effortLevel;
+                        })()}
+                      </Badge>
+                    )}
                     <Badge variant="outline">{course.instructor}</Badge>
                     {course.institution && (
                       <Badge variant="outline">{course.institution}</Badge>
@@ -308,7 +351,29 @@ const CourseDetail = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Difficulty:</span>
-                    <span className="font-medium">{formattedDifficulty}</span>
+                    {(() => {
+                      const diff = course.difficulty?.toLowerCase();
+                      let effort: "light"|"moderate"|"heavy"|"very-heavy" = "moderate";
+                      if (diff === "beginner") effort = "light";
+                      else if (diff === "intermediate") effort = "moderate";
+                      else if (diff === "advanced") effort = "heavy";
+                      // Use same color logic as CourseCard
+                      const colorMap = {
+                        light: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border-green-200 dark:border-green-800",
+                        moderate: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800",
+                        heavy: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300 border-orange-200 dark:border-orange-800",
+                        "very-heavy": "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 border-red-200 dark:border-red-800"
+                      };
+                      const labelMap = {
+                        light: "Light",
+                        moderate: "Moderate",
+                        heavy: "Heavy",
+                        "very-heavy": "Very Heavy"
+                      };
+                      return (
+                        <span className={`px-2 py-0.5 rounded border text-xs font-medium whitespace-nowrap ${colorMap[effort]}`}>{labelMap[effort]}</span>
+                      );
+                    })()}
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Students:</span>
