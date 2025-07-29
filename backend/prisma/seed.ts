@@ -351,13 +351,13 @@ async function main() {
         difficulty: Difficulty.BEGINNER,
         price: 89.99,
         language: 'English',
-        prerequisites: ['Basic computer skills'],
-        learningOutcomes: [
+        prerequisites: JSON.stringify(['Basic computer skills']),
+        learningOutcomes: JSON.stringify([
           'Become an advanced JavaScript developer',
           'Build 6 beautiful real-world projects',
           'Learn modern JavaScript features',
           'Master asynchronous JavaScript'
-        ],
+        ]),
         createdById: users[3].id // Mike Wilson
       }
     }),
@@ -374,13 +374,13 @@ async function main() {
         difficulty: Difficulty.INTERMEDIATE,
         price: 94.99,
         language: 'English',
-        prerequisites: ['JavaScript fundamentals', 'HTML & CSS'],
-        learningOutcomes: [
+        prerequisites: JSON.stringify(['JavaScript fundamentals', 'HTML & CSS']),
+        learningOutcomes: JSON.stringify([
           'Build powerful, fast, user-friendly React apps',
           'Learn React Hooks & Class-based Components',
           'Master Redux & Context API',
           'Build real projects'
-        ],
+        ]),
         createdById: users[3].id
       }
     }),
@@ -397,13 +397,13 @@ async function main() {
         difficulty: Difficulty.INTERMEDIATE,
         price: 84.99,
         language: 'English',
-        prerequisites: ['Basic Python knowledge', 'High school mathematics'],
-        learningOutcomes: [
+        prerequisites: JSON.stringify(['Basic Python knowledge', 'High school mathematics']),
+        learningOutcomes: JSON.stringify([
           'Master Machine Learning algorithms',
           'Learn Python and R for Data Science',
           'Build ML models from scratch',
           'Handle real-world datasets'
-        ],
+        ]),
         createdById: users[3].id
       }
     }),
@@ -420,13 +420,13 @@ async function main() {
         difficulty: Difficulty.BEGINNER,
         isFree: true,
         language: 'English',
-        prerequisites: ['None'],
-        learningOutcomes: [
+        prerequisites: JSON.stringify(['None']),
+        learningOutcomes: JSON.stringify([
           'Think algorithmically and solve problems efficiently',
           'Learn multiple programming languages',
           'Understand fundamental CS concepts',
           'Build web applications'
-        ],
+        ]),
         createdById: users[0].id // Admin
       }
     }),
@@ -443,13 +443,13 @@ async function main() {
         difficulty: Difficulty.BEGINNER,
         price: 49.00,
         language: 'English',
-        prerequisites: ['Basic computer skills'],
-        learningOutcomes: [
+        prerequisites: JSON.stringify(['Basic computer skills']),
+        learningOutcomes: JSON.stringify([
           'Create wireframes and prototypes',
           'Conduct UX research',
           'Design accessible interfaces',
           'Build a professional portfolio'
-        ],
+        ]),
         createdById: users[3].id
       }
     }),
@@ -466,13 +466,13 @@ async function main() {
         difficulty: Difficulty.ADVANCED,
         price: 89.99,
         language: 'English',
-        prerequisites: ['JavaScript proficiency', 'Basic understanding of APIs'],
-        learningOutcomes: [
+        prerequisites: JSON.stringify(['JavaScript proficiency', 'Basic understanding of APIs']),
+        learningOutcomes: JSON.stringify([
           'Build complete web applications',
           'Master Node.js and Express',
           'Work with MongoDB and Mongoose',
           'Implement authentication and security'
-        ],
+        ]),
         createdById: users[3].id
       }
     })
@@ -565,8 +565,8 @@ async function main() {
         wouldRecommend: true,
         title: 'Excellent React Course!',
         content: 'This course is absolutely fantastic! The instructor explains complex concepts in a very clear and understandable way. The projects are real-world applicable and helped me build a strong portfolio.',
-        pros: ['Clear explanations', 'Great projects', 'Up-to-date content', 'Responsive instructor'],
-        cons: ['Could use more advanced topics'],
+        pros: JSON.stringify(['Clear explanations', 'Great projects', 'Up-to-date content', 'Responsive instructor']),
+        cons: JSON.stringify(['Could use more advanced topics']),
         isVerified: true,
         completionDate: new Date(),
         helpfulCount: 15
@@ -584,8 +584,8 @@ async function main() {
         wouldRecommend: true,
         title: 'Great introduction to ML',
         content: 'Solid course for getting started with machine learning. Covers both theory and practical implementation. The Python examples are very helpful.',
-        pros: ['Good theory coverage', 'Practical examples', 'Both Python and R'],
-        cons: ['Sometimes moves too fast', 'Could use more recent techniques'],
+        pros: JSON.stringify(['Good theory coverage', 'Practical examples', 'Both Python and R']),
+        cons: JSON.stringify(['Sometimes moves too fast', 'Could use more recent techniques']),
         isVerified: true,
         helpfulCount: 8
       }
@@ -602,8 +602,8 @@ async function main() {
         wouldRecommend: true,
         title: 'Perfect for beginners',
         content: 'As someone transitioning from design to development, this course was exactly what I needed. The pace is perfect and the instructor is very engaging.',
-        pros: ['Beginner friendly', 'Engaging instructor', 'Good pacing', 'Practical projects'],
-        cons: ['None really'],
+        pros: JSON.stringify(['Beginner friendly', 'Engaging instructor', 'Good pacing', 'Practical projects']),
+        cons: JSON.stringify(['None really']),
         isVerified: false,
         helpfulCount: 12
       }

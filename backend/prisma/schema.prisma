@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 // Enums
@@ -96,15 +96,15 @@ model Course {
   duration          String? // e.g., "4 weeks", "Self-paced"
   difficulty        Difficulty
   status            CourseStatus @default(PUBLISHED)
-  price             Decimal?     @db.Decimal(10, 2)
+  price             Float? // Changed from Decimal to Float for SQLite
   isFree            Boolean      @default(false)
   language          String       @default("English")
-  rating            Decimal?     @db.Decimal(3, 2) // Computed field, updated via triggers/code
+  rating            Float? // Changed from Decimal to Float for SQLite
   reviewCount       Int          @default(0) // Computed field
   enrollmentCount   Int          @default(0) // Computed field
   isActive          Boolean      @default(true)
-  prerequisites     String[] // Array of prerequisite course names/skills
-  learningOutcomes  String[] // Array of learning outcomes
+  prerequisites     String? // Changed from String[] to String (JSON string)
+  learningOutcomes  String? // Changed from String[] to String (JSON string)
   syllabus          Json? // JSON structure for course syllabus
   lastUpdated       DateTime?
   createdAt         DateTime     @default(now())
@@ -178,8 +178,8 @@ model Review {
   wouldRecommend   Boolean?
   title            String
   content          String
-  pros             String[]  @default([])
-  cons             String[]  @default([])
+  pros             String? // Changed from String[] to String (JSON string)
+  cons             String? // Changed from String[] to String (JSON string)
   isAnonymous      Boolean   @default(false)
   isVerified       Boolean   @default(false) // Verified purchase/enrollment
   helpfulCount     Int       @default(0) // Computed field
@@ -448,7 +448,7 @@ model ProgressReport {
   coursesCompleted Int      @default(0)
   reviewsWritten   Int      @default(0)
   pointsEarned     Int      @default(0)
-  skillsLearned    String[] @default([])
+  skillsLearned    String? // Changed from String[] to String (JSON string)
   weeklyGoalMet    Boolean  @default(false)
   monthlyGoalMet   Boolean  @default(false)
 

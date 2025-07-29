@@ -1,6 +1,6 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import * as jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 import { logger } from '../utils/logger';
@@ -26,17 +26,12 @@ const signupSchema = z.object({
 
 // Generate JWT token
 const generateToken = (userId: string): string => {
-  const secret = process.env.JWT_SECRET as string;
-  const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
-  
-  return jwt.sign(
-    { userId },
-    secret,
-    { expiresIn }
-  );
-};
+  const secret = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production';
 
-// POST /api/auth/login
+  const token = jwt.sign({ userId }, secret);
+
+  return token;
+};// POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
     const validatedData = loginSchema.parse(req.body);
@@ -86,7 +81,7 @@ router.post('/login', async (req, res) => {
 
     logger.info(`User ${user.email} logged in successfully`);
 
-    res.json({
+    return res.json({
       success: true,
       user: userWithoutPassword,
       token,
@@ -168,7 +163,7 @@ router.post('/signup', async (req, res) => {
 
     logger.info(`New user registered: ${email} with role: ${userRole}`);
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       user: newUser,
       token,
@@ -197,7 +192,7 @@ router.post('/verify-token', async (req, res) => {
       return res.status(400).json({ error: 'Token is required' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production') as { userId: string };
     
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
@@ -217,7 +212,7 @@ router.post('/verify-token', async (req, res) => {
       return res.status(401).json({ error: 'User not found' });
     }
 
-    res.json({
+    return res.json({
       success: true,
       user,
       valid: true
