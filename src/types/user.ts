@@ -3,12 +3,15 @@ export type Role = 'STUDENT' | 'INSTRUCTOR' | 'ADMIN';
 export interface User {
   id: string;
   email: string;
-  name: string;
+  username: string;
+  firstName: string;
+  lastName: string;
   role: Role;
-  points?: number;
+  totalPoints?: number;
   reviewCount?: number;
-  createdAt: Date;
-  updatedAt: Date;
+  isVerified?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface AuthResult {

@@ -49,9 +49,12 @@ const Login = () => {
       );
       
       if (user) {
+        // Set authentication state first
         login(user);
         setSuccess("Login successful! Redirecting...");
-        setTimeout(() => navigate("/"), 1000);
+        
+        // Navigate immediately after setting auth state
+        navigate("/");
       } else {
         setError("Invalid email or password");
       }
@@ -91,9 +94,12 @@ const Login = () => {
       );
       
       if (user) {
+        // Set authentication state first
         login(user);
         setSuccess("Account created successfully! Redirecting...");
-        setTimeout(() => navigate("/"), 1000);
+        
+        // Navigate immediately after setting auth state
+        navigate("/");
       } else {
         setError("Account creation failed");
       }

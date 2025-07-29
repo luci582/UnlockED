@@ -94,9 +94,9 @@ const Header = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full" data-testid="user-menu-trigger">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src="" alt={user.name} />
+                    <AvatarImage src="" alt={`${user.firstName} ${user.lastName}`} />
                     <AvatarFallback className="bg-primary text-primary-foreground">
-                      {user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                      {(user.firstName?.[0] || '') + (user.lastName?.[0] || '')}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -105,7 +105,7 @@ const Header = () => {
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">
-                      {user.name}
+                      {user.firstName} {user.lastName}
                     </p>
                     <p className="text-xs leading-none text-muted-foreground">
                       {user.email}
@@ -202,14 +202,14 @@ const Header = () => {
                   <div className="border-t pt-4 mt-4">
                     <div className="flex items-center space-x-3 px-3 py-2">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src="" alt={user.name} />
+                        <AvatarImage src="" alt={`${user.firstName} ${user.lastName}`} />
                         <AvatarFallback className="bg-primary text-primary-foreground">
-                          {user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                          {(user.firstName?.[0] || '') + (user.lastName?.[0] || '')}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <p className="text-sm font-medium">
-                          {user.name}
+                          {user.firstName} {user.lastName}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {user.email}

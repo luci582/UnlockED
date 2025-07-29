@@ -83,20 +83,41 @@ export async function createUser(
 }
 
 export function getCurrentUser(): User | null {
-  if (currentUser) {
-    return currentUser;
-  }
-  
-  // Try to get user from localStorage
-  const storedUser = localStorage.getItem('user');
-  if (storedUser) {
-    try {
-      currentUser = JSON.parse(storedUser);
+  try {
+    if (currentUser) {
       return currentUser;
-    } catch (error) {
-      console.error('Error parsing stored user:', error);
-      localStorage.removeItem('user');
     }
+    
+    // Try to get user from localStorage
+    const storedUser = localStorage.getItem('user');
+    
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        
+        // Validate that the parsed user has required fields
+        if (parsedUser && typeof parsedUser === 'object' && parsedUser.id && parsedUser.email) {
+          currentUser = parsedUser;
+          return currentUser;
+        } else {
+          console.warn('Invalid user data in localStorage, clearing...');
+          localStorage.removeItem('user');
+          localStorage.removeItem('authToken');
+        }
+      } catch (error) {
+        console.error('Error parsing stored user:', error);
+        localStorage.removeItem('user');
+        localStorage.removeItem('authToken');
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error in getCurrentUser:', error);
+    // Clear potentially corrupted data
+    localStorage.removeItem('user');
+    localStorage.removeItem('authToken');
+    return null;
   }
   
   return null;

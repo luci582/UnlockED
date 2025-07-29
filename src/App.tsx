@@ -4,6 +4,7 @@ import { AuthProvider } from "./hooks/use-auth";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
 import HomepageSimple from "./pages/HomepageSimple";
+import DebugHomepage from "./pages/DebugHomepage";
 import CoursesDirectory from "./pages/CoursesDirectory";
 import CourseDetail from "./pages/CourseDetail";
 import SubmitReview from "./pages/SubmitReview";
@@ -43,6 +44,7 @@ const App = () => {
               <Header />
               <Routes>
                 <Route path="/" element={<HomepageSimple />} />
+                <Route path="/home" element={<HomepageSimple />} />
                 <Route path="/courses" element={
                   <ProtectedRoute>
                     <CoursesDirectory />
