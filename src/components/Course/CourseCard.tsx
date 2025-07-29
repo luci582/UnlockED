@@ -256,7 +256,7 @@ const CourseCard = ({
           [@media(min-aspect-ratio:21/9)]:max-h-[60px]
           [@media(max-aspect-ratio:4/3)]:max-h-[120px]
           overflow-y-auto skills-container">
-          {displayedSkills.slice(0, 4).map((skill, index) => {
+          {displayedSkills.map((skill, index) => {
             const isSkillSelected = selectedSkills.includes(skill);
             const isHighPriority = ['React', 'JavaScript', 'Python', 'Machine Learning', 'Node.js'].includes(skill);
             return (
