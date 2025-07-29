@@ -131,19 +131,19 @@ async function main() {
         skillId: skills.find(s => s.name === 'React')!.id,
         prerequisiteSkillId: skills.find(s => s.name === 'JavaScript')!.id,
         isRequired: true,
-        minimumLevel: SkillLevel.MEDIUM
+        minimumLevel: 'MEDIUM'
       },
       {
         skillId: skills.find(s => s.name === 'TypeScript')!.id,
         prerequisiteSkillId: skills.find(s => s.name === 'JavaScript')!.id,
         isRequired: true,
-        minimumLevel: SkillLevel.MEDIUM
+        minimumLevel: 'MEDIUM'
       },
       {
         skillId: skills.find(s => s.name === 'Machine Learning')!.id,
         prerequisiteSkillId: skills.find(s => s.name === 'Python')!.id,
         isRequired: true,
-        minimumLevel: SkillLevel.HEAVY
+        minimumLevel: 'HEAVY'
       }
     ]
   })

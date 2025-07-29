@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,437 +7,334 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-// Enums
-enum Difficulty {
-  BEGINNER
-  INTERMEDIATE
-  ADVANCED
-  EXPERT
-}
-
-enum UserRole {
-  STUDENT
-  INSTRUCTOR
-  ADMIN
-}
-
-enum SkillLevel {
-  LIGHT
-  MEDIUM
-  HEAVY
-  VERY_HEAVY
-}
-
-enum CourseStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-  UNDER_REVIEW
-}
-
-enum AchievementType {
-  REVIEW_COUNT
-  COURSE_COMPLETION
-  STREAK
-  RATING_QUALITY
-  FIRST_REVIEW
-  HELPFUL_REVIEWS
-  SKILL_MASTERY
-  COMMUNITY_CONTRIBUTOR
-}
-
-// User table - Core user information
 model User {
-  id                String   @id @default(cuid())
-  email             String   @unique
-  username          String   @unique
-  firstName         String
-  lastName          String
-  profileImage      String?
-  bio               String?
-  role              UserRole @default(STUDENT)
-  isVerified        Boolean  @default(false)
-  verificationToken String?
-  passwordHash      String
-  totalPoints       Int      @default(0)
-  reviewStreak      Int      @default(0)
-  lastActiveAt      DateTime @default(now())
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  // Relationships
-  reviews              Review[]
-  reviewVotes          ReviewVote[]
-  enrollments          CourseEnrollment[]
-  achievements         UserAchievement[]
-  notifications        Notification[]
-  courses              Course[]               // Courses created by this user
-  skillProficiencies   UserSkillProficiency[]
-  reviewHelpfulVotes   ReviewHelpfulVote[]
-  progressReports      ProgressReport[]
+  id                 String                 @id @default(cuid())
+  email              String                 @unique
+  username           String                 @unique
+  firstName          String
+  lastName           String
+  profileImage       String?
+  bio                String?
+  role               String                 @default("STUDENT")
+  isVerified         Boolean                @default(false)
+  verificationToken  String?
+  passwordHash       String
+  totalPoints        Int                    @default(0)
+  reviewStreak       Int                    @default(0)
+  lastActiveAt       DateTime               @default(now())
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+  enrollments        CourseEnrollment[]
+  courses            Course[]
+  notifications      Notification[]
+  progressReports    ProgressReport[]
+  reviewHelpfulVotes ReviewHelpfulVote[]
+  reviewVotes        ReviewVote[]
+  reviews            Review[]
+  achievements       UserAchievement[]
+  skillProficiencies UserSkillProficiency[]
 
   @@map("users")
 }
 
-// Course table - Core course information
 model Course {
-  id                String       @id @default(cuid())
-  title             String
-  description       String
-  shortDescription  String?
-  imageUrl          String?
-  thumbnailUrl      String?
-  courseUrl         String
-  instructor        String
-  institution       String?
-  duration          String? // e.g., "4 weeks", "Self-paced"
-  difficulty        Difficulty
-  status            CourseStatus @default(PUBLISHED)
-  price             Float? // Changed from Decimal to Float for SQLite
-  isFree            Boolean      @default(false)
-  language          String       @default("English")
-  rating            Float? // Changed from Decimal to Float for SQLite
-  reviewCount       Int          @default(0) // Computed field
-  enrollmentCount   Int          @default(0) // Computed field
-  isActive          Boolean      @default(true)
-  prerequisites     String? // Changed from String[] to String (JSON string)
-  learningOutcomes  String? // Changed from String[] to String (JSON string)
-  syllabus          Json? // JSON structure for course syllabus
-  lastUpdated       DateTime?
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
-
-  // Foreign keys
-  createdById String
-  createdBy   User   @relation(fields: [createdById], references: [id])
-
-  // Relationships
-  reviews      Review[]
-  skills       CourseSkill[]
-  enrollments  CourseEnrollment[]
-  categories   CourseCategory[]
-  tags         CourseTag[]
-  modules      CourseModule[]
+  id               String             @id @default(cuid())
+  title            String
+  description      String
+  shortDescription String?
+  imageUrl         String?
+  thumbnailUrl     String?
+  courseUrl        String
+  instructor       String
+  institution      String?
+  duration         String?
+  difficulty       String
+  status           String             @default("PUBLISHED")
+  price            Float?
+  isFree           Boolean            @default(false)
+  language         String             @default("English")
+  rating           Float?
+  reviewCount      Int                @default(0)
+  enrollmentCount  Int                @default(0)
+  isActive         Boolean            @default(true)
+  prerequisites    String?
+  learningOutcomes String?
+  syllabus         Json?
+  lastUpdated      DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  createdById      String
+  categories       CourseCategory[]
+  enrollments      CourseEnrollment[]
+  modules          CourseModule[]
+  skills           CourseSkill[]
+  tags             CourseTag[]
+  createdBy        User               @relation(fields: [createdById], references: [id])
+  reviews          Review[]
 
   @@map("courses")
 }
 
-// Skill table - Skills associated with courses
 model Skill {
-  id          String     @id @default(cuid())
-  name        String     @unique
-  description String?
-  category    String? // e.g., "Programming", "Design", "Business"
-  icon        String? // Icon identifier for UI
-  color       String? // Color for UI representation
-  isActive    Boolean    @default(true)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-
-  // Relationships
-  courses              CourseSkill[]
-  userProficiencies    UserSkillProficiency[]
-  prerequisiteFor      SkillPrerequisite[]    @relation("PrerequisiteSkill")
-  prerequisites        SkillPrerequisite[]    @relation("DependentSkill")
-  reviewRatings        ReviewSkillRating[]
+  id                String                 @id @default(cuid())
+  name              String                 @unique
+  description       String?
+  category          String?
+  icon              String?
+  color             String?
+  isActive          Boolean                @default(true)
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+  courses           CourseSkill[]
+  reviewRatings     ReviewSkillRating[]
+  prerequisiteFor   SkillPrerequisite[]    @relation("PrerequisiteSkill")
+  prerequisites     SkillPrerequisite[]    @relation("DependentSkill")
+  userProficiencies UserSkillProficiency[]
 
   @@map("skills")
 }
 
-// Junction table for Course-Skill many-to-many relationship
 model CourseSkill {
-  id         String     @id @default(cuid())
+  id         String   @id @default(cuid())
   courseId   String
   skillId    String
-  level      SkillLevel @default(MEDIUM) // How heavily this skill is covered
-  isCore     Boolean    @default(false) // Whether this is a core skill for the course
-  percentage Int?       @default(0) // Percentage of course dedicated to this skill (0-100)
-  createdAt  DateTime   @default(now())
-
-  // Foreign keys
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  skill  Skill  @relation(fields: [skillId], references: [id])
+  level      String   @default("MEDIUM")
+  isCore     Boolean  @default(false)
+  percentage Int?     @default(0)
+  createdAt  DateTime @default(now())
+  skill      Skill    @relation(fields: [skillId], references: [id])
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([courseId, skillId])
   @@map("course_skills")
 }
 
-// Review table - User reviews of courses
 model Review {
-  id               String    @id @default(cuid())
+  id               String              @id @default(cuid())
   userId           String
   courseId         String
-  overallRating    Int // 1-5 stars
-  difficultyRating Int? // 1-5 scale
-  contentQuality   Int? // 1-5 scale
-  instructorRating Int? // 1-5 scale
-  valueForMoney    Int? // 1-5 scale
+  overallRating    Int
+  difficultyRating Int?
+  contentQuality   Int?
+  instructorRating Int?
+  valueForMoney    Int?
   wouldRecommend   Boolean?
   title            String
   content          String
-  pros             String? // Changed from String[] to String (JSON string)
-  cons             String? // Changed from String[] to String (JSON string)
-  isAnonymous      Boolean   @default(false)
-  isVerified       Boolean   @default(false) // Verified purchase/enrollment
-  helpfulCount     Int       @default(0) // Computed field
-  flagCount        Int       @default(0) // Number of times flagged
-  isHidden         Boolean   @default(false)
+  pros             String?
+  cons             String?
+  isAnonymous      Boolean             @default(false)
+  isVerified       Boolean             @default(false)
+  helpfulCount     Int                 @default(0)
+  flagCount        Int                 @default(0)
+  isHidden         Boolean             @default(false)
   moderatorNotes   String?
-  completionDate   DateTime? // When user completed the course
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  completionDate   DateTime?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  helpfulVotes     ReviewHelpfulVote[]
+  skillRatings     ReviewSkillRating[]
+  votes            ReviewVote[]
+  course           Course              @relation(fields: [courseId], references: [id])
+  user             User                @relation(fields: [userId], references: [id])
 
-  // Foreign keys
-  user   User   @relation(fields: [userId], references: [id])
-  course Course @relation(fields: [courseId], references: [id])
-
-  // Relationships
-  votes         ReviewVote[]
-  helpfulVotes  ReviewHelpfulVote[]
-  skillRatings  ReviewSkillRating[]
-
-  @@unique([userId, courseId]) // One review per user per course
+  @@unique([userId, courseId])
   @@map("reviews")
 }
 
-// Review voting system for overall review quality
 model ReviewVote {
-  id       String @id @default(cuid())
-  userId   String
-  reviewId String
-  isUpvote Boolean // true for upvote, false for downvote
+  id        String   @id @default(cuid())
+  userId    String
+  reviewId  String
+  isUpvote  Boolean
   createdAt DateTime @default(now())
-
-  // Foreign keys
-  user   User   @relation(fields: [userId], references: [id])
-  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, reviewId])
   @@map("review_votes")
 }
 
-// Helpful votes for reviews (separate from quality votes)
 model ReviewHelpfulVote {
   id        String   @id @default(cuid())
   userId    String
   reviewId  String
-  isHelpful Boolean // true for helpful, false for not helpful
+  isHelpful Boolean
   createdAt DateTime @default(now())
-
-  // Foreign keys
-  user   User   @relation(fields: [userId], references: [id])
-  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, reviewId])
   @@map("review_helpful_votes")
 }
 
-// Skill-specific ratings within reviews
 model ReviewSkillRating {
-  id       String @id @default(cuid())
-  reviewId String
-  skillId  String
-  rating   Int // 1-5 scale for how well the course taught this skill
+  id        String   @id @default(cuid())
+  reviewId  String
+  skillId   String
+  rating    Int
   createdAt DateTime @default(now())
-
-  // Foreign keys
-  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
-  skill  Skill  @relation(fields: [skillId], references: [id])
+  skill     Skill    @relation(fields: [skillId], references: [id])
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 
   @@unique([reviewId, skillId])
   @@map("review_skill_ratings")
 }
 
-// Course enrollment tracking
 model CourseEnrollment {
-  id           String    @id @default(cuid())
-  userId       String
-  courseId     String
-  enrolledAt   DateTime  @default(now())
-  completedAt  DateTime?
-  progress     Int       @default(0) // 0-100 percentage
-  lastAccessed DateTime  @default(now())
-  status       String    @default("active") // active, completed, dropped, paused
+  id             String    @id @default(cuid())
+  userId         String
+  courseId       String
+  enrolledAt     DateTime  @default(now())
+  completedAt    DateTime?
+  progress       Int       @default(0)
+  lastAccessed   DateTime  @default(now())
+  status         String    @default("active")
   certificateUrl String?
-
-  // Foreign keys
-  user   User   @relation(fields: [userId], references: [id])
-  course Course @relation(fields: [courseId], references: [id])
+  course         Course    @relation(fields: [courseId], references: [id])
+  user           User      @relation(fields: [userId], references: [id])
 
   @@unique([userId, courseId])
   @@map("course_enrollments")
 }
 
-// User skill proficiency tracking
 model UserSkillProficiency {
-  id            String   @id @default(cuid())
-  userId        String
-  skillId       String
-  level         SkillLevel
-  yearsExperience Int?  @default(0)
-  lastUsed      DateTime?
-  isVerified    Boolean  @default(false)
-  verificationSource String? // e.g., "Course Completion", "Portfolio", "Test"
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  // Foreign keys
-  user  User  @relation(fields: [userId], references: [id])
-  skill Skill @relation(fields: [skillId], references: [id])
+  id                 String    @id @default(cuid())
+  userId             String
+  skillId            String
+  level              String
+  yearsExperience    Int?      @default(0)
+  lastUsed           DateTime?
+  isVerified         Boolean   @default(false)
+  verificationSource String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  skill              Skill     @relation(fields: [skillId], references: [id])
+  user               User      @relation(fields: [userId], references: [id])
 
   @@unique([userId, skillId])
   @@map("user_skill_proficiencies")
 }
 
-// Skill prerequisites relationship
 model SkillPrerequisite {
-  id                  String @id @default(cuid())
-  skillId             String // The skill that has prerequisites
-  prerequisiteSkillId String // The skill that is required
+  id                  String  @id @default(cuid())
+  skillId             String
+  prerequisiteSkillId String
   isRequired          Boolean @default(true)
-  minimumLevel        SkillLevel @default(LIGHT)
-
-  // Foreign keys
-  skill             Skill @relation("DependentSkill", fields: [skillId], references: [id])
-  prerequisiteSkill Skill @relation("PrerequisiteSkill", fields: [prerequisiteSkillId], references: [id])
+  minimumLevel        String  @default("LIGHT")
+  prerequisiteSkill   Skill   @relation("PrerequisiteSkill", fields: [prerequisiteSkillId], references: [id])
+  skill               Skill   @relation("DependentSkill", fields: [skillId], references: [id])
 
   @@unique([skillId, prerequisiteSkillId])
   @@map("skill_prerequisites")
 }
 
-// Categories for organizing courses
 model Category {
-  id          String @id @default(cuid())
-  name        String @unique
-  slug        String @unique
+  id          String           @id @default(cuid())
+  name        String           @unique
+  slug        String           @unique
   description String?
   icon        String?
   color       String?
   parentId    String?
-  sortOrder   Int    @default(0)
-  isActive    Boolean @default(true)
-
-  // Self-referencing relationship for subcategories
-  parent   Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  children Category[] @relation("CategoryHierarchy")
-  
-  // Relationships
-  courses CourseCategory[]
+  sortOrder   Int              @default(0)
+  isActive    Boolean          @default(true)
+  parent      Category?        @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[]       @relation("CategoryHierarchy")
+  courses     CourseCategory[]
 
   @@map("categories")
 }
 
-// Junction table for Course-Category many-to-many relationship
 model CourseCategory {
-  id         String @id @default(cuid())
+  id         String   @id @default(cuid())
   courseId   String
   categoryId String
-  isPrimary  Boolean @default(false)
-
-  // Foreign keys
-  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  category Category @relation(fields: [categoryId], references: [id])
+  isPrimary  Boolean  @default(false)
+  category   Category @relation(fields: [categoryId], references: [id])
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([courseId, categoryId])
   @@map("course_categories")
 }
 
-// Tags for additional course metadata
 model Tag {
-  id        String @id @default(cuid())
-  name      String @unique
+  id        String      @id @default(cuid())
+  name      String      @unique
   color     String?
-  createdAt DateTime @default(now())
-
-  // Relationships
-  courses CourseTag[]
+  createdAt DateTime    @default(now())
+  courses   CourseTag[]
 
   @@map("tags")
 }
 
-// Junction table for Course-Tag many-to-many relationship
 model CourseTag {
   id       String @id @default(cuid())
   courseId String
   tagId    String
-
-  // Foreign keys
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  tag    Tag    @relation(fields: [tagId], references: [id])
+  tag      Tag    @relation(fields: [tagId], references: [id])
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([courseId, tagId])
   @@map("course_tags")
 }
 
-// Course modules/chapters
 model CourseModule {
-  id          String @id @default(cuid())
+  id          String  @id @default(cuid())
   courseId    String
   title       String
   description String?
   sortOrder   Int
-  duration    String? // e.g., "2 hours"
+  duration    String?
   isOptional  Boolean @default(false)
-
-  // Foreign keys
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course      Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@map("course_modules")
 }
 
-// Achievement system
 model Achievement {
-  id          String          @id @default(cuid())
-  name        String          @unique
+  id          String            @id @default(cuid())
+  name        String            @unique
   description String
   icon        String?
-  type        AchievementType
-  criteria    Json // JSON object defining criteria for earning
-  points      Int             @default(0)
-  isActive    Boolean         @default(true)
-  createdAt   DateTime        @default(now())
-
-  // Relationships
-  users UserAchievement[]
+  type        String
+  criteria    Json
+  points      Int               @default(0)
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  users       UserAchievement[]
 
   @@map("achievements")
 }
 
-// User achievements
 model UserAchievement {
-  id            String   @id @default(cuid())
+  id            String      @id @default(cuid())
   userId        String
   achievementId String
-  earnedAt      DateTime @default(now())
-  progress      Json? // JSON for tracking progress towards achievement
-
-  // Foreign keys
-  user        User        @relation(fields: [userId], references: [id])
-  achievement Achievement @relation(fields: [achievementId], references: [id])
+  earnedAt      DateTime    @default(now())
+  progress      Json?
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
 
   @@unique([userId, achievementId])
   @@map("user_achievements")
 }
 
-// Notification system
 model Notification {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   userId    String
   title     String
   message   String
-  type      String // e.g., "review_reply", "achievement_earned", "course_update"
-  isRead    Boolean  @default(false)
-  data      Json? // Additional data for the notification
-  createdAt DateTime @default(now())
+  type      String
+  isRead    Boolean   @default(false)
+  data      Json?
+  createdAt DateTime  @default(now())
   readAt    DateTime?
-
-  // Foreign keys
-  user User @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
 
   @@map("notifications")
 }
 
-// Progress reports for analytics
 model ProgressReport {
   id               String   @id @default(cuid())
   userId           String
@@ -448,15 +342,10 @@ model ProgressReport {
   coursesCompleted Int      @default(0)
   reviewsWritten   Int      @default(0)
   pointsEarned     Int      @default(0)
-  skillsLearned    String? // Changed from String[] to String (JSON string)
+  skillsLearned    String?
   weeklyGoalMet    Boolean  @default(false)
   monthlyGoalMet   Boolean  @default(false)
-
-  // Foreign keys
-  user User @relation(fields: [userId], references: [id])
+  user             User     @relation(fields: [userId], references: [id])
 
   @@map("progress_reports")
 }
-
-// Fix the CourseTag relationship issue - removing this duplicate model
-// The correct CourseTag model already exists above

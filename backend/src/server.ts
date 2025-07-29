@@ -72,6 +72,14 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+app.get('/api', (req, res) => {
+  res.json({
+    message: 'Welcome to the UnlockED API!',
+    version: '1.0.0',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // API routes
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/users', userRoutes);

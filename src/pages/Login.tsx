@@ -24,7 +24,6 @@ const Login = () => {
   const [loginForm, setLoginForm] = useState({
     email: "",
     password: "",
-    adminKey: "",
   });
 
   // Signup form state
@@ -46,8 +45,7 @@ const Login = () => {
     try {
       const user = await authenticateUser(
         loginForm.email, 
-        loginForm.password, 
-        loginForm.adminKey || undefined
+        loginForm.password
       );
       
       if (user) {
@@ -83,11 +81,11 @@ const Login = () => {
     }
 
     try {
-      const fullName = `${signupForm.firstName} ${signupForm.lastName}`.trim();
       const user = await createUser(
         signupForm.email,
         signupForm.password,
-        fullName,
+        signupForm.firstName,
+        signupForm.lastName,
         signupForm.role,
         signupForm.adminKey || undefined
       );
@@ -108,17 +106,15 @@ const Login = () => {
 
   const fillDemoCredentials = () => {
     setLoginForm({
-      email: "demo@unlocked.edu",
-      password: "demo123",
-      adminKey: "",
+      email: "test@example.com",
+      password: "password123",
     });
   };
 
   const fillAdminCredentials = () => {
     setLoginForm({
-      email: "admin@unlocked.edu", 
+      email: "admin@example.com", 
       password: "admin123",
-      adminKey: "teamlockedin124",
     });
   };
 
@@ -191,21 +187,6 @@ const Login = () => {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="adminKey">Admin Key (Optional)</Label>
-                  <div className="relative">
-                    <Shield className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="adminKey"
-                      type="password"
-                      placeholder="Enter admin key for elevated access"
-                      value={loginForm.adminKey}
-                      onChange={(e) => setLoginForm(prev => ({ ...prev, adminKey: e.target.value }))}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Logging in..." : "Login"}
                 </Button>
@@ -217,7 +198,7 @@ const Login = () => {
                     className="w-full" 
                     onClick={fillDemoCredentials}
                   >
-                    Use Demo Account
+                    Use Test Account (Student)
                   </Button>
                   <Button 
                     type="button" 
@@ -342,7 +323,7 @@ const Login = () => {
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Use admin key "teamlockedin124" for admin access
+                    Use admin key "teamlockedin124" for admin access (optional)
                   </p>
                 </div>
 

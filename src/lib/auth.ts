@@ -16,13 +16,13 @@ export async function authenticateUser(email: string, password: string, adminKey
       body: JSON.stringify({
         email,
         password,
-        adminKey
+        ...(adminKey && { adminKey })
       }),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Authentication failed');
+      throw new Error(errorData.error || 'Authentication failed');
     }
 
     const data = await response.json();
@@ -35,14 +35,15 @@ export async function authenticateUser(email: string, password: string, adminKey
     return data.user;
   } catch (error) {
     console.error('Authentication error:', error);
-    return null;
+    throw error;
   }
 }
 
 export async function createUser(
   email: string, 
   password: string, 
-  name: string, 
+  firstName: string,
+  lastName: string,
   role: Role = 'STUDENT',
   adminKey?: string
 ): Promise<User | null> {
@@ -55,7 +56,8 @@ export async function createUser(
       body: JSON.stringify({
         email,
         password,
-        name,
+        firstName,
+        lastName,
         role,
         adminKey
       }),
@@ -63,7 +65,7 @@ export async function createUser(
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Account creation failed');
+      throw new Error(errorData.error || 'Account creation failed');
     }
 
     const data = await response.json();
@@ -76,7 +78,7 @@ export async function createUser(
     return data.user;
   } catch (error) {
     console.error('Account creation error:', error);
-    return null;
+    throw error;
   }
 }
 
@@ -147,16 +149,28 @@ export const login = async (loginData: LoginData): Promise<AuthResult> => {
 };
 
 export const signup = async (signupData: SignupData): Promise<AuthResult> => {
-  const user = await createUser(
-    signupData.email,
-    signupData.password,
-    signupData.name,
-    signupData.role,
-    signupData.adminKey
-  );
-  return {
-    success: user !== null,
-    user: user || undefined,
-    error: user ? undefined : 'Account creation failed'
-  };
+  try {
+    const [firstName, ...lastNameParts] = signupData.name.split(' ');
+    const lastName = lastNameParts.join(' ') || '';
+    
+    const user = await createUser(
+      signupData.email,
+      signupData.password,
+      firstName,
+      lastName,
+      signupData.role,
+      signupData.adminKey
+    );
+    return {
+      success: user !== null,
+      user: user || undefined,
+      error: user ? undefined : 'Account creation failed'
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      user: undefined,
+      error: error.message || 'Account creation failed'
+    };
+  }
 };
