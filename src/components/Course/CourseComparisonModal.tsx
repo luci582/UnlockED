@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X, Star, Users, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Dialog,
   DialogContent,
@@ -36,6 +37,16 @@ const CourseComparisonModal = ({ isOpen, onClose }: CourseComparisonModalProps) 
       case "heavy": return "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400";
       case "very-heavy": return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
       default: return "bg-muted text-muted-foreground";
+    }
+  };
+
+  const getEstimatedHours = (effort: string) => {
+    switch (effort) {
+      case "light": return "< 5 hours/week";
+      case "moderate": return "5-10 hours/week";
+      case "heavy": return "10-15 hours/week";
+      case "very-heavy": return "15+ hours/week";
+      default: return "Hours vary";
     }
   };
 
@@ -105,9 +116,18 @@ const CourseComparisonModal = ({ isOpen, onClose }: CourseComparisonModalProps) 
                 {course.effortLevel && (
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Workload</span>
-                    <Badge className={`text-xs ${getEffortColor(course.effortLevel)}`}>
-                      {getEffortLabel(course.effortLevel)}
-                    </Badge>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge className={`text-xs cursor-help ${getEffortColor(course.effortLevel)}`}>
+                            {getEffortLabel(course.effortLevel)}
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Estimated workload: {getEstimatedHours(course.effortLevel)}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 )}
                 

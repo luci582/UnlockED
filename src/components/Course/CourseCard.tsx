@@ -2,6 +2,7 @@ import { Star, Users, Clock, ArrowRight, Plus, Check, Monitor, MapPin, Trophy } 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
@@ -124,6 +125,16 @@ const CourseCard = ({
     }
   };
 
+  const getEstimatedHours = (effort: string) => {
+    switch (effort) {
+      case "light": return "< 5 hours/week";
+      case "moderate": return "5-10 hours/week";
+      case "heavy": return "10-15 hours/week";
+      case "very-heavy": return "15+ hours/week";
+      default: return "Hours vary";
+    }
+  };
+
   const getModeIcon = (mode: string) => {
     switch (mode) {
       case "online": return <Monitor className="h-3.5 w-3.5" />;
@@ -180,9 +191,18 @@ const CourseCard = ({
                   </Badge>
                 )}
                 {effortLevel && (
-                  <Badge className={`text-xs font-medium px-2 py-0.5 sm:px-2.5 sm:py-1 border whitespace-nowrap ${getEffortColor(effortLevel)}`}>
-                    {getEffortLabel(effortLevel)}
-                  </Badge>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge className={`text-xs font-medium px-2 py-0.5 sm:px-2.5 sm:py-1 border whitespace-nowrap cursor-help ${getEffortColor(effortLevel)}`}>
+                          {getEffortLabel(effortLevel)}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Estimated workload: {getEstimatedHours(effortLevel)}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 )}
               </div>
             </div>
