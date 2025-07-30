@@ -1,16 +1,18 @@
 services:
   # Backend API Server
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: lucimstar/unlocked-backend:1.2
+    # Uncomment build section for local development
+    # build:
+    #   context: ./backend
+    #   dockerfile: Dockerfile
     container_name: unlocked-backend
     restart: unless-stopped
     environment:
       NODE_ENV: production
       JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
       PORT: 3001
-      CORS_ORIGIN: ${FRONTEND_URL:-http://localhost:80}
+      CORS_ORIGIN: ${FRONTEND_URL:-http://localhost}
     volumes:
       # Mount SQLite database directory
       - ./backend/prisma:/app/prisma
@@ -30,9 +32,11 @@ services:
 
   # Frontend React Application
   frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.frontend
+    image: lucimstar/unlocked:1.2
+    # Uncomment build section for local development
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile.frontend
     container_name: unlocked-frontend
     restart: unless-stopped
     ports:
