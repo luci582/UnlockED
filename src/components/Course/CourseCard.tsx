@@ -148,7 +148,7 @@ const CourseCard = ({
   const hasMoreSkills = skillNames.length > 4;
 
   return (
-    <Card className={`group relative overflow-hidden transition-all duration-300 
+    <Card className={`group relative transition-all duration-300 
       hover:-translate-y-1 hover:shadow-xl hover:shadow-black/5 
       dark:hover:shadow-white/5 
       /* Responsive heights for different aspect ratios */
@@ -195,7 +195,7 @@ const CourseCard = ({
                     <Badge className={`text-xs font-medium px-2 py-0.5 sm:px-2.5 sm:py-1 border whitespace-nowrap cursor-help ${getEffortColor(effortLevel)}`}>
                       {getEffortLabel(effortLevel)}
                     </Badge>
-                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-background border border-border text-foreground text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-background border border-border text-foreground text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-[9999]">
                       Estimated workload: {getEstimatedHours(effortLevel)}
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-border"></div>
                     </div>
