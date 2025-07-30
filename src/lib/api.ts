@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = '/api';
 
 export interface ReviewData {
   courseCode: string;
@@ -19,7 +19,7 @@ export interface ApiResponse<T> {
 
 export const submitReview = async (userEmail: string, reviewData: ReviewData): Promise<ApiResponse<any>> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/reviews`, {
+    const response = await fetch(`${API_BASE_URL}/reviews`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ export const submitReview = async (userEmail: string, reviewData: ReviewData): P
 
 export const getLeaderboard = async (): Promise<ApiResponse<any>> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/leaderboard`);
+    const response = await fetch(`${API_BASE_URL}/leaderboard`);
     const result = await response.json();
     
     if (!response.ok) {
@@ -103,7 +103,7 @@ export interface DatabaseCourse {
 
 export const fetchCourses = async (page: number = 1, limit: number = 20): Promise<ApiResponse<DatabaseCourse[]>> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/courses?page=${page}&limit=${limit}`, {
+    const response = await fetch(`${API_BASE_URL}/courses?page=${page}&limit=${limit}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -131,7 +131,7 @@ export const fetchCourses = async (page: number = 1, limit: number = 20): Promis
 
 export const fetchCourseById = async (id: string): Promise<ApiResponse<DatabaseCourse & { reviews: any[] }>> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/courses/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/courses/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

@@ -129,7 +129,89 @@ setup_database() {
     # Seed database
     docker-compose exec backend npm run db:seed
     
-    print_success "Database setup completed"
+    # Add workload data to preserve our workload tags
+    print_status "Adding workload data to courses..."
+    docker-compose exec backend node add-workload-data.js || {
+        print_warning "add-workload-data.js not found, creating it..."
+        docker-compose exec backend sh -c 'cat > add-workload-data.js << '"'"'EOF'"'"'
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
+async function addWorkloadData() {
+  try {
+    console.log("📚 Adding workload data to courses...");
+    const courses = await prisma.course.findMany();
+    
+    const workloadMappings = [
+      { titleContains: "COMP1511", effortLevel: "moderate" },
+      { titleContains: "COMP2521", effortLevel: "heavy" }, 
+      { titleContains: "COMP1521", effortLevel: "heavy" },
+      { titleContains: "COMP3900", effortLevel: "very-heavy" },
+      { titleContains: "COMP6080", effortLevel: "heavy" },
+      { titleContains: "MATH1131", effortLevel: "very-heavy" },
+      { titleContains: "MATH1081", effortLevel: "heavy" },
+      { titleContains: "PSYC1001", effortLevel: "moderate" },
+      { titleContains: "MGMT1001", effortLevel: "light" },
+      { titleContains: "ACCT1501", effortLevel: "moderate" },
+      { titleContains: "FINS1613", effortLevel: "moderate" },
+      { titleContains: "ARTS1000", effortLevel: "light" },
+      { titleContains: "ECON1101", effortLevel: "moderate" },
+    ];
+    
+    for (const course of courses) {
+      let effortLevel = "moderate";
+      const mapping = workloadMappings.find(m => course.title.includes(m.titleContains));
+      if (mapping) {
+        effortLevel = mapping.effortLevel;
+      } else {
+        const diff = course.difficulty?.toLowerCase();
+        if (diff === "beginner") effortLevel = "light";
+        else if (diff === "intermediate") effortLevel = "moderate";
+        else if (diff === "advanced") effortLevel = "heavy";
+        else {
+          const options = ["light", "moderate", "heavy"];
+          effortLevel = options[Math.floor(Math.random() * options.length)];
+        }
+      }
+      
+      let existingOutcomes = {};
+      try {
+        if (course.learningOutcomes && typeof course.learningOutcomes === "string") {
+          existingOutcomes = JSON.parse(course.learningOutcomes);
+        } else if (course.learningOutcomes && typeof course.learningOutcomes === "object") {
+          existingOutcomes = course.learningOutcomes;
+        }
+      } catch (e) {
+        existingOutcomes = {};
+      }
+      
+      await prisma.course.update({
+        where: { id: course.id },
+        data: { 
+          learningOutcomes: JSON.stringify({
+            ...existingOutcomes,
+            effortLevel: effortLevel
+          })
+        }
+      });
+      
+      console.log(`✅ Updated ${course.title}: ${effortLevel} workload`);
+    }
+    
+    console.log("🎉 Workload data added successfully!");
+  } catch (error) {
+    console.error("❌ Error adding workload data:", error);
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+addWorkloadData();
+EOF'
+        docker-compose exec backend node add-workload-data.js
+    }
+    
+    print_success "Database setup completed with workload data"
 }
 
 # Show service status

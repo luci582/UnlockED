@@ -1,31 +1,4 @@
-version: '3.8'
-
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:15-alpine
-    container_name: unlocked-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${DATABASE_NAME:-unlocked}
-      POSTGRES_USER: ${DATABASE_USER:-unlocked_user}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-unlocked_password}
-      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "${DATABASE_PORT:-5432}:5432"
-    networks:
-      - unlocked-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-unlocked_user} -d ${DATABASE_NAME:-unlocked}"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-    security_opt:
-      - no-new-privileges:true
-
   # Backend API Server
   backend:
     build:
@@ -35,17 +8,17 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://${DATABASE_USER:-unlocked_user}:${DATABASE_PASSWORD:-unlocked_password}@postgres:5432/${DATABASE_NAME:-unlocked}?schema=public
       JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
       PORT: 3001
       CORS_ORIGIN: ${FRONTEND_URL:-http://localhost:80}
+    volumes:
+      # Mount SQLite database directory
+      - ./backend/prisma:/app/prisma
+      - sqlite_data:/app/data
     ports:
       - "${BACKEND_PORT:-3001}:3001"
     networks:
       - unlocked-network
-    depends_on:
-      postgres:
-        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:3001/api/health || exit 1"]
       interval: 30s
@@ -105,9 +78,9 @@ networks:
     name: unlocked-network
 
 volumes:
-  postgres_data:
+  sqlite_data:
     driver: local
-    name: unlocked-postgres-data
+    name: unlocked-sqlite-data
   redis_data:
     driver: local
     name: unlocked-redis-data

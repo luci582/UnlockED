@@ -31,8 +31,8 @@ import {
 import { Trash2, UserPlus, Users, MessageSquare, Shield, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 
-// API base URL - consistent with auth.ts
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+// API base URL - use nginx proxy
+const API_BASE = '/api';
 
 interface User {
   id: number;

@@ -1,7 +1,7 @@
 import { User, Role, AuthResult, SignupData, LoginData } from '../types/user';
 
-// API base URL - will use backend server
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+// API base URL - use nginx proxy
+const API_BASE = '/api';
 
 // Simulated current user for demo
 let currentUser: User | null = null;
