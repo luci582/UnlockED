@@ -1,52 +1,400 @@
-# UnlockED - UNSW Course Review Platform
+# UnlockED - UNSW Course Review Platform 🎓
 
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite)](https://vitejs.dev/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-4-000000?logo=express)](https://expressjs.com/)
-[![Prisma](https://img.shields.io/badge/Prisma-5-2D3748?logo=prisma)](https://www.prisma.io/)
+[![Prisma](https://img.shields.io/badge/Prisma-6-2D3748?logo=prisma)](https://www.prisma.io/)
+[![Docker](https://img.shields.io/badge/Docker-24-2496ED?logo=docker)](https://www.docker.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql)](https://www.postgresql.org/)
 
-## 🎓 Overview
+## � Overview
 
-UnlockED is a modern, comprehensive course review and discovery platform built specifically for UNSW students. It empowers students to make informed academic decisions through peer reviews, detailed course analytics, and gamified community engagement.
+UnlockED is a modern, comprehensive course review and discovery platform built specifically for UNSW students. It empowers students to make informed academic decisions through peer reviews, detailed course analytics, workload insights, and gamified community engagement.
 
-### ✨ Key Features
+## 🎮 Features Deep Dive
 
-🔍 **Smart Course Discovery** - Advanced search and filtering across all UNSW faculties  
-⭐ **Peer Review System** - Authentic reviews from verified UNSW students  
-🎯 **Skills Tracking** - Comprehensive skill development mapping per course  
-🏆 **Gamification** - Point rewards, leaderboards, and achievement tracking  
-📊 **Data Analytics** - Rating distributions, workload insights, and trends  
-🎨 **Modern UI/UX** - Dark/light theme, mobile responsive, UNSW-branded design  
-🔐 **Secure Authentication** - Role-based access with JWT token security
+### 🔍 Smart Course Discovery
+- **Advanced Filtering**: Filter by faculty, difficulty, rating, workload, and skills
+- **Real-time Search**: Instant results with fuzzy matching and highlighting
+- **Comparison Tool**: Side-by-side course comparison with detailed metrics
+- **Workload Intelligence**: Visual workload tags (Light/Moderate/Heavy/Very Heavy) with estimated weekly hours
 
-## 🚀 Quick Start
+## 🧪 Testing & Quality Assurance
+
+### Testing Strategy
+```bash
+# Frontend Testing
+npm run test              # Run Jest tests
+npm run test:coverage     # Test coverage report
+npm run test:e2e          # Cypress end-to-end tests
+
+# Backend Testing  
+cd backend
+npm run test              # API endpoint tests
+npm run test:integration  # Database integration tests
+```
+
+### Code Quality
+- **ESLint**: Configured with React and TypeScript rules
+- **Prettier**: Automatic code formatting
+- **Husky**: Pre-commit hooks for quality checks
+- **TypeScript Strict Mode**: Enhanced type safety
+- **Security Audits**: Regular dependency vulnerability scans
+
+## 🚀 Deployment Options
+
+### Production Deployment
+```bash
+# Docker Production (Recommended)
+./deploy.sh prod
+
+# Manual Production Build
+npm run build
+cd backend && npm run build
+npm start  # Serves production build
+```
+
+### Scaling & Performance
+- **Horizontal Scaling**: Multiple backend instances with load balancer
+- **Database Optimization**: Indexed queries and connection pooling
+- **CDN Integration**: Static asset delivery optimization
+- **Caching Strategy**: Redis for session and API response caching
+
+## 🤝 Contributing
+
+### Development Workflow
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Make** your changes with proper tests
+4. **Commit** with conventional commit messages
+5. **Push** to your branch (`git push origin feature/amazing-feature`)
+6. **Open** a Pull Request
+
+### Contribution Guidelines
+- Follow the existing code style and TypeScript patterns
+- Add tests for new features and bug fixes
+- Update documentation for API changes
+- Ensure all tests pass and no linting errors
+- Keep commits atomic and well-described
+
+### Development Setup for Contributors
+```bash
+# Fork and clone your fork
+git clone https://github.com/YOUR_USERNAME/UnlockED.git
+cd UnlockED
+
+# Set up development environment
+./deploy.sh dev
+
+# Create feature branch
+git checkout -b feature/your-feature-name
+
+# Make changes and test
+npm run test
+npm run lint
+
+# Commit and push
+git commit -m "feat: add amazing new feature"
+git push origin feature/your-feature-name
+```
+
+## 📊 Project Roadmap
+
+### ✅ Completed Features
+- Core course review and rating system
+- Advanced search and filtering
+- Workload classification with visual tags
+- User authentication and authorization
+- Responsive design with dark/light themes
+- Docker containerization with Alpine Linux
+- Database with comprehensive sample data
+
+### 🚧 In Progress
+- **Enhanced Analytics Dashboard** with interactive charts
+- **Mobile App** with React Native
+- **AI-Powered Recommendations** based on user preferences
+- **Social Features** with course discussion forums
+
+### 🔮 Future Plans
+- **Integration with UNSW Systems** for real course data
+- **Advanced Gamification** with course completion tracking
+- **Career Pathway Mapping** with industry partnerships
+- **Accessibility Improvements** for inclusive design
+- **API v2** with GraphQL support
+- **Microservices Architecture** for better scalability
+
+## 📞 Support & Community
+
+### Getting Help
+- **📖 Documentation**: Comprehensive guides in `/docs`
+- **💬 Discussions**: GitHub Discussions for questions and ideas
+- **🐛 Bug Reports**: Issue templates for reporting problems
+- **💡 Feature Requests**: Structured process for new features
+
+### Community
+- **Discord Server**: Real-time chat and support
+- **Weekly Standups**: Open community development meetings
+- **Code Reviews**: Collaborative improvement process
+- **Mentorship Program**: Guidance for new contributors
+
+## 📝 License & Attribution
+
+### License
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+### Acknowledgments
+- **UNSW Sydney** for inspiration and educational mission
+- **shadcn/ui** for the excellent component library
+- **Radix UI** for accessible component primitives
+- **Tailwind CSS** for the utility-first CSS framework
+- **Prisma** for the amazing database toolkit
+- **Vercel** for hosting and deployment platform
+
+### Contributors
+Special thanks to all contributors who help make UnlockED better:
+- [Contributor Guidelines](CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security Policy](SECURITY.md)
+
+---
+
+## 🎯 Quick Start Commands
 
 ```bash
-# 1. Clone and setup
+# 🐳 Docker Deployment (Recommended)
+git clone https://github.com/luci582/UnlockED.git
+cd UnlockED && cp .env.example .env
+./deploy.sh dev    # Development with hot reload
+./deploy.sh prod   # Production deployment
+
+# 🔧 Local Development
+npm install && cd backend && npm install && cd ..
+cd backend && npx prisma migrate dev && npx tsx prisma/seed.ts && node add-workload-data.js && cd ..
+npm run dev  # Frontend (localhost:8080)
+cd backend && npm run dev  # Backend (localhost:3001)
+
+# 📊 Database Management
+npx prisma studio        # Visual database editor
+./deploy.sh shell-db     # Database shell (Docker)
+./deploy.sh logs         # View all service logs
+
+# 🛠️ Useful Commands
+./deploy.sh status       # Check service health
+./deploy.sh restart      # Restart all services
+./deploy.sh cleanup      # Clean reset
+```
+
+**🌐 Access Points:**
+- **Frontend**: http://localhost (Docker) or http://localhost:8080 (Local)
+- **Backend API**: http://localhost:3001/api
+- **Database Studio**: Available via Prisma Studio
+- **Health Checks**: `/health` endpoints for all services
+
+---
+
+<div align="center">
+
+**Built with ❤️ for the UNSW community**
+
+[⭐ Star this repo](https://github.com/luci582/UnlockED) | [🐛 Report Bug](https://github.com/luci582/UnlockED/issues) | [💡 Request Feature](https://github.com/luci582/UnlockED/issues) | [📖 Documentation](./docs)
+
+</div>
+
+### 🎯 Skills & Career Mapping
+- **Skill Proficiency Tracking**: Visual skill development across courses
+- **Career Pathway Recommendations**: AI-driven course suggestions based on career goals
+- **Industry Alignment**: Skills mapped to real industry requirements
+- **Achievement System**: Unlock badges for skill mastery and course completion
+
+### 📊 Analytics Dashboard
+- **Interactive Charts**: Rating distributions with beautiful visualizations
+- **Trend Analysis**: Course performance over time and semesters
+- **Workload Metrics**: Average study time and difficulty progression
+- **Personalized Insights**: Custom recommendations based on your academic profile
+
+### 🔐 Security & Authentication
+- **Role-Based Access**: Different permissions for Students, Instructors, and Admins
+- **Secure Sessions**: JWT tokens with automatic refresh and logout
+- **Data Protection**: Encrypted sensitive data and secure API endpoints
+- **Rate Limiting**: Protection against abuse and spam
+
+## 📱 User Interface
+
+### 🎨 Design System
+- **UNSW Branding**: Official colors, fonts, and design guidelines
+- **Accessibility**: WCAG 2.1 AA compliant with keyboard navigation
+- **Responsive Layout**: Optimized for desktop, tablet, and mobile devices
+- **Theme Support**: Dark/light themes with system preference detection
+
+### 🧩 Component Library
+- **shadcn/ui**: Modern, accessible components built on Radix UI
+- **Custom Components**: Course cards, rating displays, and review forms
+- **Interactive Elements**: Hover effects, smooth transitions, and micro-interactions
+- **Loading States**: Skeleton loaders and progress indicators for better UX
+
+## 🗄️ Database Schema
+
+### Core Entities
+```
+� User
+├── Authentication (email, password, role)
+├── Profile (name, bio, year, faculty)
+├── Gamification (points, streak, achievements)
+└── Privacy Settings
+
+📚 Course
+├── Basic Info (title, code, description, instructor)
+├── Academic Details (difficulty, prerequisites, learning outcomes)
+├── Metrics (rating, review count, enrollment count)
+├── Workload Data (effort level, estimated hours)
+└── Skills & Categories
+
+⭐ Review
+├── Ratings (overall, difficulty, teaching, value)
+├── Content (title, description, pros, cons)
+├── Metadata (semester, workload, would recommend)
+└── Moderation (verified, helpful votes)
+
+� Skill & Category
+├── Skill Definitions (name, description, category)
+├── Course Associations (skill level, importance)
+└── User Proficiency Tracking
+```
+
+### Workload Data Integration
+Our database includes intelligent workload classification:
+- **Light**: < 5 hours/week (Introductory courses, electives)
+- **Moderate**: 5-10 hours/week (Standard courses, most majors)
+- **Heavy**: 10-15 hours/week (Core CS courses, math-intensive)
+- **Very Heavy**: 15+ hours/week (Capstone projects, advanced courses)
+
+*Database automatically populated with realistic workload data based on course characteristics and historical patterns.*
+
+## 🚀 Quick Start Guide
+
+### Option 1: Docker Deployment (Recommended)
+
+**🐳 One-Command Setup**
+```bash
+# Clone the repository
+git clone https://github.com/luci582/UnlockED.git
+cd UnlockED
+
+# Set up environment
+cp .env.example .env
+# Edit .env with your configuration
+
+# Deploy with Docker (includes database with workload data)
+./deploy.sh dev    # Development mode
+./deploy.sh prod   # Production mode
+```
+
+**🌐 Access Your Application**
+- **Frontend**: http://localhost (or your configured port)
+- **Backend API**: http://localhost:3001/api
+- **Database**: Automatically configured with sample data
+- **Admin Panel**: Login as admin to manage courses
+
+### Option 2: Local Development
+
+**📋 Prerequisites**
+- Node.js 18+ and npm
+- PostgreSQL 15+
+- Git
+
+**⚡ Setup Steps**
+```bash
+# 1. Clone and install dependencies
 git clone https://github.com/luci582/UnlockED.git
 cd UnlockED
 npm install
 cd backend && npm install && cd ..
 
-# 2. Initialize database
+# 2. Database setup
 cd backend
+cp .env.example .env
+# Configure DATABASE_URL in .env
+
+# Initialize database with schema
 npx prisma migrate dev --name init
+npx prisma generate
+
+# Seed with sample data (includes workload tags)
 npx tsx prisma/seed.ts
+node add-workload-data.js  # Adds workload data to courses
 cd ..
 
 # 3. Start development servers
 # Terminal 1 - Backend (port 3001)
 cd backend && npm run dev
 
-# Terminal 2 - Frontend (port 8080)  
+# Terminal 2 - Frontend (port 8080)
 npm run dev
 ```
 
-**🌐 Access**: http://localhost:8080  
-**🔑 Login**: `test@example.com` / `password123`  
-**📊 Database**: `npx prisma studio` (from backend folder)
+**� Quick Access**
+- **Application**: http://localhost:8080
+- **API Docs**: http://localhost:3001/api
+- **Database Studio**: `npx prisma studio` (from backend folder)
+- **Test Login**: `test@example.com` / `password123`
+
+## 🏗️ Architecture Overview
+
+### Technology Stack
+
+**Frontend**
+- ⚛️ **React 18** with TypeScript for type-safe development
+- ⚡ **Vite 6** for lightning-fast development and building
+- 🎨 **Tailwind CSS** with shadcn/ui component library
+- 🌙 **Theme System** with dark/light mode and system preference
+- 📱 **Responsive Design** with mobile-first approach
+
+**Backend**
+- 🟢 **Node.js 18** with Express.js framework
+- 🔷 **TypeScript** for full type safety
+- 🗄️ **Prisma ORM** with PostgreSQL database
+- 🔐 **JWT Authentication** with refresh token support
+- �️ **Security Middleware** (Helmet, CORS, Rate Limiting)
+
+**Database**
+- 🐘 **PostgreSQL 15** for reliable data storage
+- 🔄 **Prisma Migrations** for schema management
+- 💾 **Redis** for caching and session management
+- 📊 **Rich Data Models** with relationships and constraints
+
+**Infrastructure**
+- 🐳 **Docker** with Alpine Linux for optimal performance
+- 🔧 **Multi-stage builds** for production optimization
+- 🏥 **Health checks** and monitoring
+- 📈 **Horizontal scaling** ready with load balancer support
+
+### Project Structure
+```
+UnlockED/
+├── 📁 src/                    # Frontend React application
+│   ├── 📁 components/         # Reusable UI components
+│   │   ├── 📁 Course/        # Course-specific components
+│   │   ├── 📁 Auth/          # Authentication components
+│   │   ├── 📁 Layout/        # Layout and navigation
+│   │   └── 📁 ui/            # shadcn/ui components
+│   ├── 📁 pages/             # Application pages/routes
+│   ├── 📁 hooks/             # Custom React hooks
+│   ├── 📁 lib/               # Utility libraries and API
+│   └── 📁 types/             # TypeScript type definitions
+├── 📁 backend/               # Node.js Express API
+│   ├── 📁 src/              # TypeScript source code
+│   │   ├── 📁 routes/       # API route handlers
+│   │   ├── 📁 middleware/   # Express middleware
+│   │   └── 📁 utils/        # Utility functions
+│   ├── 📁 prisma/           # Database schema and migrations
+│   └── 📁 dist/             # Compiled JavaScript (production)
+├── 📁 public/               # Static assets
+├── 🐳 docker-compose.yml    # Multi-service orchestration
+├── 🚀 deploy.sh             # Deployment automation script
+└── 📚 DOCKER.md             # Docker deployment guide
+```
 
 ## 📱 Current Features
 
