@@ -11,7 +11,6 @@ interface FilterPanelProps {
   onFiltersChange?: (filters: any) => void;
   currentFilters?: {
     faculty: string[];
-    rating: number;
     mode: string[];
     skills: string[];
   };
@@ -21,7 +20,6 @@ interface FilterPanelProps {
 const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick }: FilterPanelProps) => {
   const [filters, setFilters] = useState(currentFilters || {
     faculty: [],
-    rating: 0,
     mode: [],
     skills: [],
   });
@@ -49,7 +47,6 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick }: FilterPa
 
   const [openSections, setOpenSections] = useState({
     faculty: true,
-    rating: true,
     mode: true,
     skills: true
   });
@@ -64,13 +61,11 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick }: FilterPa
   const clearAllFilters = () => {
     setFilters({
       faculty: [],
-      rating: 0,
       mode: [],
       skills: [],
     });
     onFiltersChange?.({
       faculty: [],
-      rating: 0,
       mode: [],
       skills: [],
     });
@@ -107,24 +102,7 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick }: FilterPa
           </CollapsibleContent>
         </Collapsible>
 
-        {/* Rating Filter */}
-        <Collapsible open={openSections.rating} onOpenChange={() => toggleSection('rating')}>
-          <CollapsibleTrigger className="flex w-full items-center justify-between py-2">
-            <Label className="font-medium">Minimum Rating</Label>
-            <ChevronDown className={`h-4 w-4 transition-transform ${openSections.rating ? 'rotate-180' : ''}`} />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="space-y-2 pt-2">
-            {[4, 3, 2, 1].map((rating) => (
-              <div key={rating} className="flex items-center space-x-2">
-                <Checkbox id={`rating-${rating}`} />
-                <Label htmlFor={`rating-${rating}`} className="flex items-center space-x-1 text-sm">
-                  <Star className="h-3 w-3 fill-course-rating text-course-rating" />
-                  <span>{rating}+ stars</span>
-                </Label>
-              </div>
-            ))}
-          </CollapsibleContent>
-        </Collapsible>
+
 
         {/* Delivery Mode Filter */}
         <Collapsible open={openSections.mode} onOpenChange={() => toggleSection('mode')}>

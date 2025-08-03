@@ -420,7 +420,7 @@ const CourseDetail = () => {
             }`}
           >
             <Play className="h-4 w-4" />
-            Video Summary
+            60s Summary
           </button>
           <button
             onClick={() => setActiveTab("reviews")}
@@ -499,17 +499,17 @@ const CourseDetail = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Play className="h-5 w-5" />
-                    Course Video Summary
-                    <Badge variant="outline" className="ml-2 text-xs">Student Created</Badge>
+                    Course Summary Video
+                    <Badge variant="outline" className="ml-2 text-xs">60 seconds</Badge>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground mb-6">
-                    Get a comprehensive overview of the course through student-created video content that covers key topics and learning objectives from a student perspective.
+                    Watch a concise 60-second overview of this course, created by students who have completed it.
                   </p>
                   
                   <div className="space-y-4">
-                    {/* Video Placeholder */}
+                    {/* Single Video */}
                     <div 
                       className="aspect-video bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                       onClick={() => window.open('https://www.youtube.com/shorts/Ay8lynMZ4mE?feature=share', '_blank')}
@@ -517,10 +517,10 @@ const CourseDetail = () => {
                       <div className="text-center">
                         <Play className="h-16 w-16 mx-auto text-slate-400 mb-4" />
                         <h3 className="text-lg font-semibold text-slate-600 dark:text-slate-300 mb-2">
-                          Course Introduction Video
+                          {course.title} - Student Review
                         </h3>
                         <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-                          15 minutes • Overview of {course.title}
+                          60 seconds • Quick course overview
                         </p>
                         <Button 
                           className="gap-2"
@@ -530,62 +530,9 @@ const CourseDetail = () => {
                           }}
                         >
                           <Play className="h-4 w-4" />
-                          Watch Introduction
+                          Watch Now
                         </Button>
                       </div>
-                    </div>
-
-                    {/* Video Chapters */}
-                    <div className="grid gap-4 mt-8">
-                      <h4 className="text-lg font-semibold mb-4">Other Students Course Review</h4>
-                      
-                      {(course.title.includes("PSYC") ? [
-                        { title: "Emma's Review: What is Psychology?", duration: "12 min", description: "Introduction to psychology as a scientific discipline" },
-                        { title: "James' Review: Research Methods", duration: "18 min", description: "Understanding psychological research and statistics" },
-                        { title: "Sarah's Review: Learning & Memory", duration: "22 min", description: "How we learn and remember information" },
-                        { title: "Michael's Review: Cognitive Processes", duration: "15 min", description: "Attention, perception, and thinking" },
-                        { title: "Lisa's Review: Social Psychology", duration: "20 min", description: "How we interact with and influence others" },
-                        { title: "Alex's Review: Personality & Individual Differences", duration: "16 min", description: "What makes us unique" }
-                      ] : [
-                        { title: "David's Review: Course Introduction", duration: "10 min", description: "Welcome and course overview" },
-                        { title: "Sophie's Review: Fundamental Concepts", duration: "25 min", description: "Core principles and theories" },
-                        { title: "Ryan's Review: Practical Applications", duration: "30 min", description: "Real-world examples and case studies" },
-                        { title: "Nina's Review: Assessment Guidelines", duration: "15 min", description: "How you'll be evaluated" }
-                      ]).map((chapter, index) => (
-                        <Card 
-                          key={index} 
-                          className="hover:shadow-md transition-shadow cursor-pointer"
-                          onClick={() => window.open('https://www.youtube.com/shorts/Ay8lynMZ4mE?feature=share', '_blank')}
-                        >
-                          <CardContent className="p-4">
-                            <div className="flex items-center gap-4">
-                              <div className="flex-shrink-0">
-                                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                                  <Play className="h-5 w-5 text-primary" />
-                                </div>
-                              </div>
-                              <div className="flex-1">
-                                <h5 className="font-semibold mb-1">{chapter.title}</h5>
-                                <p className="text-sm text-muted-foreground mb-2">{chapter.description}</p>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                  <Clock className="h-3 w-3" />
-                                  <span>{chapter.duration}</span>
-                                </div>
-                              </div>
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  window.open('https://www.youtube.com/shorts/Ay8lynMZ4mE?feature=share', '_blank');
-                                }}
-                              >
-                                <Play className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
                     </div>
                   </div>
                 </CardContent>
@@ -595,20 +542,16 @@ const CourseDetail = () => {
             <div className="lg:col-span-1">
               <Card>
                 <CardHeader>
-                  <CardTitle>Video Stats</CardTitle>
+                  <CardTitle>Video Details</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Total Duration:</span>
-                    <span className="font-medium">
-                      {course.title.includes("PSYC") ? "1h 43m" : "1h 20m"}
-                    </span>
+                    <span className="text-muted-foreground">Duration:</span>
+                    <span className="font-medium">60 seconds</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Chapters:</span>
-                    <span className="font-medium">
-                      {course.title.includes("PSYC") ? "6" : "4"}
-                    </span>
+                    <span className="text-muted-foreground">Created by:</span>
+                    <span className="font-medium">Students</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Language:</span>
@@ -618,61 +561,6 @@ const CourseDetail = () => {
                     <span className="text-muted-foreground">Captions:</span>
                     <span className="font-medium">Available</span>
                   </div>
-                  <Separator />
-                  <div className="text-center">
-                    <a 
-                      href="https://my.unsw.edu.au/" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="w-full"
-                    >
-                      <Button className="w-full gap-2">
-                        <ExternalLink className="h-4 w-4" />
-                        Enroll into the Course
-                      </Button>
-                    </a>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="mt-6">
-                <CardHeader>
-                  <CardTitle>Download Resources</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <a 
-                    href="https://www.unsw.edu.au/course-outlines/" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="w-full"
-                  >
-                    <Button variant="outline" className="w-full justify-start gap-2">
-                      <BookOpen className="h-4 w-4" />
-                      Course Outlines (UNSW)
-                    </Button>
-                  </a>
-                  <a 
-                    href="https://www.unsw.edu.au/course-outlines/" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="w-full"
-                  >
-                    <Button variant="outline" className="w-full justify-start gap-2">
-                      <ExternalLink className="h-4 w-4" />
-                      Reading List (UNSW)
-                    </Button>
-                  </a>
-                  <a 
-                    href="https://www.unsw.edu.au/course-outlines/" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="w-full"
-                  >
-                    <Button variant="outline" className="w-full justify-start gap-2">
-                      <Monitor className="h-4 w-4" />
-                      Course Materials (UNSW)
-                    </Button>
-                  </a>
                 </CardContent>
               </Card>
             </div>

@@ -7,12 +7,6 @@ import { Badge } from "../components/ui/badge";
 import { Separator } from "../components/ui/separator";
 import { Avatar, AvatarFallback } from "../components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
-import { fetchCourseById } from "../lib/api";
-import RatingDistributionChart from "../components/Course/RatingDistributionChart";
-import { Badge } from "../components/ui/badge";
-import { Separator } from "../components/ui/separator";
-import { Avatar, AvatarFallback } from "../components/ui/avatar";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { courseDetails } from "../data/courses";
 import RatingDistributionChart from "../components/Course/RatingDistributionChart";
 
@@ -97,7 +91,7 @@ const CourseDetail = () => {
   const tabs = [
     { id: "overview", label: "Overview" },
     { id: "reviews", label: "Reviews" },
-    { id: "video", label: "Student Video" }
+    { id: "video", label: "60s Summary" }
   ];
 
   return (
@@ -374,9 +368,9 @@ const CourseDetail = () => {
         {activeTab === "video" && (
           <Card>
             <CardHeader>
-              <CardTitle>Student Reflection Video</CardTitle>
+              <CardTitle>Course Summary Video</CardTitle>
               <p className="text-sm text-muted-foreground">
-                Watch a 60-second insight from a top student who completed this course
+                Watch a concise 60-second overview of this course, created by students who have completed it.
               </p>
             </CardHeader>
             <CardContent>
@@ -387,17 +381,21 @@ const CourseDetail = () => {
                     <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-lg"></div>
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                    Student Success Story
+                    {course.title} - Quick Overview
                   </h3>
                   <p className="text-muted-foreground mb-4">
-                    "This course changed my perspective on computer science. The hands-on projects really helped me understand complex algorithms."
+                    "Get a quick insight into this course from a student perspective. Perfect for understanding what to expect before enrolling."
                   </p>
-                  <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">
-                    - Sarah Chen, Computer Science Graduate
+                  <p className="text-sm text-blue-600 dark:text-blue-400 font-medium mb-4">
+                    Duration: 60 seconds
                   </p>
-                  <div className="mt-4 text-xs text-muted-foreground">
-                    🎬 Demo video coming soon
-                  </div>
+                  <Button 
+                    className="gap-2"
+                    onClick={() => window.open('https://www.youtube.com/shorts/Ay8lynMZ4mE?feature=share', '_blank')}
+                  >
+                    <Play className="h-4 w-4" />
+                    Watch Video
+                  </Button>
                 </div>
               </div>
             </CardContent>

@@ -13,16 +13,6 @@ import { useAuth } from "@/hooks/use-auth";
 
 interface Filters {
   faculty: string[];
-  rating: number;
-  mode: string[];
-  skills: string[];
-}
-
-
-
-interface Filters {
-  faculty: string[];
-  rating: number;
   mode: string[];
   skills: string[];
 }
@@ -40,7 +30,6 @@ const CoursesDirectory = () => {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<Filters>({
     faculty: [],
-    rating: 0,
     mode: [],
     skills: [],
   });
@@ -97,8 +86,8 @@ const CoursesDirectory = () => {
       const facultyMatch = filters.faculty.length === 0 || 
         courseCategories.some(category => filters.faculty.includes(category));
 
-      // Rating filter
-      const ratingMatch = filters.rating === 0 || (course.rating && course.rating >= filters.rating);
+      // Rating filter - removed, always match all courses
+      const ratingMatch = true;
 
       // Mode filter (Note: courses from DB don't have mode, so we'll skip this for now)
       const modeMatch = filters.mode.length === 0; // || filters.mode.includes(course.mode);
@@ -331,7 +320,7 @@ const CoursesDirectory = () => {
                 <p className="text-muted-foreground mb-4">No courses found matching your criteria.</p>
                 <Button variant="outline" onClick={() => {
                   setSearchQuery("");
-                  setFilters({ faculty: [], rating: 0, mode: [], skills: [] });
+                  setFilters({ faculty: [], mode: [], skills: [] });
                 }}>
                   Clear all filters
                 </Button>

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import CourseCard from "@/components/Course/CourseCard";
+import HiddenGemsSection from "@/components/Course/HiddenGemsSection";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect, useState } from "react";
 import { fetchCourses, DatabaseCourse } from "@/lib/api";
@@ -167,6 +168,9 @@ const HomepageSimple = () => {
           </div>
         </div>
       </section>
+
+      {/* Hidden Gems Section */}
+      <HiddenGemsSection />
 
       {/* How It Works */}
       <section className="py-20">

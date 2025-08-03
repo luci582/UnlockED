@@ -31,6 +31,7 @@ FROM node:18-alpine AS production
 RUN apk update && apk upgrade && apk add --no-cache \
     curl \
     openssl \
+    su-exec \
     && rm -rf /var/cache/apk/*
 
 # Create non-root user for security
@@ -51,8 +52,13 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
-# Change ownership to non-root user
-RUN chown -R backend-user:backend-user /app
+# Copy entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Create data directory and set permissions
+RUN mkdir -p /app/data && \
+    chown -R backend-user:backend-user /app
 
 # Expose port
 EXPOSE 3001
@@ -61,8 +67,8 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:3001/api/health || exit 1
 
-# Switch to non-root user
-USER backend-user
+# Don't switch to non-root user yet (will be done in entrypoint)
+# USER backend-user
 
 # Start the application
-CMD ["npm", "start"]
+CMD ["docker-entrypoint.sh"]

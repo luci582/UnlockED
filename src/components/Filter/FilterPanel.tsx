@@ -17,13 +17,11 @@ interface Category {
 interface FilterPanelProps {
   onFiltersChange?: (filters: {
     faculty: string[];
-    rating: number;
     mode: string[];
     skills: string[];
   }) => void;
   currentFilters?: {
     faculty: string[];
-    rating: number;
     mode: string[];
     skills: string[];
   };
@@ -34,7 +32,6 @@ interface FilterPanelProps {
 const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick, showActiveCount = false }: FilterPanelProps) => {
   const [filters, setFilters] = useState(currentFilters || {
     faculty: [],
-    rating: 0,
     mode: [],
     skills: [],
   });
@@ -102,7 +99,6 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick, showActive
 
   const [openSections, setOpenSections] = useState({
     faculty: true,
-    rating: true,
     mode: true,
     skills: true
   });
@@ -116,7 +112,6 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick, showActive
 
   const updateFilters = (newFilters: {
     faculty: string[];
-    rating: number;
     mode: string[];
     skills: string[];
   }) => {
@@ -127,7 +122,6 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick, showActive
   const clearAllFilters = () => {
     const clearedFilters = {
       faculty: [],
-      rating: 0,
       mode: [],
       skills: [],
     };
@@ -136,7 +130,6 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick, showActive
 
   const getActiveFiltersCount = () => {
     return filters.faculty.length + 
-           (filters.rating > 0 ? 1 : 0) + 
            filters.mode.length + 
            filters.skills.length;
   };
@@ -148,9 +141,7 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick, showActive
     updateFilters({ ...filters, faculty: newFaculty });
   };
 
-  const handleRatingChange = (rating: number, checked: boolean) => {
-    updateFilters({ ...filters, rating: checked ? rating : 0 });
-  };
+
 
   const handleModeChange = (mode: string, checked: boolean) => {
     const newMode = checked
@@ -204,28 +195,7 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick, showActive
           </CollapsibleContent>
         </Collapsible>
 
-        {/* Rating Filter */}
-        <Collapsible open={openSections.rating} onOpenChange={() => toggleSection('rating')}>
-          <CollapsibleTrigger className="flex w-full items-center justify-between py-2">
-            <Label className="font-medium">Minimum Rating</Label>
-            <ChevronDown className={`h-4 w-4 transition-transform ${openSections.rating ? 'rotate-180' : ''}`} />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="space-y-2 pt-2">
-            {[4, 3, 2, 1].map((rating) => (
-              <div key={rating} className="flex items-center space-x-2">
-                <Checkbox 
-                  id={`rating-${rating}`} 
-                  checked={filters.rating >= rating}
-                  onCheckedChange={(checked) => handleRatingChange(rating, !!checked)}
-                />
-                <Label htmlFor={`rating-${rating}`} className="flex items-center space-x-1 text-sm">
-                  <Star className="h-3 w-3 fill-primary text-primary" />
-                  <span>{rating}+ stars</span>
-                </Label>
-              </div>
-            ))}
-          </CollapsibleContent>
-        </Collapsible>
+
 
         {/* Delivery Mode Filter */}
         <Collapsible open={openSections.mode} onOpenChange={() => toggleSection('mode')}>

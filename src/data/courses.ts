@@ -124,6 +124,30 @@ export const allCourses: Course[] = [
     mode: "in-person",
     effortLevel: "moderate",
   },
+  {
+    id: "comp3511",
+    title: "Human Computer Interaction",
+    code: "COMP3511",
+    faculty: "Engineering",
+    rating: 4.6,
+    reviewCount: 89,
+    skills: ["UX Design", "Research", "Prototyping", "User Testing"],
+    mode: "hybrid",
+    effortLevel: "moderate",
+    isNew: true,
+  },
+  {
+    id: "arts2000",
+    title: "Digital Humanities",
+    code: "ARTS2000",
+    faculty: "Arts & Social Sciences",
+    rating: 4.3,
+    reviewCount: 67,
+    skills: ["Digital Research", "Data Visualization", "Critical Thinking", "Technology"],
+    mode: "online",
+    effortLevel: "light",
+    isNew: true,
+  },
 ];
 
 // Detailed course information for individual course pages
