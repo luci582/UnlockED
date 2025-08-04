@@ -300,32 +300,46 @@ const CoursesDirectory = () => {
               </div>
             ) : viewMode === "grid" ? (
               <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                {filteredCourses.map((course) => (
-                  <CourseCard 
-                    key={course.id} 
-                    {...course} 
-                    onSkillClick={handleSkillClick}
-                    selectedSkills={filters.skills}
-                    onCompareToggle={handleCompareToggle}
-                    isSelected={isSelected(course.id)}
-                    userRole={user?.role || null}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {filteredCourses.map((course) => (
-                  <div key={course.id} className="w-full">
+                {filteredCourses.map((course) => {
+                  // Check if this course is a hidden gem
+                  const courseCode = course.title.match(/^([A-Z]{4}\d{4})/)?.[1];
+                  const isHiddenGem = courseCode && ['COMP2521', 'MATH1131', 'ACCT1501'].includes(courseCode);
+                  
+                  return (
                     <CourseCard 
+                      key={course.id} 
                       {...course} 
                       onSkillClick={handleSkillClick}
                       selectedSkills={filters.skills}
                       onCompareToggle={handleCompareToggle}
                       isSelected={isSelected(course.id)}
                       userRole={user?.role || null}
+                      isHiddenGem={isHiddenGem}
                     />
-                  </div>
-                ))}
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredCourses.map((course) => {
+                  // Check if this course is a hidden gem
+                  const courseCode = course.title.match(/^([A-Z]{4}\d{4})/)?.[1];
+                  const isHiddenGem = courseCode && ['COMP2521', 'MATH1131', 'ACCT1501'].includes(courseCode);
+                  
+                  return (
+                    <div key={course.id} className="w-full">
+                      <CourseCard 
+                        {...course} 
+                        onSkillClick={handleSkillClick}
+                        selectedSkills={filters.skills}
+                        onCompareToggle={handleCompareToggle}
+                        isSelected={isSelected(course.id)}
+                        userRole={user?.role || null}
+                        isHiddenGem={isHiddenGem}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             )}
 

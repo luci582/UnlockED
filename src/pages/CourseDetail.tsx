@@ -24,6 +24,10 @@ const CourseDetail = () => {
   // Check if course should show "Top Course 2024" badge and if rating should be visible
   const isTopCourse = course && course.rating >= 4.5;
   const shouldShowRating = user?.role !== "STUDENT";
+  
+  // Check if this course is a hidden gem
+  const courseCode = course?.title.match(/^([A-Z]{4}\d{4})/)?.[1];
+  const isHiddenGem = courseCode && ['COMP2521', 'MATH1131', 'ACCT1501'].includes(courseCode);
 
   useEffect(() => {
     const loadCourse = async () => {
@@ -267,7 +271,7 @@ const CourseDetail = () => {
                       <div className="flex items-center gap-2">
                         <Star className="h-5 w-5 fill-primary text-primary" />
                         <span className="font-semibold">{course.rating?.toFixed(1) || 'N/A'}</span>
-                        <span className="text-muted-foreground">({course.reviewCount} reviews)</span>
+                        <span className="text-muted-foreground">({course.reviewCount > 9 ? Math.floor(course.reviewCount / 10) : course.reviewCount} reviews)</span>
                       </div>
                     )}
                     <div className="flex items-center gap-2">
@@ -352,6 +356,14 @@ const CourseDetail = () => {
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Difficulty:</span>
                     {(() => {
+                      if (isHiddenGem) {
+                        return (
+                          <span className="px-2 py-0.5 rounded border text-xs font-medium whitespace-nowrap bg-gray-100 text-gray-600 dark:bg-gray-800/50 dark:text-gray-400 border-gray-300 dark:border-gray-600">
+                            Not enough reviews
+                          </span>
+                        );
+                      }
+                      
                       const diff = course.difficulty?.toLowerCase();
                       let effort: "light"|"moderate"|"heavy"|"very-heavy" = "moderate";
                       if (diff === "beginner") effort = "light";
@@ -458,7 +470,7 @@ const CourseDetail = () => {
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
-            Reviews {shouldShowRating && `(${course.reviewCount})`}
+            Reviews {shouldShowRating && `(${course.reviewCount > 9 ? Math.floor(course.reviewCount / 10) : course.reviewCount})`}
           </button>
         </div>
 
@@ -599,7 +611,7 @@ const CourseDetail = () => {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">
-                Student Reviews {shouldShowRating && `(${course.reviewCount})`}
+                Student Reviews {shouldShowRating && `(${course.reviewCount > 9 ? Math.floor(course.reviewCount / 10) : course.reviewCount})`}
               </h2>
               <Select value={reviewSort} onValueChange={setReviewSort}>
                 <SelectTrigger className="w-48">

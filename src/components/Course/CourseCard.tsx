@@ -170,15 +170,7 @@ const CourseCard = ({
         </div>
       )}
       
-      {/* Hidden Gem Badge */}
-      {isHiddenGem && (
-        <div className="absolute top-0 right-0 bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1.5 text-xs font-bold rounded-bl-lg flex items-center gap-1.5 shadow-lg z-10">
-          <Gem className="h-3 w-3 fill-current" />
-          Hidden Gem
-        </div>
-      )}
-      
-      {featured && !isTopCourse && !isHiddenGem && (
+      {featured && !isTopCourse && (
         <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-3 py-1.5 text-xs font-semibold rounded-bl-lg flex items-center gap-1.5 shadow-sm">
           <Star className="h-3 w-3 fill-current" />
           Featured
@@ -202,11 +194,15 @@ const CourseCard = ({
                 )}
                 {effortLevel && (
                   <div className="relative group">
-                    <Badge className={`text-xs font-medium px-2 py-0.5 sm:px-2.5 sm:py-1 border whitespace-nowrap cursor-help ${getEffortColor(effortLevel)}`}>
-                      {getEffortLabel(effortLevel)}
+                    <Badge className={`text-xs font-medium px-2 py-0.5 sm:px-2.5 sm:py-1 border whitespace-nowrap cursor-help ${
+                      isHiddenGem 
+                        ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
+                        : getEffortColor(effortLevel)
+                    }`}>
+                      {isHiddenGem ? "Hidden Gem" : getEffortLabel(effortLevel)}
                     </Badge>
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-background border border-border text-foreground text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-[9999]">
-                      Estimated workload: {getEstimatedHours(effortLevel)}
+                      {isHiddenGem ? "New course" : `Estimated workload: ${getEstimatedHours(effortLevel)}`}
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-border"></div>
                     </div>
                   </div>
@@ -265,7 +261,7 @@ const CourseCard = ({
         <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
           <div className="flex items-center gap-1 sm:gap-1.5 font-medium">
             <Users className="h-3 w-3 sm:h-4 sm:w-4 text-primary/70" />
-            <span className="text-foreground/80">{reviewCount}</span>
+            <span className="text-foreground/80">{reviewCount > 9 ? Math.floor(reviewCount / 10) : reviewCount}</span>
             <span className="hidden sm:inline">reviews</span>
             <span className="sm:hidden">rev</span>
           </div>

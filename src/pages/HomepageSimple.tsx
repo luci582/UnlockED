@@ -150,14 +150,21 @@ const HomepageSimple = () => {
               ))
             ) : topCourses.length > 0 ? (
               // Display top courses with hidden ratings
-              topCourses.map((course) => (
-                <CourseCard 
-                  key={course.id} 
-                  {...course} 
-                  userRole={user?.role || null}
-                  hideRating={true} // Hide ratings on homepage
-                />
-              ))
+              topCourses.map((course) => {
+                // Check if this course is a hidden gem
+                const courseCode = course.title.match(/^([A-Z]{4}\d{4})/)?.[1];
+                const isHiddenGem = courseCode && ['COMP2521', 'MATH1131', 'ACCT1501'].includes(courseCode);
+                
+                return (
+                  <CourseCard 
+                    key={course.id} 
+                    {...course} 
+                    userRole={user?.role || null}
+                    hideRating={true} // Hide ratings on homepage
+                    isHiddenGem={isHiddenGem}
+                  />
+                );
+              })
             ) : (
               // Fallback if no top courses
               <Card className="text-center p-8 col-span-full">
