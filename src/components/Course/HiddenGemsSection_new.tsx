@@ -63,7 +63,6 @@ const HiddenGemsSection = () => {
               {...course} 
               userRole={null} // Pass null to ensure consistent behavior
               hideRating={true} // Hide ratings to match Featured Courses
-              isHiddenGem={true} // Mark as hidden gem to show special badge
             />
           ))}
         </div>

@@ -175,17 +175,45 @@ const CourseDetail = () => {
                     <span className="text-muted-foreground">Students:</span>
                     <span className="font-medium">{course.enrollmentCount}</span>
                   </div>
-                  {course.duration && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Duration:</span>
-                      <span className="font-medium">{course.duration}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Price:</span>
-                    <span className="font-medium">
-                      {course.isFree ? 'Free' : `$${course.price}`}
-                    </span>
+                  <div className="space-y-2">
+                    <span className="text-muted-foreground text-sm">Fees (per semester):</span>
+                    {(() => {
+                      let localFee = null;
+                      let internationalFee = null;
+                      
+                      if (course.learningOutcomes) {
+                        try {
+                          const outcomes = JSON.parse(course.learningOutcomes);
+                          localFee = outcomes.localFee;
+                          internationalFee = outcomes.internationalFee;
+                        } catch (e) {
+                          // If JSON parsing fails, fall back to legacy display
+                        }
+                      }
+                      
+                      if (localFee && internationalFee) {
+                        return (
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">Local students (CSP):</span>
+                              <span className="font-medium">${localFee.toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">International students:</span>
+                              <span className="font-medium">${internationalFee.toLocaleString()}</span>
+                            </div>
+                          </div>
+                        );
+                      } else {
+                        return (
+                          <div className="flex justify-between">
+                            <span className="font-medium">
+                              {course.isFree ? 'Free' : `$${course.price}`}
+                            </span>
+                          </div>
+                        );
+                      }
+                    })()}
                   </div>
                 </CardContent>
               </Card>

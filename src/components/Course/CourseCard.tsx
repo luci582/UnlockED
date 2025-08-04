@@ -1,4 +1,4 @@
-import { Star, Users, Clock, ArrowRight, Plus, Check, Monitor, MapPin, Trophy } from "lucide-react";
+import { Star, Users, Clock, ArrowRight, Plus, Check, Monitor, MapPin, Trophy, Gem } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +29,7 @@ interface CourseCardProps {
   mode?: "online" | "in-person" | "hybrid";
   featured?: boolean;
   isNew?: boolean;
+  isHiddenGem?: boolean; // New prop to indicate hidden gem status
   effortLevel?: "light" | "moderate" | "heavy" | "very-heavy";
   onSkillClick?: (skill: string) => void;
   selectedSkills?: string[];
@@ -65,6 +66,7 @@ const CourseCard = ({
   mode,
   featured = false,
   isNew = false,
+  isHiddenGem = false,
   effortLevel,
   onSkillClick,
   selectedSkills = [],
@@ -99,8 +101,8 @@ const CourseCard = ({
   
   const courseCode = extractCourseCode(title);
 
-  // Check if course should show "Top Course 2024" badge
-  const isTopCourse = rating && rating >= 4.5;
+  // Check if course should show "Top Course 2024" badge (but not for hidden gems)
+  const isTopCourse = rating && rating >= 4.5 && !isHiddenGem;
   
   // Check if rating should be hidden (for students or when explicitly hidden)
   const shouldShowRating = !hideRating && userRole !== "STUDENT";
@@ -168,7 +170,15 @@ const CourseCard = ({
         </div>
       )}
       
-      {featured && !isTopCourse && (
+      {/* Hidden Gem Badge */}
+      {isHiddenGem && (
+        <div className="absolute top-0 right-0 bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1.5 text-xs font-bold rounded-bl-lg flex items-center gap-1.5 shadow-lg z-10">
+          <Gem className="h-3 w-3 fill-current" />
+          Hidden Gem
+        </div>
+      )}
+      
+      {featured && !isTopCourse && !isHiddenGem && (
         <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-3 py-1.5 text-xs font-semibold rounded-bl-lg flex items-center gap-1.5 shadow-sm">
           <Star className="h-3 w-3 fill-current" />
           Featured

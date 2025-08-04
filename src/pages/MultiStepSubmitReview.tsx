@@ -105,11 +105,11 @@ const MultiStepSubmitReview = () => {
 
   const handleNext = () => {
     if (currentStep === 1) {
-      // Validate required fields for step 1
-      if (!formData.courseCode || !formData.semester || !formData.overallRating || !formData.review) {
+      // Validate required fields for step 1 - only rating is required, text is optional
+      if (!formData.courseCode || !formData.semester || !formData.overallRating) {
         toast({
           title: "Please fill in all required fields",
-          description: "Course code, semester, rating, and review are required.",
+          description: "Course code, semester, and rating are required.",
           variant: "destructive",
         });
         return;
@@ -134,21 +134,21 @@ const MultiStepSubmitReview = () => {
       return;
     }
     
-    // Validate all required fields
-    if (!formData.courseCode || !formData.semester || !formData.overallRating || !formData.review.trim()) {
+    // Validate required fields - only rating is mandatory, text is optional
+    if (!formData.courseCode || !formData.semester || !formData.overallRating) {
       toast({
         title: "Missing Required Fields",
-        description: "Please fill in course code, semester, rating, and review.",
+        description: "Please fill in course code, semester, and rating.",
         variant: "destructive",
       });
       return;
     }
 
-    // Validate review length
-    if (formData.review.trim().length < 50) {
+    // Optional: validate review length only if provided
+    if (formData.review.trim().length > 0 && formData.review.trim().length < 10) {
       toast({
         title: "Review Too Short",
-        description: "Please write at least 50 characters for your review.",
+        description: "If you provide a review, please write at least 10 characters.",
         variant: "destructive",
       });
       return;
@@ -304,10 +304,10 @@ const MultiStepSubmitReview = () => {
 
                 {/* Review Text */}
                 <div className="space-y-2">
-                  <Label htmlFor="review">Your Review *</Label>
+                  <Label htmlFor="review">Your Review (Optional)</Label>
                   <Textarea
                     id="review"
-                    placeholder="Share your experience with this course..."
+                    placeholder="Share your experience with this course (optional)..."
                     className="min-h-[120px]"
                     value={formData.review}
                     onChange={(e) => setFormData(prev => ({...prev, review: e.target.value}))}

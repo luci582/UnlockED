@@ -66,9 +66,22 @@ const CoursesDirectory = () => {
                          course.difficulty?.toLowerCase() === 'advanced' ? 'heavy' : 
                          'moderate');
       
+      // Extract delivery mode from learningOutcomes JSON
+      let deliveryMode = "hybrid"; // Default fallback
+      if (course.learningOutcomes) {
+        try {
+          const outcomes = JSON.parse(course.learningOutcomes);
+          deliveryMode = outcomes.deliveryMode || "hybrid";
+        } catch (e) {
+          // If JSON parsing fails, use default
+          deliveryMode = "hybrid";
+        }
+      }
+      
       return {
         ...course,
-        effortLevel: effortLevel as "light" | "moderate" | "heavy" | "very-heavy"
+        effortLevel: effortLevel as "light" | "moderate" | "heavy" | "very-heavy",
+        mode: deliveryMode as "online" | "in-person" | "hybrid"
       };
     });
 
@@ -89,8 +102,9 @@ const CoursesDirectory = () => {
       // Rating filter - removed, always match all courses
       const ratingMatch = true;
 
-      // Mode filter (Note: courses from DB don't have mode, so we'll skip this for now)
-      const modeMatch = filters.mode.length === 0; // || filters.mode.includes(course.mode);
+      // Mode filter - use the extracted delivery mode
+      const modeMatch = filters.mode.length === 0 || 
+        filters.mode.includes(course.mode);
 
       // Skills filter - course must have ALL selected skills
       const skillsMatch = filters.skills.length === 0 || 

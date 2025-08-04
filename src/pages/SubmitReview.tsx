@@ -30,7 +30,7 @@ const SubmitReview = () => {
   // Calculate form completion progress
   const calculateProgress = () => {
     let completed = 0;
-    const total = 7; // Total required sections
+    const total = 6; // Total required sections (removed review text requirement)
     
     if (courseName) completed++;
     if (instructor) completed++;
@@ -38,7 +38,7 @@ const SubmitReview = () => {
     if (rating > 0) completed++;
     if (selectedWorkload) completed++;
     if (selectedSkills.length > 0) completed++;
-    if (reviewText.trim().length > 50) completed++;
+    // Review text is now optional, so not counted towards completion
     
     return (completed / total) * 100;
   };
@@ -119,7 +119,7 @@ const SubmitReview = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Basic validation
+    // Basic validation - only rating is mandatory, text is optional
     if (!courseName || !rating || !semester) {
       toast({
         title: "Missing Required Fields",
@@ -129,10 +129,11 @@ const SubmitReview = () => {
       return;
     }
 
-    if (reviewText.trim().length < 50) {
+    // Optional: validate review length only if provided
+    if (reviewText.trim().length > 0 && reviewText.trim().length < 10) {
       toast({
         title: "Review Too Short",
-        description: "Please write at least 50 characters for your review.",
+        description: "If you provide a review, please write at least 10 characters.",
         variant: "destructive",
       });
       return;
@@ -498,31 +499,31 @@ const SubmitReview = () => {
             <CardHeader className="pb-4">
               <div className="flex items-center gap-2">
                 <MessageSquare className="h-5 w-5 text-indigo-600" />
-                <CardTitle>Your Review</CardTitle>
+                <CardTitle>Your Review (Optional)</CardTitle>
               </div>
               <p className="text-sm text-muted-foreground">
-                Share your detailed experience to help future students (minimum 50 characters)
+                Share your detailed experience to help future students (optional)
               </p>
             </CardHeader>
              <CardContent className="space-y-4">
                <Textarea
-                 placeholder="What did you like about this course? What challenges did you face? How was the workload? Any tips for future students? What skills did you develop?"
+                 placeholder="What did you like about this course? What challenges did you face? How was the workload? Any tips for future students? (Optional)"
                  className="min-h-[150px] resize-none"
                  value={reviewText}
                  onChange={(e) => setReviewText(e.target.value)}
                />
                <div className="flex items-center justify-between text-xs">
-                 <span className={`${reviewText.length >= 50 ? 'text-green-600' : 'text-muted-foreground'}`}>
-                   {reviewText.length}/50 characters minimum
+                 <span className="text-muted-foreground">
+                   {reviewText.length > 0 ? `${reviewText.length} characters` : 'Optional field'}
                  </span>
                  <span className="text-muted-foreground">
                    {reviewText.length}/2000 characters
                  </span>
                </div>
-               {reviewText.length >= 50 && (
+               {reviewText.length >= 10 && (
                  <div className="p-3 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-lg border border-green-200 dark:border-green-800">
                    <p className="text-sm text-green-800 dark:text-green-200">
-                     ✓ Great! Your review meets the minimum length requirement.
+                     ✓ Thank you for providing additional feedback!
                    </p>
                  </div>
                )}
@@ -564,7 +565,7 @@ const SubmitReview = () => {
                 type="submit" 
                 size="lg" 
                 className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg px-8"
-                disabled={!courseName || !rating || !semester || reviewText.trim().length < 50}
+                disabled={!courseName || !rating || !semester}
               >
                 <Award className="h-4 w-4 mr-2" />
                 Submit Review & Earn 50 pts
