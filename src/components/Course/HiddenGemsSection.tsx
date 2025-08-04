@@ -14,11 +14,15 @@ const HiddenGemsSection = () => {
       try {
         const result = await fetchCourses();
         if (result.success && result.data) {
-          // Filter courses created in the last 30 days
-          const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+          // Filter for specific hidden gem courses
+          const hiddenGemCodes = ['COMP2521', 'MATH1131', 'ACCT1501'];
           const hiddenGems = result.data
-            .filter(course => new Date(course.createdAt) > thirtyDaysAgo)
-            .slice(0, 3); // Show only 3 hidden gems
+            .filter(course => {
+              // Extract course code from title (e.g., "COMP2521 - Data Structures" -> "COMP2521")
+              const courseCode = course.title.match(/^([A-Z]{4}\d{4})/)?.[1];
+              return courseCode && hiddenGemCodes.includes(courseCode);
+            })
+            .slice(0, 3); // Ensure we don't show more than 3
           setNewCourses(hiddenGems);
         }
       } catch (error) {
