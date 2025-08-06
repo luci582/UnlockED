@@ -9,8 +9,10 @@ import { Avatar, AvatarFallback } from "../components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { courseDetails } from "../data/courses";
 import RatingDistributionChart from "../components/Course/RatingDistributionChart";
+import { useAuth } from "../hooks/use-auth";
 
 const CourseDetail = () => {
+  const { user } = useAuth();
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("overview");
   const [reviewSort, setReviewSort] = useState("most-recent");
@@ -131,6 +133,24 @@ const CourseDetail = () => {
                 <Button asChild className="w-full">
                   <Link to="/submit-review">Submit Review</Link>
                 </Button>
+                
+                {/* Quick Links - Only for Students */}
+                {user && user.role === 'STUDENT' && (
+                  <div className="space-y-2 pt-4 border-t mt-4">
+                    <span className="text-muted-foreground text-sm">Quick Links:</span>
+                    <div className="space-y-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full justify-start"
+                        onClick={() => window.open('https://www.unsw.edu.au/student/managing-your-studies/resources/myplan', '_blank')}
+                      >
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        My Planner
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

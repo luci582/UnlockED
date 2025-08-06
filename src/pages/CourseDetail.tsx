@@ -431,6 +431,35 @@ const CourseDetail = () => {
                       }
                     })()}
                   </div>
+                  
+                  {/* Quick Links - Only for Students */}
+                  {user && user.role === 'STUDENT' && (
+                    <div className="space-y-2 pt-4 border-t">
+                      <span className="text-muted-foreground text-sm">Quick Links:</span>
+                      <div className="space-y-2">
+                        {course.courseUrl && (
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full justify-start"
+                            onClick={() => window.open(course.courseUrl, '_blank')}
+                          >
+                            <ExternalLink className="h-4 w-4 mr-2" />
+                            Course Handbook
+                          </Button>
+                        )}
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full justify-start"
+                          onClick={() => window.open('https://www.unsw.edu.au/student/managing-your-studies/resources/myplan', '_blank')}
+                        >
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          My Planner
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
