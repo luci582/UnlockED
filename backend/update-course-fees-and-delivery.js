@@ -5,17 +5,20 @@ const prisma = new PrismaClient();
 // UNSW 2024 undergraduate course fees (per unit of credit)
 const UNSW_FEES = {
   // Commonwealth Supported Place (CSP) - local students
-  local_fee: 1540, // Per unit of credit for most courses
-  // International student fees vary by faculty
+  local_fee: 565, // Per unit of credit - $3,390 per semester for 6 units
+  // International student fees - uniform across faculties
   international_fees: {
-    'Arts & Social Sciences': 3680,
-    'Business School': 4160, 
-    'Computer Science & Engineering': 4680,
-    'Engineering': 4680,
-    'Medicine & Health': 5200,
-    'Science': 4160,
-    'Law & Justice': 4680,
-    'Built Environment': 4160
+    'Arts & Social Sciences': 1170,
+    'Business School': 1170, 
+    'Computer Science & Engineering': 1170,
+    'Engineering': 1170,
+    'Medicine & Health': 1170,
+    'Science': 1170,
+    'Law & Justice': 1170,
+    'Built Environment': 1170,
+    'Programming': 1170,
+    'Data Science': 1170,
+    'Business': 1170
   }
 };
 
@@ -60,7 +63,7 @@ async function updateCourseFeesAndDelivery() {
       // Calculate fees (6 units of credit per course is standard)
       const unitsOfCredit = 6;
       const localFee = UNSW_FEES.local_fee * unitsOfCredit;
-      const internationalFee = (UNSW_FEES.international_fees[faculty] || 4160) * unitsOfCredit;
+      const internationalFee = (UNSW_FEES.international_fees[faculty] || 1170) * unitsOfCredit;
       
       // Determine delivery mode
       let deliveryMode = 'hybrid'; // Default
