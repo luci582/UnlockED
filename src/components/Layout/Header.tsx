@@ -45,9 +45,13 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
       <div className="container flex h-16 items-center">
         <Link to="/" className="flex items-center space-x-2 group">
-          {/* Styled logo container with hover effect */}
+          {/* UNSW logo with hover effect */}
           <div className="p-2 bg-primary/10 rounded-lg transition-colors group-hover:bg-primary/20">
-            <GraduationCap className="h-6 w-6 text-primary" />
+            <img 
+              src="https://www.unsw.edu.au/content/dam/images/graphics/logos/unsw/unsw_0.png" 
+              alt="UNSW Logo" 
+              className="h-6 w-auto"
+            />
           </div>
           <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             UnlockED

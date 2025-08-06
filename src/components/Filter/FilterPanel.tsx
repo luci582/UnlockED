@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/hooks/use-auth";
 
 interface Category {
   id: string;
@@ -19,21 +20,25 @@ interface FilterPanelProps {
     faculty: string[];
     mode: string[];
     skills: string[];
+    rating: string[];
   }) => void;
   currentFilters?: {
     faculty: string[];
     mode: string[];
     skills: string[];
+    rating: string[];
   };
   onSkillClick?: (skill: string) => void;
   showActiveCount?: boolean;
 }
 
 const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick, showActiveCount = false }: FilterPanelProps) => {
+  const { user } = useAuth();
   const [filters, setFilters] = useState(currentFilters || {
     faculty: [],
     mode: [],
     skills: [],
+    rating: [],
   });
 
   const [faculties, setFaculties] = useState<string[]>([]);
@@ -43,7 +48,7 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick, showActive
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/courses');
+        const response = await fetch('/api/courses');
         if (response.ok) {
           const result = await response.json();
           if (result.success && result.courses) {
@@ -97,10 +102,18 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick, showActive
     "Writing", "Excel", "Collaboration", "Public Speaking"
   ];
 
+  const ratingOptions = [
+    { id: "4-5", label: "4+ Stars", icon: Star },
+    { id: "3-4", label: "3+ Stars", icon: Star },
+    { id: "2-3", label: "2+ Stars", icon: Star },
+    { id: "1-2", label: "1+ Stars", icon: Star }
+  ];
+
   const [openSections, setOpenSections] = useState({
     faculty: true,
     mode: true,
-    skills: true
+    skills: true,
+    rating: true
   });
 
   const toggleSection = (section: string) => {
@@ -114,6 +127,7 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick, showActive
     faculty: string[];
     mode: string[];
     skills: string[];
+    rating: string[];
   }) => {
     setFilters(newFilters);
     onFiltersChange?.(newFilters);
@@ -124,6 +138,7 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick, showActive
       faculty: [],
       mode: [],
       skills: [],
+      rating: [],
     };
     updateFilters(clearedFilters);
   };
@@ -131,7 +146,8 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick, showActive
   const getActiveFiltersCount = () => {
     return filters.faculty.length + 
            filters.mode.length + 
-           filters.skills.length;
+           filters.skills.length +
+           filters.rating.length;
   };
 
   const handleFacultyChange = (faculty: string, checked: boolean) => {
@@ -148,6 +164,13 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick, showActive
       ? [...filters.mode, mode]
       : filters.mode.filter(m => m !== mode);
     updateFilters({ ...filters, mode: newMode });
+  };
+
+  const handleRatingChange = (rating: string, checked: boolean) => {
+    const newRating = checked
+      ? [...filters.rating, rating]
+      : filters.rating.filter(r => r !== rating);
+    updateFilters({ ...filters, rating: newRating });
   };
 
   const handleSkillToggle = (skill: string) => {
@@ -222,6 +245,34 @@ const FilterPanel = ({ onFiltersChange, currentFilters, onSkillClick, showActive
             })}
           </CollapsibleContent>
         </Collapsible>
+
+        {/* Review Rating Filter - Only for Teachers */}
+        {user && (user.role === 'INSTRUCTOR' || user.role === 'ADMIN') && (
+          <Collapsible open={openSections.rating} onOpenChange={() => toggleSection('rating')}>
+            <CollapsibleTrigger className="flex w-full items-center justify-between py-2">
+              <Label className="font-medium">Review Rating</Label>
+              <ChevronDown className={`h-4 w-4 transition-transform ${openSections.rating ? 'rotate-180' : ''}`} />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-2 pt-2">
+              {ratingOptions.map((rating) => {
+                const Icon = rating.icon;
+                return (
+                  <div key={rating.id} className="flex items-center space-x-2">
+                    <Checkbox 
+                      id={rating.id} 
+                      checked={filters.rating.includes(rating.id)}
+                      onCheckedChange={(checked) => handleRatingChange(rating.id, !!checked)}
+                    />
+                    <Label htmlFor={rating.id} className="flex items-center space-x-2 text-sm">
+                      <Icon className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                      <span>{rating.label}</span>
+                    </Label>
+                  </div>
+                );
+              })}
+            </CollapsibleContent>
+          </Collapsible>
+        )}
 
         {/* Skills Filter */}
         <Collapsible open={openSections.skills} onOpenChange={() => toggleSection('skills')}>

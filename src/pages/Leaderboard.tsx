@@ -608,8 +608,12 @@ const Leaderboard = () => {
               <div className="grid gap-4 md:gap-6 md:grid-cols-2 max-w-2xl mx-auto">
                 <div className="bg-background rounded-lg p-4 md:p-6 border shadow-sm">
                    <div className="text-center">
-                     <div className="w-16 h-16 md:w-20 md:h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
-                       <span className="text-xl md:text-2xl">👕</span>
+                     <div className="w-16 h-16 md:w-20 md:h-20 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 md:mb-4 overflow-hidden">
+                       <img 
+                         src="https://thegradshop.arc.unsw.edu.au/cdn/shop/files/Artboard10.jpg?v=1696568056" 
+                         alt="UNSW Hoodie" 
+                         className="w-full h-full object-cover"
+                       />
                      </div>
                      <h3 className="font-semibold mb-2 text-sm md:text-base">UNSW Hoodie</h3>
                      <p className="text-xs md:text-sm text-muted-foreground mb-3 md:mb-4">
@@ -627,8 +631,12 @@ const Leaderboard = () => {
 
                 <div className="bg-background rounded-lg p-4 md:p-6 border shadow-sm">
                    <div className="text-center">
-                     <div className="w-16 h-16 md:w-20 md:h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
-                       <span className="text-xl md:text-2xl">👜</span>
+                     <div className="w-16 h-16 md:w-20 md:h-20 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 md:mb-4 overflow-hidden">
+                       <img 
+                         src="https://thegradshop.arc.unsw.edu.au/cdn/shop/files/ToteBag2.jpg?v=1710824794" 
+                         alt="UNSW Tote Bag" 
+                         className="w-full h-full object-cover"
+                       />
                      </div>
                      <h3 className="font-semibold mb-2 text-sm md:text-base">UNSW Tote Bag</h3>
                      <p className="text-xs md:text-sm text-muted-foreground mb-3 md:mb-4">

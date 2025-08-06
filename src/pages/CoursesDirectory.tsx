@@ -15,6 +15,7 @@ interface Filters {
   faculty: string[];
   mode: string[];
   skills: string[];
+  rating: string[];
 }
 
 const CoursesDirectory = () => {
@@ -32,6 +33,7 @@ const CoursesDirectory = () => {
     faculty: [],
     mode: [],
     skills: [],
+    rating: [],
   });
 
   // Fetch courses from database
@@ -99,8 +101,27 @@ const CoursesDirectory = () => {
       const facultyMatch = filters.faculty.length === 0 || 
         courseCategories.some(category => filters.faculty.includes(category));
 
-      // Rating filter - removed, always match all courses
-      const ratingMatch = true;
+      // Rating filter - filter by course rating ranges
+      const ratingMatch = filters.rating.length === 0 || 
+        filters.rating.some(ratingRange => {
+          const courseRating = course.rating || 0;
+          // Debug: log rating data
+          if (filters.rating.length > 0) {
+            console.log(`Course: ${course.title}, Rating: ${courseRating}, Filter: ${ratingRange}`);
+          }
+          switch (ratingRange) {
+            case "4-5":
+              return courseRating >= 4;
+            case "3-4":
+              return courseRating >= 3;
+            case "2-3":
+              return courseRating >= 2;
+            case "1-2":
+              return courseRating >= 1;
+            default:
+              return false;
+          }
+        });
 
       // Mode filter - use the extracted delivery mode
       const modeMatch = filters.mode.length === 0 || 
@@ -348,7 +369,7 @@ const CoursesDirectory = () => {
                 <p className="text-muted-foreground mb-4">No courses found matching your criteria.</p>
                 <Button variant="outline" onClick={() => {
                   setSearchQuery("");
-                  setFilters({ faculty: [], mode: [], skills: [] });
+                  setFilters({ faculty: [], mode: [], skills: [], rating: [] });
                 }}>
                   Clear all filters
                 </Button>
