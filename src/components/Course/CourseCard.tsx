@@ -261,7 +261,7 @@ const CourseCard = ({
         <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
           <div className="flex items-center gap-1 sm:gap-1.5 font-medium">
             <Users className="h-3 w-3 sm:h-4 sm:w-4 text-primary/70" />
-            <span className="text-foreground/80">{reviewCount > 9 ? Math.floor(reviewCount / 10) : reviewCount}</span>
+            <span className="text-foreground/80">{reviewCount}</span>
             <span className="hidden sm:inline">reviews</span>
             <span className="sm:hidden">rev</span>
           </div>

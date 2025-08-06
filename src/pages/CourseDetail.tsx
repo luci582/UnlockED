@@ -47,7 +47,7 @@ const CourseDetail = () => {
             ...response.data,
             rating: response.data.rating || (Math.random() * 1.5 + 3.5), // Random rating between 3.5-5
             reviewCount: response.data.reviewCount || Math.floor(Math.random() * 200 + 50), // 50-250 reviews
-            enrollmentCount: response.data.enrollmentCount || Math.floor(Math.random() * 1000 + 200), // 200-1200 enrolled
+            enrollmentCount: response.data.enrollmentCount !== undefined ? response.data.enrollmentCount : Math.floor(Math.random() * 1000 + 200), // Use database value or random if undefined
             reviews: response.data.reviews?.length > 0 ? response.data.reviews : generateFakeReviews(response.data.title),
             // Add workload data based on course difficulty or random assignment
             effortLevel: (() => {
@@ -271,7 +271,7 @@ const CourseDetail = () => {
                       <div className="flex items-center gap-2">
                         <Star className="h-5 w-5 fill-primary text-primary" />
                         <span className="font-semibold">{course.rating?.toFixed(1) || 'N/A'}</span>
-                        <span className="text-muted-foreground">({course.reviewCount > 9 ? Math.floor(course.reviewCount / 10) : course.reviewCount} reviews)</span>
+                        <span className="text-muted-foreground">({course.reviewCount} reviews)</span>
                       </div>
                     )}
                     <div className="flex items-center gap-2">
@@ -470,7 +470,7 @@ const CourseDetail = () => {
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
-            Reviews {shouldShowRating && `(${course.reviewCount > 9 ? Math.floor(course.reviewCount / 10) : course.reviewCount})`}
+            Reviews {shouldShowRating && `(${course.reviewCount})`}
           </button>
         </div>
 
@@ -611,7 +611,7 @@ const CourseDetail = () => {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">
-                Student Reviews {shouldShowRating && `(${course.reviewCount > 9 ? Math.floor(course.reviewCount / 10) : course.reviewCount})`}
+                Student Reviews {shouldShowRating && `(${course.reviewCount})`}
               </h2>
               <Select value={reviewSort} onValueChange={setReviewSort}>
                 <SelectTrigger className="w-48">

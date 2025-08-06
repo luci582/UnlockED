@@ -39,7 +39,7 @@ coverage/
 # Cache
 .cache/
 .parcel-cache/
-
 # Database
 backend/node_modules/
 node_modules/
+
